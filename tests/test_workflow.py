@@ -57,3 +57,22 @@ def test_invalid_workflows(tmp_path, change):
     path.write_text(json.dumps(doc))
     with pytest.raises(DSLValidationError):
         load_workflow(path)
+
+
+def test_workflow_control_dependencies(logical, fixture_registry, tmp_path):
+    import asyncio
+    from conftest import ProcessFixtureAdapter as Fixture
+    from veriruntime.model import GoalDependency, Verdict
+    from veriruntime.service import VerificationService
+    g1 = replace(logical.task, id="G1")
+    g2 = replace(logical.task, id="G2")
+    workflow = VerificationWorkflow("dag", (g2, g1), (GoalDependency("G1", "G2"),))
+    service = VerificationService(tmp_path, registry=fixture_registry(Fixture("a", "print('SAFE')")))
+    report = asyncio.run(service.verify(workflow))
+    assert [g.report.result.goal_id for g in report.goals] == ["G1", "G2"]
+    assert all(g.report.result.verdict == Verdict.SAFE for g in report.goals)
+    service = VerificationService(tmp_path, registry=fixture_registry(Fixture("b", "print('UNSAFE')")))
+    report = asyncio.run(service.verify(workflow))
+    assert report.goals[1].report.result.status == "BLOCKED"
+    assert report.goals[1].report.attempts == ()
+    assert report.goals[1].report.result.failure_reasons == ("dependency_not_satisfied",)

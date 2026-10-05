@@ -173,3 +173,28 @@ interfaces, never tool names. Cancellation and failures yield UNKNOWN attempts,
 and reconciliation counts distinct families. Tests exercise real concurrency and
 process-group cleanup, and a real two-verifier SAFE cross-check. Raw inputs, plans,
 events, timing and attempt records are retained before the SQLite layer arrives.
+
+## Physical optimizer and workflow scheduler
+
+`optimize(LogicalPlan, RuntimeContext) -> OptimizationResult` produces one physical
+plan per fixed goal. Candidates are filtered by availability, language, property,
+C standard/data model and memory estimate. The initial cost heuristic ranks by a
+smoothed definitive rate divided by historical median time, with version/config
+scoped priors. Memory estimates and max_parallel pack candidates into parallel
+stages; sequential fallback stages receive time slices under the global deadline.
+Infeasible trust requirements remain explicit and yield UNKNOWN, never a lowered
+confirmation count. Hints are recorded and currently ignored.
+
+`VerificationService.verify(VerificationWorkflow | VerificationTask)` is the future
+LLM boundary. The thin DAG scheduler executes ready goals sequentially and checks
+explicit required predecessor results. Each ready goal is independently optimized
+and executed via `Runtime.execute_goal`. Blocked successors receive structured
+`dependency_not_satisfied` feedback. No workflow-level theorem verdict is inferred.
+
+## M4 review
+
+YES: optimizer replacements need only the optimize interface. Tool adapters do
+not receive semantic planning authority. Real history is persisted in SQLite and
+influences candidate ordering. Plans honor memory estimates, concurrency and
+confirmation opportunity; runtime enforces the shared wall deadline and records
+uncertainty. Single goals and explicit control DAGs use the same per-goal engine.
