@@ -2,12 +2,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import json
 from pathlib import Path
+import time
 import uuid
 
 from veriruntime.model import (Diagnostic, LogicalPlan, TerminationReason, VerificationResult,
                                VerificationWorkflow, Verdict)
+from veriruntime.model import to_data
+from veriruntime.artifacts import ArtifactStore
+from veriruntime.cache import SemanticCache
 from veriruntime.optimizer import CostAwareOptimizer, OptimizationResult, RuntimeContext
+from veriruntime.plan import CacheLookupPlan
 from veriruntime.runtime import Runtime, RuntimeReport
 from veriruntime.store import ExecutionStore
 from veriruntime.tools import default_registry
@@ -33,24 +39,77 @@ class VerificationService:
         self.store = ExecutionStore(self.data_dir)
         self.optimizer = optimizer or CostAwareOptimizer()
         self.cache_enabled = cache_enabled
+        self.artifacts = ArtifactStore(self.data_dir, self.store)
+        self.cache = SemanticCache(self.store, self.artifacts)
 
     def optimize_goal(self, task):
-        return self.optimizer.optimize(LogicalPlan(task), RuntimeContext(self.registry, self.store))
+        return self.optimizer.optimize(LogicalPlan(task), RuntimeContext(self.registry, self.store,
+                                       self.cache if self.cache_enabled else None))
 
     def explain_workflow(self, workflow):
         return tuple(self.optimize_goal(task) for task in workflow.goals)
 
-    async def verify_goal(self, task, cancellation=None, optimization=None):
+    def _record_attempt(self, attempt, task):
+        workspace = Path(attempt.workspace)
+        refs = [self.artifacts.put_file(path, kind, attempt.id).id for kind, path in (
+            ("STDOUT", attempt.stdout_path), ("STDERR", attempt.stderr_path),
+            ("COMMAND", workspace / "command.json"), ("ATTEMPT", workspace / "attempt.json")) if Path(path).exists()]
+        for kind, path in self.registry.get(attempt.tool).collect_artifacts(workspace):
+            refs.append(self.artifacts.put_file(path, kind, attempt.id).id)
+        attempt = replace(attempt, artifact_ids=tuple(refs))
+        self.store.record_attempt(attempt, task)
+        return attempt
+
+    def _finish_goal(self, task, optimization, report):
+        evidence = self.store.definitive_evidence(task.semantic_key)
+        if {a["verdict"] for a in evidence} == {"SAFE", "UNSAFE"}:
+            diagnostic = Diagnostic("conflicting_verdict", task.id,
+                                    detail="Opposing completed evidence in this goal's execution history")
+            report = replace(report, result=replace(report.result, verdict=Verdict.CONFLICT, confirmations=0,
+                requirement_satisfied=False, termination_reason=TerminationReason.CONFLICT,
+                diagnostics=report.result.diagnostics + (diagnostic,),
+                failure_reasons=tuple(sorted(set(report.result.failure_reasons + (diagnostic.code,)))),
+                artifacts=tuple(dict.fromkeys(report.result.artifacts + tuple(ref for a in evidence for ref in a.get("artifact_ids", []))))))
+            self.cache.clear([task.semantic_key])
+        refs = list(report.result.artifacts)
+        for kind, value in (("INPUT_SNAPSHOT", task), ("LOGICAL_PLAN", LogicalPlan(task)),
+                            ("PHYSICAL_PLAN", optimization.physical_plan), ("OPTIMIZER", optimization),
+                            ("LOG", report.events)):
+            refs.append(self.artifacts.put_bytes(json.dumps(to_data(value), sort_keys=True).encode(), kind).id)
+        refs.extend(ref for attempt in report.attempts for ref in attempt.artifact_ids)
+        refs = tuple(dict.fromkeys(refs))
+        report = replace(report, result=replace(report.result, artifacts=refs,
+                                               optimizer_summary=optimization.explanation))
+        result_ref = self.artifacts.put_bytes(json.dumps(to_data(report.result), sort_keys=True).encode(), "RESULT").id
+        self.store.finish_execution(report, (*refs, result_ref))
+        if self.cache_enabled:
+            self.cache.store_result(task, report, (*refs, result_ref))
+        return GoalExecution(optimization, report)
+
+    async def verify_goal(self, task, cancellation=None, optimization=None, workflow_execution_id=None):
         optimization = optimization or self.optimize_goal(task)
-        runtime = Runtime(self.registry, self.data_dir, on_attempt=self.store.record_attempt)
-        report = await runtime.execute_goal(LogicalPlan(task), optimization.physical_plan, cancellation)
-        result = replace(report.result, optimizer_summary=optimization.explanation)
-        return GoalExecution(optimization, replace(report, result=result))
+        execution_id = uuid.uuid4().hex
+        self.store.start_execution(execution_id, task, optimization, workflow_execution_id)
+        start = time.monotonic()
+        entry = self.cache.lookup(task) if self.cache_enabled and isinstance(optimization.physical_plan, CacheLookupPlan) else None
+        if entry and not (cancellation and cancellation.reason):
+            from .runtime.process import utc_now
+            result = VerificationResult(execution_id, task.semantic_key, entry.verdict, entry.confirmations,
+                True, TerminationReason.REQUIREMENTS_MET, (), time.monotonic() - start, True,
+                entry.source_execution_id, goal_id=task.id, artifacts=entry.artifact_ids)
+            report = RuntimeReport(result, (), ({"kind": "cache_hit", "time": utc_now(),
+                "source_execution_id": entry.source_execution_id, "semantic_key": task.semantic_key},))
+        else:
+            runtime = Runtime(self.registry, self.data_dir, on_attempt=self._record_attempt)
+            report = await runtime.execute_goal(LogicalPlan(task), optimization.physical_plan, cancellation,
+                                                 execution_id=execution_id)
+        return self._finish_goal(task, optimization, report)
 
     async def verify(self, workflow_or_task, cancellation=None):
         workflow = (workflow_or_task if isinstance(workflow_or_task, VerificationWorkflow)
                     else VerificationWorkflow.single(workflow_or_task))
         execution_id = uuid.uuid4().hex
+        self.store.start_workflow(execution_id, workflow)
         remaining = {task.id: task for task in workflow.goals}
         results, executions = {}, []
         # This thin workflow scheduler respects explicit control edges. It performs
@@ -68,10 +127,13 @@ class VerificationService:
                     result = VerificationResult(uuid.uuid4().hex, task.semantic_key, Verdict.UNKNOWN, 0,
                         False, TerminationReason.EXHAUSTED, (), 0, goal_id=task.id, status="BLOCKED",
                         diagnostics=(diagnostic,), failure_reasons=(diagnostic.code,))
-                    execution = GoalExecution(self.optimize_goal(task), RuntimeReport(result, (), ()))
+                    optimization = self.optimize_goal(task)
+                    self.store.start_execution(result.execution_id, task, optimization, execution_id)
+                    execution = self._finish_goal(task, optimization, RuntimeReport(result, (), ()))
                 else:
-                    execution = await self.verify_goal(task, cancellation)
+                    execution = await self.verify_goal(task, cancellation, workflow_execution_id=execution_id)
                 executions.append(execution)
                 results[task.id] = execution.report.result
                 remaining.pop(task.id)
+        self.store.finish_workflow(execution_id, executions)
         return WorkflowExecution(execution_id, workflow, tuple(executions))

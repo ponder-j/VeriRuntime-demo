@@ -80,9 +80,9 @@ class Runtime:
                     slice_deadline = min(deadline, time.monotonic() + node.time_slice_sec) if node.time_slice_sec else deadline
                     attempt = await execute(adapter, task, root / uuid.uuid4().hex, execution_id,
                                             slice_deadline, stop, memory, cancellation)
-                    attempts.append(attempt)
                     if self.on_attempt:
-                        self.on_attempt(attempt, task)
+                        attempt = self.on_attempt(attempt, task) or attempt
+                    attempts.append(attempt)
                     event("tool_end", tool=node.tool, attempt_id=attempt.id, verdict=attempt.verdict.value,
                           status=attempt.status.value, wall_time_sec=attempt.wall_time_sec)
             elif isinstance(node, SequencePlan):

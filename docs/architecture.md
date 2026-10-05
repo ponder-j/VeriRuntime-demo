@@ -198,3 +198,33 @@ not receive semantic planning authority. Real history is persisted in SQLite and
 influences candidate ordering. Plans honor memory estimates, concurrency and
 confirmation opportunity; runtime enforces the shared wall deadline and records
 uncertainty. Single goals and explicit control DAGs use the same per-goal engine.
+
+## Per-goal cache validity and provenance
+
+SQLite persists workflows, logical tasks, executions with both plans and optimizer
+decisions, attempts, results, runtime statistics, artifact references and cache
+entries. Raw stdout/stderr, argv/environment, input snapshots, events and result
+JSON are content-addressed immutable files. A cache hit records a new execution
+with zero attempts and a link to the source execution; history is never fabricated.
+
+Cache validity requires exact semantic goal identity (including requirements),
+a completed definitive source result, enough matching distinct verifier families,
+nonempty version/config provenance, no opposing completed attempt, and all original
+artifact hashes still intact. Unknowns, conflicts and unsuccessful attempts never
+contribute cache evidence. Labels, hints, budgets and physical plan identity are
+excluded from the semantic key. Tool-specific artifacts record version/config;
+they are stored as evidence and are not reused as solver inputs across versions.
+The cache format carries its own contract version and must be advanced if evidence
+interpretation changes. Workflow-level caching and partial confirmation reuse are
+not implemented. Clearing cache deletes selected entries only, not artifacts/history.
+Opposing completed evidence in the same exact goal's history also yields CONFLICT
+and evicts a previous definitive cache entry. Clearing cache cannot erase this
+recorded disagreement; it remains auditable in execution history.
+
+## M5 review
+
+YES: the physical optimizer emits CacheLookup with an auditable fallback; execution
+revalidates evidence before returning a hit. Cache-disabled operation remains valid.
+Source execution and all evidence stay linked to the immutable logical snapshot.
+Tests verify zero verifier starts on a hit, strict requirements, corruption misses,
+conflict exclusion and scoped deletion.

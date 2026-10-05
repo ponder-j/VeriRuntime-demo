@@ -47,6 +47,7 @@ def main(argv=None) -> int:
             else:
                 for goal in execution.goals:
                     result = goal.report.result
+                    print("CACHE HIT" if result.cache_hit else "CACHE DISABLED" if args.no_cache else "CACHE MISS")
                     print(f"Goal {result.goal_id}: {result.verdict.value}; confirmations={result.confirmations}; requirement_satisfied={result.requirement_satisfied}")
                     print(f"  execution: {result.execution_id}; wall time: {result.wall_time_sec:.3f}s")
                     print(f"  verifier executions: {len(goal.report.attempts)}")

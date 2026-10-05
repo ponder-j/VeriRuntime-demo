@@ -71,7 +71,7 @@ def test_workflow_control_dependencies(logical, fixture_registry, tmp_path):
     report = asyncio.run(service.verify(workflow))
     assert [g.report.result.goal_id for g in report.goals] == ["G1", "G2"]
     assert all(g.report.result.verdict == Verdict.SAFE for g in report.goals)
-    service = VerificationService(tmp_path, registry=fixture_registry(Fixture("b", "print('UNSAFE')")))
+    service = VerificationService(tmp_path / "blocked", registry=fixture_registry(Fixture("b", "print('UNSAFE')")))
     report = asyncio.run(service.verify(workflow))
     assert report.goals[1].report.result.status == "BLOCKED"
     assert report.goals[1].report.attempts == ()

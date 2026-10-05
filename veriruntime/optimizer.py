@@ -3,7 +3,7 @@ from dataclasses import dataclass, replace
 from typing import Protocol
 
 from veriruntime.model import to_data
-from veriruntime.plan import ParallelPlan, PhysicalPlan, RunPlan, SequencePlan
+from veriruntime.plan import CacheLookupPlan, ParallelPlan, PhysicalPlan, RunPlan, SequencePlan
 
 
 @dataclass(frozen=True)
@@ -101,4 +101,12 @@ class CostAwareOptimizer:
             "trust_feasible": len(candidates) >= task.requirements.min_confirmations,
             "budget": to_data(task.budget), "hints": to_data(task.hints), "hints_applied": False,
             "tiny_budget": tiny_budget, "stages": [list(group) for group in stages]}
+        if runtime_context.cache:
+            entry = runtime_context.cache.lookup(task)
+            explanation["cache"] = "HIT" if entry else "MISS"
+            if entry:
+                plan = CacheLookupPlan(task.semantic_key, entry.source_execution_id, plan)
+                explanation["fallback_selected_tools"] = explanation["selected_tools"]
+                explanation["selected_tools"] = []
+                explanation["cache_source_execution"] = entry.source_execution_id
         return OptimizationResult(plan, explanation, scores)
