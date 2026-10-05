@@ -3,6 +3,33 @@
 VeriRuntime is a declarative multi-verifier execution runtime. A caller describes
 **what to verify**. The optimizer and scheduler decide **how to verify it**.
 
+## Two planning levels and the runtime boundary
+
+An upstream LLM Semantic Planner answers: which logical propositions should be
+proved to answer the user's question? VeriRuntime's per-goal Physical Optimizer
+answers: how should a fixed proof obligation be executed economically?
+
+Anything that changes a proposition belongs upstream: goal decomposition,
+assumptions, invariants, auxiliary lemmas, logical dependencies, and replanning
+after UNKNOWN. VeriRuntime never silently creates those. It may change tools,
+order, concurrency, fallback, resource allocation, cancellation and cache lookup.
+Hints are advisory preferences, never correctness assumptions. The optimizer
+may ignore them, and they are excluded from semantic identity.
+
+VerificationTask is also named LogicalGoal. VerificationWorkflow contains fixed
+goals, explicit acyclic control dependencies and inert metadata. A single task
+JSON is backward-compatible shorthand for a one-goal workflow. An edge explicitly
+requires a predecessor's requested SAFE/UNSAFE result and satisfied confirmation
+requirement before its successor can run. No assertion is inherited as an
+assumption; G1 SAFE + G2 SAFE does not prove G3. Workflow scheduling can remain
+thin and sequential while physical plans within each goal run in parallel.
+
+The result API includes goal identity, verdict, lifecycle status, confirmations,
+artifacts, structured diagnostics, optimizer summary and failure codes. An
+upstream planner can consume UNKNOWN with `timeout`, `insufficient_unwinding`,
+`out_of_memory`, `no_compatible_tool` or other codes, then submit a new explicit
+workflow. No LLM is implemented inside the runtime.
+
 ```mermaid
 flowchart TD
     DSL[JSON Verification DSL] --> Parser[Parser and validator]
@@ -104,3 +131,45 @@ registry performs capability lookup. Actual command, version, output, and exit
 code were retained during smoke verification. Installed backends run real tests;
 missing backends explicitly skip only integration tests. No runtime fake backend
 or DSL tool directive was introduced.
+
+## Execution lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending
+    Pending --> START_FAILED: preparation or spawn error
+    Pending --> Running: compatible tool and budget admission
+    Running --> COMPLETED: normal recognized termination
+    Running --> ERROR: abnormal exit or malformed result
+    Running --> TIMEOUT: wall deadline
+    Running --> OOM: aggregate sampled RSS exceeds budget
+    Running --> CANCELLED: user cancellation or requirements satisfied
+    COMPLETED --> Reconcile
+    ERROR --> Reconcile
+    TIMEOUT --> Reconcile
+    OOM --> Reconcile
+    CANCELLED --> Reconcile
+    START_FAILED --> Reconcile
+    Reconcile --> [*]
+```
+
+Sequence falls back until requirements are met or budget is exhausted. Parallel
+starts real subprocesses, subject to one global concurrency bound even in nested
+plans. Every batch of completed attempts is reconciled before early cancellation.
+For one confirmation, an unfinished peer may be cancelled; only observed completed
+evidence can be checked for conflict. Requiring two confirmations keeps peers
+running. A conflict overrides all counts.
+
+POSIX processes have independent sessions; termination signals the whole process
+group, escalates to SIGKILL, and reaps the direct process. A process that deliberately
+escapes the group is outside this portable backend's isolation guarantees. Sampled
+RSS includes active verifier trees, but can miss short spikes, does not limit virtual
+memory or CPU, and is not strict memory isolation. No BenchExec/cgroup claims apply.
+
+## M3 review
+
+YES: physical operators are typed AST nodes; the interpreter depends on adapter
+interfaces, never tool names. Cancellation and failures yield UNKNOWN attempts,
+and reconciliation counts distinct families. Tests exercise real concurrency and
+process-group cleanup, and a real two-verifier SAFE cross-check. Raw inputs, plans,
+events, timing and attempt records are retained before the SQLite layer arrives.

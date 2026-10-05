@@ -6,29 +6,34 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import stat
+import subprocess
 import tarfile
-import urllib.request
 import urllib.parse
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def download(url, destination):
-    headers = {"User-Agent": "VeriRuntime-bootstrap/0.1"}
+def download(url, destination, package):
+    command = ["curl", "--fail", "--silent", "--show-error", "--location", "--retry", "3",
+               "--connect-timeout", "20", "--user-agent", "VeriRuntime-bootstrap/0.1"]
     if url.startswith("https://ghcr.io/"):
+        if shutil.which("brew"):
+            env = dict(os.environ, HOMEBREW_NO_AUTO_UPDATE="1")
+            subprocess.run(["brew", "fetch", "--force-bottle", package["name"]], env=env, check=True)
+            cached = subprocess.check_output(["brew", "--cache", package["name"]], env=env, text=True).strip()
+            shutil.copyfile(cached, destination)
+            # main validates the pinned hash, rejecting changed formula versions.
+            return
         repository = url.split("/v2/", 1)[1].split("/blobs/", 1)[0]
         token_url = "https://ghcr.io/token?" + urllib.parse.urlencode(
             {"service": "ghcr.io", "scope": f"repository:{repository}:pull"})
-        with urllib.request.urlopen(token_url, timeout=60) as response:
-            token = json.load(response)["token"]
-        headers["Authorization"] = "Bearer " + token
+        token = json.loads(subprocess.check_output(command + [token_url]))["token"]
+        command += ["--header", "Authorization: Bearer " + token]
     temporary = destination.with_suffix(".partial")
-    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as response:
-        with temporary.open("wb") as output:
-            while chunk := response.read(1024 * 1024):
-                output.write(chunk)
+    subprocess.run(command + [url, "--output", str(temporary)], check=True)
     temporary.replace(destination)
 
 
@@ -39,12 +44,19 @@ def safe_path(destination, name):
     return path
 
 
+def make_writable(path):
+    # Homebrew bottles contain read-only files. Reinstalling an identical pinned
+    # package must work without altering anything outside the toolchain root.
+    if path.is_file() and not path.is_symlink():
+        path.chmod(path.stat().st_mode | stat.S_IWUSR)
+
+
 def extract(archive, package, destination):
     destination.mkdir(parents=True, exist_ok=True)
     if package["format"] == "zip":
         with zipfile.ZipFile(archive) as bundle:
             for member in bundle.infolist():
-                safe_path(destination, member.filename)
+                make_writable(safe_path(destination, member.filename))
                 if stat.S_ISLNK(member.external_attr >> 16):
                     raise ValueError("Zip symlinks are not supported")
                 bundle.extract(member, destination)
@@ -57,7 +69,7 @@ def extract(archive, package, destination):
                 selected = package.get("select", [])
                 if selected and not any(s in member.name for s in selected):
                     continue
-                safe_path(destination, member.name)
+                make_writable(safe_path(destination, member.name))
                 if member.isdev() or member.isfifo():
                     raise ValueError("Special archive files are not supported")
                 if member.issym():
@@ -85,7 +97,7 @@ def main():
         archive = downloads / filename
         print(f"Installing {package['name']} {package['version']}", flush=True)
         if not archive.exists():
-            download(package["url"], archive)
+            download(package["url"], archive, package)
         with archive.open("rb") as stream:
             checksum = hashlib.file_digest(stream, "sha256").hexdigest()
         if checksum != package["sha256"]:

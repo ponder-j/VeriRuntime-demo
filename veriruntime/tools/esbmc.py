@@ -34,7 +34,8 @@ class ESBMCAdapter(ToolAdapter):
         rows = re.findall(r'^\s*(PASSED|FAILED|UNKNOWN)\s+\[([^\]]+)\].*$', output, re.M)
         failures = [prop for state, prop in rows if state == "FAILED"]
         if failures and any(".assertion." not in prop for prop in failures):
-            return ParsedResult(Verdict.UNKNOWN, message="Non-assertion failure or incomplete unwinding")
+            return ParsedResult(Verdict.UNKNOWN, message="Non-assertion failure or incomplete unwinding",
+                diagnostic_code="insufficient_unwinding" if any("unwind" in p for p in failures) else "verifier_error")
         if conclusions == ["FAILED"] and failures and exit_code == 1:
             return ParsedResult(Verdict.UNSAFE, message="Assertion counterexample")
         if conclusions == ["SUCCESSFUL"] and exit_code == 0 and all(state == "PASSED" for state, _ in rows):

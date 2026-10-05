@@ -33,7 +33,9 @@ class CBMCAdapter(ToolAdapter):
             failed = [p for p in properties if p.get("status") == "FAILURE"]
             assertions = [p for p in failed if p.get("sourceLocation", {}).get("propertyClass") == "assertion"]
             if failed and len(assertions) != len(failed):
-                return ParsedResult(Verdict.UNKNOWN, message="Non-assertion failure or incomplete unwinding")
+                incomplete = any("unwind" in p.get("property", "") for p in failed)
+                return ParsedResult(Verdict.UNKNOWN, message="Non-assertion failure or incomplete unwinding",
+                                    diagnostic_code="insufficient_unwinding" if incomplete else "verifier_error")
             if statuses == ["failure"] and assertions and exit_code == 10:
                 return ParsedResult(Verdict.UNSAFE, message="Assertion counterexample")
             if (statuses == ["success"] and exit_code == 0 and

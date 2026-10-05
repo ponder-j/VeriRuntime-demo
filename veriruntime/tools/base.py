@@ -16,6 +16,7 @@ class ParsedResult:
     verdict: Verdict
     status: ExecutionStatus = ExecutionStatus.COMPLETED
     message: str = ""
+    diagnostic_code: str = ""
 
 
 def materialize(program: ProgramSnapshot, workspace: Path) -> tuple[str, ...]:

@@ -1,7 +1,7 @@
 """Shared semantic and evidence records, independent of backend implementations."""
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, is_dataclass
+from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum
 import hashlib
 import json
@@ -110,6 +110,13 @@ class Budget:
 
 
 @dataclass(frozen=True)
+class SemanticHints:
+    prefer_fast_counterexample: bool = False
+    expected_characteristics: tuple[str, ...] = ()
+    required_capabilities: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class VerificationTask:
     id: str
     language: str
@@ -120,6 +127,7 @@ class VerificationTask:
     requirements: Requirements
     budget: Budget
     version: str = "0.1"
+    hints: SemanticHints = field(default_factory=SemanticHints)
 
     @property
     def semantic_key(self) -> str:
@@ -128,6 +136,46 @@ class VerificationTask:
                        "entry": self.entry, "program": self.program.identity(),
                        "property": self.property, "semantics": self.semantics,
                        "requirements": self.requirements})
+
+
+# A fixed proof obligation. The alias preserves the single-task API.
+LogicalGoal = VerificationTask
+
+
+@dataclass(frozen=True)
+class GoalDependency:
+    predecessor: str
+    successor: str
+    required_verdict: Verdict = Verdict.SAFE
+
+
+@dataclass(frozen=True)
+class VerificationWorkflow:
+    workflow_id: str
+    goals: tuple[LogicalGoal, ...]
+    dependencies: tuple[GoalDependency, ...] = ()
+    metadata: tuple[tuple[str, str], ...] = ()
+
+    def __post_init__(self):
+        ids = [goal.id for goal in self.goals]
+        if not ids or len(ids) != len(set(ids)):
+            raise ValueError("Workflow goal IDs must be unique and nonempty")
+        remaining = set(ids)
+        for dep in self.dependencies:
+            if dep.predecessor not in remaining or dep.successor not in remaining:
+                raise ValueError("Workflow dependency refers to an unknown goal")
+            if not dep.required_verdict.definitive:
+                raise ValueError("Dependencies require SAFE or UNSAFE")
+        edges = {(d.predecessor, d.successor) for d in self.dependencies}
+        while remaining:
+            ready = {goal for goal in remaining if not any(b == goal and a in remaining for a, b in edges)}
+            if not ready:
+                raise ValueError("Workflow dependencies must form a DAG")
+            remaining -= ready
+
+    @classmethod
+    def single(cls, task: VerificationTask):
+        return cls(task.id, (task,))
 
 
 @dataclass(frozen=True)
@@ -185,6 +233,16 @@ class ExecutionAttempt:
     stderr_path: str
     message: str = ""
     artifact_ids: tuple[str, ...] = ()
+    diagnostic_code: str = ""
+
+
+@dataclass(frozen=True)
+class Diagnostic:
+    code: str
+    goal_id: str
+    tool: str | None = None
+    attempt_id: str | None = None
+    detail: str = ""
 
 
 @dataclass(frozen=True)
@@ -199,6 +257,12 @@ class VerificationResult:
     wall_time_sec: float
     cache_hit: bool = False
     source_execution_id: str | None = None
+    goal_id: str = ""
+    status: str = "COMPLETED"
+    artifacts: tuple[str, ...] = ()
+    diagnostics: tuple[Diagnostic, ...] = ()
+    optimizer_summary: dict = field(default_factory=dict)
+    failure_reasons: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
