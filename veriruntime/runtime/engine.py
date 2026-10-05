@@ -56,10 +56,10 @@ class Runtime:
         stop = Cancellation()
         memory = MemoryMonitor(task.budget.memory_mb)
         semaphore = asyncio.Semaphore(task.budget.max_parallel)
-        attempts, events = [], []
-
-        def event(kind, **data):
-            events.append({"time": utc_now(), "kind": kind, **data})
+        from veriruntime.observability import EventLog
+        journal = EventLog(root / "events.jsonl")
+        attempts, events = [], journal.events
+        event = journal.emit
 
         def done():
             verdict, _, satisfied = reconcile(attempts, task.requirements.min_confirmations)
@@ -146,5 +146,4 @@ class Runtime:
                              failure_reasons=tuple(sorted(set(result.failure_reasons + (code,)))))
         event("execution_end", verdict=verdict.value, confirmations=confirmations)
         (root / "result.json").write_text(json.dumps(to_data(result), indent=2))
-        (root / "events.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
         return RuntimeReport(result, tuple(attempts), tuple(events))

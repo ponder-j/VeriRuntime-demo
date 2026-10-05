@@ -228,3 +228,25 @@ revalidates evidence before returning a hit. Cache-disabled operation remains va
 Source execution and all evidence stay linked to the immutable logical snapshot.
 Tests verify zero verifier starts on a hit, strict requirements, corruption misses,
 conflict exclusion and scoped deletion.
+
+## EXPLAIN and structured feedback
+
+EXPLAIN separates the supplied Logical Workflow from optimized Physical Execution
+for each goal. Candidate filtering, scores, history, hints, resource packing, cache
+state and fallback plans are machine-readable. `--analyze` executes and presents
+attempts, verdict/status, timing, versions, termination, artifacts and source
+provenance. An explain-only call launches no verifier execution (version/help
+discovery probes may still run). Goals with dependencies are optimized again when
+ready because history/cache can change while predecessors execute.
+
+EventLog emits structured append-only JSONL independently of the CLI renderer.
+SQLite `history` and `show` expose real execution records; cache-hit show also
+includes original source provenance. Unknown results provide codes for filtering,
+timeouts, insufficient unfolding, memory limits, errors and unmet dependencies.
+
+## M6 review
+
+YES: user-facing rendering is separate from structured internal events; EXPLAIN
+does not conflate the supplied logical workflow and generated physical plans.
+The demo asserts a real UNSAFE miss followed by a hit with zero attempts. Demo
+cache clearing is scoped to known example keys and retains all other data.

@@ -61,6 +61,12 @@ class VerificationService:
         return attempt
 
     def _finish_goal(self, task, optimization, report):
+        if report.result.verdict == Verdict.UNKNOWN and not report.attempts:
+            codes = {reason for candidate in optimization.candidate_scores for reason in candidate.reasons}
+            diagnostics = tuple(Diagnostic(code, task.id) for code in sorted(codes))
+            report = replace(report, result=replace(report.result,
+                diagnostics=report.result.diagnostics + diagnostics,
+                failure_reasons=tuple(sorted(set(report.result.failure_reasons) | codes))))
         evidence = self.store.definitive_evidence(task.semantic_key)
         if {a["verdict"] for a in evidence} == {"SAFE", "UNSAFE"}:
             diagnostic = Diagnostic("conflicting_verdict", task.id,
