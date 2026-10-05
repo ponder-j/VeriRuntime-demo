@@ -88,3 +88,11 @@ YES: logical records depend only on semantic inputs; execution records explicitl
 separate verdict, lifecycle, task and attempt identity. Physical operators belong
 in a separate plan module. One adapter protocol and one optimizer interface are
 sufficient; no plugin framework or speculative proof-reuse abstraction is needed.
+
+## M1 review
+
+YES: strict schema rejects physical directives; the parser needs no verifier.
+Program content is captured before execution; local quoted headers participate
+in identity, while macro/absolute/symlink includes are rejected when replay is
+unsupported. The IR supports multiple translation units. `memory_safety` is a
+valid proposition but must be filtered out by adapters lacking that capability.

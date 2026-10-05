@@ -18,6 +18,9 @@ vrun = "veriruntime.cli:main"
 [tool.setuptools.packages.find]
 include = ["veriruntime*"]
 
+[tool.setuptools.package-data]
+"veriruntime.dsl" = ["*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["integration: runs installed real software verifiers"]

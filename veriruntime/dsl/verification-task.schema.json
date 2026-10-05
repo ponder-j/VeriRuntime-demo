@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://veriruntime.local/schemas/verification-task-0.1.json",
+  "title": "Declarative Verification Task",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "task", "property", "semantics", "requirements", "budget"],
+  "properties": {
+    "version": {"const": "0.1"},
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "language", "entry", "sources"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "language": {"const": "C"},
+        "entry": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+        "sources": {"type": "array", "minItems": 1, "uniqueItems": true,
+                    "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "property": {
+      "type": "object", "additionalProperties": false, "required": ["kind"],
+      "properties": {"kind": {"enum": ["assertion_safety", "memory_safety"]}}
+    },
+    "semantics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["c_standard", "data_model"],
+      "properties": {"c_standard": {"enum": ["c11", "c99"]},
+                     "data_model": {"enum": ["LP64", "ILP32"]}}
+    },
+    "requirements": {
+      "type": "object", "additionalProperties": false, "required": ["min_confirmations"],
+      "properties": {"min_confirmations": {"type": "integer", "minimum": 1, "maximum": 16}}
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["wall_time_sec", "memory_mb", "max_parallel"],
+      "properties": {
+        "wall_time_sec": {"type": "number", "exclusiveMinimum": 0, "maximum": 86400},
+        "memory_mb": {"type": "integer", "minimum": 16},
+        "max_parallel": {"type": "integer", "minimum": 1, "maximum": 64}
+      }
+    }
+  }
+}

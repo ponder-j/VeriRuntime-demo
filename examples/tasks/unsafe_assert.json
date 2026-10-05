@@ -1,0 +1,8 @@
+{
+  "version": "0.1",
+  "task": {"id": "unsafe-assert", "language": "C", "entry": "main", "sources": ["../c/unsafe_assert.c"]},
+  "property": {"kind": "assertion_safety"},
+  "semantics": {"c_standard": "c11", "data_model": "LP64"},
+  "requirements": {"min_confirmations": 1},
+  "budget": {"wall_time_sec": 30, "memory_mb": 2048, "max_parallel": 2}
+}
