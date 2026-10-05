@@ -9,6 +9,7 @@ import platform
 import shutil
 import stat
 import subprocess
+import sys
 import tarfile
 import urllib.parse
 import zipfile
@@ -22,7 +23,7 @@ def download(url, destination, package):
     if url.startswith("https://ghcr.io/"):
         if shutil.which("brew"):
             env = dict(os.environ, HOMEBREW_NO_AUTO_UPDATE="1")
-            subprocess.run(["brew", "fetch", "--force-bottle", package["name"]], env=env, check=True)
+            subprocess.run(["brew", "fetch", "--force-bottle", "--retry", package["name"]], env=env, check=True)
             cached = subprocess.check_output(["brew", "--cache", package["name"]], env=env, text=True).strip()
             shutil.copyfile(cached, destination)
             # main validates the pinned hash, rejecting changed formula versions.
@@ -83,6 +84,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cpachecker", action="store_true", help="Also install optional third verifier")
     args = parser.parse_args()
+    if sys.version_info < (3, 11):
+        parser.error("Bootstrap requires Python 3.11+; create the project .venv first")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         parser.error("Pinned bootstrap supports macOS ARM64 Tahoe. On Linux install official releases and set VRUN_<TOOL>; see docs/verifier-support.md.")
     lock = json.loads((ROOT / "verifiers.lock.json").read_text())

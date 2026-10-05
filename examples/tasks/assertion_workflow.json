@@ -1,0 +1,68 @@
+{
+  "version": "0.1",
+  "workflow": {
+    "id": "assertion-workflow",
+    "goals": [
+      {
+        "task": {
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 1
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        },
+        "id": "G1"
+      },
+      {
+        "task": {
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/unsafe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 1
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        },
+        "id": "G2"
+      }
+    ],
+    "dependencies": [
+      {
+        "from": "G1",
+        "to": "G2",
+        "required_verdict": "SAFE"
+      }
+    ],
+    "metadata": {
+      "description": "Two independent propositions with an explicit control dependency; no theorem composition."
+    }
+  }
+}

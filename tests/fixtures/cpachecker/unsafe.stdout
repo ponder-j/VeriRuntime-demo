@@ -1,0 +1,6 @@
+Running CPAchecker with Java heap of size 768M.
+Running CPAchecker with default stack size (1024k). Specify a larger value with --stack if needed.
+Running CPAchecker with the following extra VM options:  -Djava.io.tmpdir=/var/folders/pj/vcrsx3yx04g2qfplfl_bl49c0000gn/T/
+Verification result: FALSE. Property violation (VeriRuntimeAssertion) found by chosen configuration.
+More details about the verification run can be found in the directory "<REPO>/.veriruntime/smoke/cpachecker/unsafe/tool-output".
+Graphical representation included in the file "<REPO>/.veriruntime/smoke/cpachecker/unsafe/tool-output/Counterexample.1.html".

@@ -1,0 +1,26 @@
+{
+  "version": "0.1",
+  "task": {
+    "id": "bench-bounded_loop",
+    "language": "C",
+    "entry": "main",
+    "sources": [
+      "bounded_loop.c"
+    ]
+  },
+  "property": {
+    "kind": "assertion_safety"
+  },
+  "semantics": {
+    "c_standard": "c11",
+    "data_model": "LP64"
+  },
+  "requirements": {
+    "min_confirmations": 2
+  },
+  "budget": {
+    "wall_time_sec": 60,
+    "memory_mb": 2048,
+    "max_parallel": 2
+  }
+}

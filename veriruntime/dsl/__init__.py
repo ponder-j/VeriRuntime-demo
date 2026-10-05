@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 from importlib.resources import files
 import json
+import os
 from pathlib import Path
 import re
 
@@ -45,28 +46,28 @@ def snapshot(sources: list[str], base: Path) -> ProgramSnapshot:
         except (OSError, UnicodeError) as exc:
             raise DSLValidationError(f"Cannot snapshot source {path}: {exc}") from exc
         captured[path] = content
+        if re.search(r'\b(__DATE__|__TIME__|__TIMESTAMP__|__FILE__|__BASE_FILE__|__FILE_NAME__)\b', content):
+            raise DSLValidationError("Environment-dependent predefined macros are not supported in replayable goals")
+        if '%:' in content or '??' in content or re.search(r'^\s*#\s*(include_next|embed)\b', content, re.M):
+            raise DSLValidationError("Nonstandard input dependency syntax is not supported")
         # Literal local includes are recursive immutable inputs. Macro includes
         # cannot be resolved without a build configuration, so fail closed.
-        stripped = re.sub(r'/\*.*?\*/|//[^\n]*', '', content, flags=re.S)
+        spliced = content.replace('\\\r\n', '').replace('\\\n', '')
+        stripped = re.sub(r'/\*.*?\*/|//[^\n]*', '', spliced, flags=re.S)
         for include in re.findall(r'^\s*#\s*include\s+([^\n]+)', stripped, re.M):
             include = include.strip()
             local = re.fullmatch(r'"([^"\n]+)"\s*', include)
             if local:
                 dependency = path.parent / local.group(1)
-                if Path(local.group(1)).is_absolute() or dependency.resolve() != dependency.absolute():
-                    # Parent traversal is fine; symlinks/absolute include spellings
-                    # cannot be replayed faithfully in an isolated workspace.
-                    import os
-                    normalized = Path(os.path.abspath(dependency))
-                    if Path(local.group(1)).is_absolute() or normalized != dependency.resolve():
-                        raise DSLValidationError(f"Absolute or symlink include unsupported: {include}")
+                normalized = Path(os.path.abspath(dependency))
+                if Path(local.group(1)).is_absolute() or normalized != dependency.resolve():
+                    raise DSLValidationError(f"Absolute or symlink include unsupported: {include}")
                 capture(dependency.resolve())
             elif not re.fullmatch(r'<[A-Za-z0-9_./-]+>\s*', include):
                 raise DSLValidationError(f"Unsupported nonliteral include in {path}: {include}")
 
     for path in paths:
         capture(path)
-    import os
     root = Path(os.path.commonpath([str(base), *(str(p.parent) for p in captured)]))
     entries = tuple(sorted((ProgramFile(p.relative_to(root).as_posix(), text,
                                          hashlib.sha256(text.encode("utf-8")).hexdigest())

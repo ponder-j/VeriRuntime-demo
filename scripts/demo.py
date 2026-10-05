@@ -39,19 +39,21 @@ def main():
     safe = run(['verify', 'examples/tasks/safe_assert.json', '--data-dir', DATA, '--json'], True)
     assert safe['goals'][0]['report']['result']['verdict'] == 'SAFE'
     print('safe program: SAFE')
-    # M7 cross-check examples are automatically included once present.
+    checks = []
     for case in ('unsafe', 'safe'):
         path = f'examples/tasks/{case}_assert_crosscheck.json'
         if (ROOT / path).exists():
             check = run(['verify', path, '--explain', '--data-dir', DATA, '--json'], True)
             result = check['goals'][0]['report']['result']
             assert result['requirement_satisfied'] and result['confirmations'] >= 2
+            checks.append(check)
             print('cross-check:', result['goal_id'], result['verdict'], result['confirmations'], 'confirmations')
     run(['history', '--data-dir', DATA])
     provenance = run(['show', a['result']['execution_id'], '--data-dir', DATA, '--json'], True)
     assert provenance['attempts'] and provenance['artifact_records']
     out = ROOT / DATA / 'demo-record.json'
-    out.write_text(json.dumps({'first': first, 'second': second, 'safe': safe, 'provenance': provenance}, indent=2))
+    out.write_text(json.dumps({'first': first, 'second': second, 'safe': safe,
+                              'crosschecks': checks, 'provenance': provenance}, indent=2))
     print('Demo passed. Full evidence:', out)
 
 

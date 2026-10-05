@@ -1,0 +1,26 @@
+Using the following resource limits: CPU-time limit of 900s (ResourceLimitChecker.fromConfiguration, INFO)
+
+CPAchecker 4.2.2 / valueAnalysis (Java HotSpot(TM) 64-Bit Server VM 24.0.2) started (CPAchecker.run, INFO)
+
+Parsing CFA from file(s) "<REPO>/.veriruntime/smoke/cpachecker/unsafe/translation-0.i" (CPAchecker.parse, INFO)
+
+The following configuration options were specified but are not used:
+ cpa.predicate.encodeFloatAs
+ solver.solver
+ (CPAchecker.printConfigurationWarnings, WARNING)
+
+Starting analysis ... (CPAchecker.runAlgorithm, INFO)
+
+Error path found, starting counterexample check with CPACHECKER. (CounterexampleCheckAlgorithm.checkCounterexample, INFO)
+
+Cannot map specification OBSERVER AUTOMATON VeriRuntimeAssertion
+INITIAL STATE Init;
+STATE USEFIRST Init :
+  MATCH LABEL [VR_ASSERT_FAILURE_de49038a8472a810] -> ERROR;
+END AUTOMATON to property type. Will ignore it (would only be problematic if this were the termination property). (CounterexampleCheck:AutomatonGraphmlParser.getSpecAsProperties, WARNING)
+
+Using predicate analysis with Princess 2025-06-25. (CounterexampleCheck:PredicateCPA:PredicateCPA.<init>, INFO)
+
+Error path found and confirmed by counterexample check with CPACHECKER. (CounterexampleCheckAlgorithm.checkCounterexample, INFO)
+
+Stopping analysis ... (CPAchecker.runAlgorithm, INFO)

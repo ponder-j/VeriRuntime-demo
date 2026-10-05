@@ -141,6 +141,8 @@ class Runtime:
         from dataclasses import replace
         if verdict in (Verdict.CONFLICT, Verdict.UNKNOWN):
             code = ("conflicting_verdict" if verdict == Verdict.CONFLICT else
+                    "cancellation" if reason == TerminationReason.USER_CANCEL else
+                    "timeout" if reason == TerminationReason.WALL_BUDGET and not attempts else
                     "no_compatible_tool" if not attempts else "insufficient_confirmations")
             result = replace(result, diagnostics=result.diagnostics + (Diagnostic(code, task.id),),
                              failure_reasons=tuple(sorted(set(result.failure_reasons + (code,)))))

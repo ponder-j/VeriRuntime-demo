@@ -10,7 +10,7 @@ from .base import ParsedResult, ToolAdapter, materialize
 class ESBMCAdapter(ToolAdapter):
     name = family = "esbmc"
     required_flags = ("--std", "--unwind", "--no-unwinding-assertions", "--multi-property", "--z3")
-    config = {"adapter": 1, "unwind": 64, "unwinding_assertions": True,
+    config = {"adapter": 2, "unwind": 64, "unwinding_assertions": True,
               "solver": "z3", "multi_property": True, "overflow_check": True, "ub_shift_check": True}
     estimated_memory_mb = 512
     prior_runtime_sec = 0.7
@@ -31,13 +31,20 @@ class ESBMCAdapter(ToolAdapter):
         output = stdout + "\n" + stderr
         conclusions = re.findall(r'^VERIFICATION (SUCCESSFUL|FAILED|UNKNOWN)\s*$', output, re.M)
         # Match the actual property table, never echoed source/trace text.
-        rows = re.findall(r'^\s*(PASSED|FAILED|UNKNOWN)\s+\[([^\]]+)\].*$', output, re.M)
-        failures = [prop for state, prop in rows if state == "FAILED"]
+        rows = re.findall(r'^\s*(PASSED|FAILED|UNKNOWN)\s+\[([^\]]+)\]([^\n]*)$', output, re.M)
+        failures = [prop for state, prop, _ in rows if state == "FAILED"]
+        # ESBMC 8.5 numbers unwinding obligations as main.assertion.N too.
+        # Their property-table description, not their ID, identifies incompleteness.
+        incomplete = any(state == "FAILED" and ("unwind" in prop or
+            re.search(r'\bline\s+\d+\s+unwinding assertion\b', description))
+            for state, prop, description in rows)
+        if incomplete:
+            return ParsedResult(Verdict.UNKNOWN, message="Insufficient loop unwinding", diagnostic_code="insufficient_unwinding")
         if failures and any(".assertion." not in prop for prop in failures):
             return ParsedResult(Verdict.UNKNOWN, message="Non-assertion failure or incomplete unwinding",
                 diagnostic_code="insufficient_unwinding" if any("unwind" in p for p in failures) else "verifier_error")
         if conclusions == ["FAILED"] and failures and exit_code == 1:
             return ParsedResult(Verdict.UNSAFE, message="Assertion counterexample")
-        if conclusions == ["SUCCESSFUL"] and exit_code == 0 and all(state == "PASSED" for state, _ in rows):
+        if conclusions == ["SUCCESSFUL"] and exit_code == 0 and all(state == "PASSED" for state, _, _ in rows):
             return ParsedResult(Verdict.SAFE, message="Complete assertion proof with unwinding checks")
         return ParsedResult(Verdict.UNKNOWN, message="No complete ESBMC conclusion")

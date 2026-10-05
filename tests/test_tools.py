@@ -7,16 +7,19 @@ from veriruntime.model import ExecutionStatus, Verdict
 from veriruntime.tools import ToolRegistry, default_registry
 from veriruntime.tools.cbmc import CBMCAdapter
 from veriruntime.tools.esbmc import ESBMCAdapter
+from veriruntime.tools.cpachecker import CPAcheckerAdapter
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-@pytest.mark.parametrize("name,adapter", [("cbmc", CBMCAdapter), ("esbmc", ESBMCAdapter)])
+@pytest.mark.parametrize("name,adapter", [("cbmc", CBMCAdapter), ("esbmc", ESBMCAdapter), ("cpachecker", CPAcheckerAdapter)])
 @pytest.mark.parametrize("case,verdict,code", [("safe", Verdict.SAFE, 0), ("unsafe", Verdict.UNSAFE, 1)])
 def test_observed_real_output(name, adapter, case, verdict, code):
     if name == "cbmc" and code == 1:
         code = 10
+    if name == "cpachecker":
+        code = 0
     p = adapter().parse_result((FIXTURES / name / f"{case}.stdout").read_text(),
                               (FIXTURES / name / f"{case}.stderr").read_text(), code)
     assert p.verdict == verdict
@@ -28,7 +31,12 @@ def test_fail_closed_parsers():
     assert ESBMCAdapter().parse_result("some SUCCESS string", "", 0).verdict == Verdict.UNKNOWN
     output = "  FAILED [main.unwinding.1] unwinding assertion\nVERIFICATION FAILED\n"
     assert ESBMCAdapter().parse_result(output, "", 1).verdict == Verdict.UNKNOWN
+    output = '  FAILED [main.assertion.1] line 2 unwinding assertion loop 3\nVERIFICATION FAILED\n'
+    parsed = ESBMCAdapter().parse_result('', output, 1)
+    assert parsed.verdict == Verdict.UNKNOWN and parsed.diagnostic_code == 'insufficient_unwinding'
     assert CBMCAdapter().parse_result("[]", "", 137).verdict == Verdict.UNKNOWN
+    assert CPAcheckerAdapter().parse_result('Verification result: FALSE. Property violation found.', '', 0).verdict == Verdict.UNKNOWN
+    assert CPAcheckerAdapter().parse_result('Verification result: TRUE. No violation.', 'The analysis may no longer be sound!', 0).verdict == Verdict.UNKNOWN
 
 
 def test_registry_capabilities():
@@ -44,7 +52,7 @@ def test_registry_capabilities():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("tool", ["cbmc", "esbmc"])
+@pytest.mark.parametrize("tool", ["cbmc", "esbmc", "cpachecker"])
 @pytest.mark.parametrize("case,verdict", [("safe", Verdict.SAFE), ("unsafe", Verdict.UNSAFE)])
 def test_real_verifier(tool, case, verdict, tmp_path):
     adapter = default_registry(ROOT).get(tool)

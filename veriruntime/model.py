@@ -5,6 +5,8 @@ from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum
 import hashlib
 import json
+from pathlib import PurePosixPath
+import re
 from typing import Any
 
 
@@ -77,6 +79,15 @@ class ProgramSnapshot:
     files: tuple[ProgramFile, ...]
     sources: tuple[str, ...]
 
+    def __post_init__(self):
+        paths = [f.logical_path for f in self.files]
+        if not self.sources or len(paths) != len(set(paths)) or len(self.sources) != len(set(self.sources)):
+            raise ValueError("Snapshot requires unique files and source translation units")
+        if any(PurePosixPath(p).is_absolute() or '..' in PurePosixPath(p).parts for p in paths):
+            raise ValueError("Snapshot paths must be normalized relative logical paths")
+        if not set(self.sources) <= set(paths):
+            raise ValueError("Every source must belong to the immutable snapshot")
+
     @property
     def size_bytes(self) -> int:
         return sum(len(f.content.encode("utf-8")) for f in self.files)
@@ -90,16 +101,28 @@ class ProgramSnapshot:
 class VerificationProperty:
     kind: str = "assertion_safety"
 
+    def __post_init__(self):
+        if self.kind not in ("assertion_safety", "memory_safety"):
+            raise ValueError("Unsupported logical property")
+
 
 @dataclass(frozen=True)
 class Semantics:
     c_standard: str = "c11"
     data_model: str = "LP64"
 
+    def __post_init__(self):
+        if self.c_standard not in ("c11", "c99") or self.data_model not in ("LP64", "ILP32"):
+            raise ValueError("Unsupported C semantics")
+
 
 @dataclass(frozen=True)
 class Requirements:
     min_confirmations: int = 1
+
+    def __post_init__(self):
+        if type(self.min_confirmations) is not int or not 1 <= self.min_confirmations <= 16:
+            raise ValueError("min_confirmations must be an integer between 1 and 16")
 
 
 @dataclass(frozen=True)
@@ -107,6 +130,13 @@ class Budget:
     wall_time_sec: float = 30
     memory_mb: int = 2048
     max_parallel: int = 2
+
+    def __post_init__(self):
+        import math
+        if (isinstance(self.wall_time_sec, bool) or not math.isfinite(self.wall_time_sec) or
+                not 0 < self.wall_time_sec <= 86400 or type(self.memory_mb) is not int or self.memory_mb < 16 or
+                type(self.max_parallel) is not int or not 1 <= self.max_parallel <= 64):
+            raise ValueError("Invalid resource budget")
 
 
 @dataclass(frozen=True)
@@ -128,6 +158,10 @@ class VerificationTask:
     budget: Budget
     version: str = "0.1"
     hints: SemanticHints = field(default_factory=SemanticHints)
+
+    def __post_init__(self):
+        if not self.id or self.language != "C" or self.version != "0.1" or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', self.entry):
+            raise ValueError("Invalid fixed verification goal")
 
     @property
     def semantic_key(self) -> str:

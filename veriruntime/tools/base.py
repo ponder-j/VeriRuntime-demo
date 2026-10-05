@@ -73,13 +73,14 @@ class ToolAdapter:
             if not path.is_file():
                 continue
             try:
-                version_run = subprocess.run([str(path), "--version"], capture_output=True,
+                prefix = self.launch_prefix(path)
+                version_run = subprocess.run([*prefix, "--version"], capture_output=True,
                                              text=True, timeout=15, env=self.environment())
-                version = (version_run.stdout + version_run.stderr).strip()
+                version = self.version_text(version_run.stdout + version_run.stderr)
                 if version_run.returncode != 0 or not version:
                     diagnostics.append(f"{path}: version probe failed: {version[:400]}")
                     continue
-                help_run = subprocess.run([str(path), "--help"], capture_output=True,
+                help_run = subprocess.run([*prefix, "--help"], capture_output=True,
                                           text=True, timeout=15, env=self.environment())
                 help_text = help_run.stdout + help_run.stderr
                 missing = [f for f in self.required_flags if f not in help_text]
@@ -95,6 +96,12 @@ class ToolAdapter:
         self._profile = ToolProfile(self.name, self.family, False, "", None,
             config_id=digest(self.config), diagnostic="; ".join(diagnostics) or "Executable not found")
         return self._profile
+
+    def launch_prefix(self, path):
+        return (str(path),)
+
+    def version_text(self, output):
+        return output.strip()
 
     def profile(self) -> ToolProfile:
         return self._profile or self.detect()

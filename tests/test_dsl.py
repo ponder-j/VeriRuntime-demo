@@ -83,3 +83,16 @@ def test_duplicate_json_keys_rejected(task_file):
     task_file.write_text('{"version":"0.1","version":"0.2"}')
     with pytest.raises(DSLValidationError, match="Duplicate"):
         load_task(task_file)
+
+
+@pytest.mark.parametrize('code', ['int main(void){return __TIME__[0];}', '#include_next "live.h"', '%:include "live.h"'])
+def test_nonreplayable_inputs_rejected(task_file, code):
+    (task_file.parent/'main.c').write_text(code)
+    with pytest.raises(DSLValidationError):
+        load_task(task_file)
+
+
+def test_spliced_include_is_snapshotted(task_file):
+    (task_file.parent/'local.h').write_text('int helper(void);')
+    (task_file.parent/'main.c').write_text('#in\\\nclude "local.h"\nint main(void){return 0;}')
+    assert len(load_task(task_file).program.files) == 2

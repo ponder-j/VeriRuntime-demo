@@ -17,7 +17,7 @@ class CacheEntry:
 
 
 class SemanticCache:
-    contract = "definitive-cache-v1"
+    contract = "definitive-cache-v2"
 
     def __init__(self, store, artifacts):
         self.store, self.artifacts = store, artifacts
@@ -53,9 +53,22 @@ class SemanticCache:
                 return None
             if not all((artifact := self.store.artifact(ref)) and self.artifacts.valid(artifact) for ref in refs):
                 return None
+            # SQLite metadata must agree with the immutable artifact records.
+            # In particular, changing a family/count in metadata cannot manufacture
+            # independent confirmations without corresponding raw attempt evidence.
+            from pathlib import Path
+            records = [self.store.artifact(ref) for ref in refs]
+            for kind, expected in (("LOGICAL_PLAN", source["logical_plan"]), ("RESULT", result)):
+                if not any(r["kind"] == kind and json.loads(Path(r["path"]).read_text()) == expected for r in records):
+                    return None
+            for attempt in evidence:
+                expected = {k: v for k, v in attempt.items() if k != "artifact_ids"}
+                raw = [r for r in records if r["kind"] == "ATTEMPT" and r["attempt_id"] == attempt["id"]]
+                if not any({k: v for k, v in json.loads(Path(r["path"]).read_text()).items() if k != "artifact_ids"} == expected for r in raw):
+                    return None
             return CacheEntry(task.semantic_key, verdict, len(families), entry["source_execution_id"],
                               tuple(refs), tuple(evidence), entry["created_time"])
-        except (ValueError, KeyError, TypeError):
+        except (ValueError, KeyError, TypeError, OSError):
             return None
 
     def store_result(self, task, report, artifact_ids):

@@ -13,3 +13,10 @@ def test_verdict_is_separate_from_lifecycle():
     assert Verdict.SAFE.definitive
     assert canonical_json({"status": ExecutionStatus.TIMEOUT, "verdict": Verdict.UNKNOWN}) == (
         '{"status":"TIMEOUT","verdict":"UNKNOWN"}')
+
+
+@pytest.mark.parametrize('minimum', [-1,0,True,17])
+def test_public_goal_api_rejects_invalid_trust(minimum):
+    from veriruntime.model import Requirements
+    with pytest.raises(ValueError):
+        Requirements(minimum)

@@ -33,4 +33,5 @@ class ToolRegistry:
 def default_registry(root: str | Path = ".") -> ToolRegistry:
     from .cbmc import CBMCAdapter
     from .esbmc import ESBMCAdapter
-    return ToolRegistry((CBMCAdapter(root), ESBMCAdapter(root)))
+    from .cpachecker import CPAcheckerAdapter
+    return ToolRegistry((CBMCAdapter(root), ESBMCAdapter(root), CPAcheckerAdapter(root)))

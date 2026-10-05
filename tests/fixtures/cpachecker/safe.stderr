@@ -1,0 +1,14 @@
+Using the following resource limits: CPU-time limit of 900s (ResourceLimitChecker.fromConfiguration, INFO)
+
+CPAchecker 4.2.2 / valueAnalysis (Java HotSpot(TM) 64-Bit Server VM 24.0.2) started (CPAchecker.run, INFO)
+
+Parsing CFA from file(s) "<REPO>/.veriruntime/smoke/cpachecker/safe/translation-0.i" (CPAchecker.parse, INFO)
+
+The following configuration options were specified but are not used:
+ cpa.predicate.encodeFloatAs
+ solver.solver
+ (CPAchecker.printConfigurationWarnings, WARNING)
+
+Starting analysis ... (CPAchecker.runAlgorithm, INFO)
+
+Stopping analysis ... (CPAchecker.runAlgorithm, INFO)

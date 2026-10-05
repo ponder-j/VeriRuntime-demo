@@ -86,6 +86,12 @@ class VerificationService:
         refs = tuple(dict.fromkeys(refs))
         report = replace(report, result=replace(report.result, artifacts=refs,
                                                optimizer_summary=optimization.explanation))
+        root = self.data_dir / "executions" / report.result.execution_id
+        root.mkdir(parents=True, exist_ok=True)
+        for filename, value in (("logical.json", LogicalPlan(task)), ("physical.json", optimization.physical_plan),
+                                ("optimization.json", optimization), ("result.json", report.result)):
+            (root / filename).write_text(json.dumps(to_data(value), indent=2))
+        (root / "events.jsonl").write_text("".join(json.dumps(e) + "\n" for e in report.events))
         result_ref = self.artifacts.put_bytes(json.dumps(to_data(report.result), sort_keys=True).encode(), "RESULT").id
         self.store.finish_execution(report, (*refs, result_ref))
         if self.cache_enabled:

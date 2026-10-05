@@ -32,9 +32,12 @@ workflow. No LLM is implemented inside the runtime.
 
 ```mermaid
 flowchart TD
+    User[User requirement] --> Semantic[Upstream LLM Semantic Planner]
+    Semantic --> DSL
     DSL[JSON Verification DSL] --> Parser[Parser and validator]
-    Parser --> Logical[Logical Verification IR]
-    Logical --> Optimizer
+    Parser --> Workflow[Logical Workflow IR: fixed goals and explicit dependencies]
+    Workflow --> Logical[Ready Logical Goal]
+    Logical --> Optimizer[Per-Goal Physical Optimizer]
     Registry[Tool Registry] --> Optimizer
     History[Execution History] --> Optimizer
     Cache[Semantic Cache] --> Optimizer
@@ -45,6 +48,8 @@ flowchart TD
     Verifiers --> Store[Execution and Artifact Store]
     Store --> History
     Store --> Cache
+    Store --> Feedback[Structured goal feedback]
+    Feedback -. explicit semantic replanning .-> Semantic
 ```
 
 ## Semantic transparency
@@ -220,6 +225,10 @@ not implemented. Clearing cache deletes selected entries only, not artifacts/his
 Opposing completed evidence in the same exact goal's history also yields CONFLICT
 and evicts a previous definitive cache entry. Clearing cache cannot erase this
 recorded disagreement; it remains auditable in execution history.
+Cache revalidation also compares stored logical/result metadata and per-attempt
+provenance against their immutable JSON artifacts, so a metadata count or family
+change cannot fabricate a confirmation. M7 advanced the cache contract to v2 after
+qualifying ESBMC's unwinding property-table classification.
 
 ## M5 review
 
@@ -250,3 +259,31 @@ YES: user-facing rendering is separate from structured internal events; EXPLAIN
 does not conflate the supplied logical workflow and generated physical plans.
 The demo asserts a real UNSAFE miss followed by a hit with zero attempts. Demo
 cache clearing is scoped to known example keys and retains all other data.
+
+## Adapter contract and compilation layer
+
+An adapter detects/version-probes its real CLI, declares capabilities, accepts a
+fixed task, materializes its snapshot, builds argv without shell=True, parses
+recognized terminal records and collects evidence. It has no permission to select
+other goals, create assumptions or interpret a predecessor as a proof of its input.
+Equivalent syntax/property elaboration is permitted: CPAchecker's assertion macro
+and reachability specification preserve the same assertion obligation. Generated
+inputs/configs and preprocessing/verifier argv are retained as artifacts.
+
+Adding Ultimate requires an adapter/profile and registration, not a DSL change.
+A learned optimizer replaces the optimize interface without modifying adapters.
+The service remains operational with no LLM, with cache disabled, or with one
+compatible verifier. An upstream planner can submit new workflows after UNKNOWN;
+the current implementation contains neither an LLM nor an HTTP server.
+
+## M7 final architecture review
+
+YES: single-task shorthand and multi-goal control DAGs share one fixed-goal API.
+The optimizer never creates subgoals. No runtime/optimizer/cache code branches on
+backend names, and test fixtures are confined to tests. Three genuine tools were
+qualified with real safe/unsafe runs and multi-source examples. Cross-checks require
+two distinct matching families. Opposing completed evidence returns CONFLICT.
+Verdict/status and task/attempt remain separate. All real launches record versions,
+outer argv, and any compilation-layer argv. Exact cache validation excludes
+incomplete evidence and requires intact, consistent provenance. The actual demo
+and three-family mini benchmark verify the intended semantic-transparent behavior.

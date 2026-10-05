@@ -77,3 +77,23 @@ def test_observed_cross_run_conflict_evicts_cache(logical, fixture_registry, tmp
     assert report.report.result.verdict == Verdict.CONFLICT
     assert first.cache.lookup(logical.task) is None
     assert 'conflicting_verdict' in report.report.result.failure_reasons
+
+
+def test_modified_provenance_metadata_invalidates_hit(logical, fixture_registry, tmp_path):
+    service = VerificationService(tmp_path, registry=fixture_registry(Fixture('a', "print('SAFE')")))
+    report = asyncio.run(service.verify_goal(logical.task))
+    attempt = report.report.attempts[0]
+    with service.store.connection() as db:
+        payload=json.loads(db.execute('SELECT payload FROM attempts WHERE id=?',(attempt.id,)).fetchone()[0])
+        payload['version']='altered'
+        db.execute('UPDATE attempts SET payload=? WHERE id=?',(json.dumps(payload),attempt.id))
+    assert service.cache.lookup(logical.task) is None
+
+
+def test_timeout_not_cached(logical, fixture_registry, tmp_path):
+    from veriruntime.model import Budget, ExecutionStatus
+    task=replace(logical.task,budget=Budget(0.1,512,1))
+    service=VerificationService(tmp_path,registry=fixture_registry(Fixture('slow','import time;time.sleep(5)')))
+    report=asyncio.run(service.verify_goal(task))
+    assert report.report.attempts[0].status == ExecutionStatus.TIMEOUT
+    assert service.cache.lookup(task) is None

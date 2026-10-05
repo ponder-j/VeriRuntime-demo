@@ -1,0 +1,26 @@
+[
+  {
+    "task": "safe_assert.json",
+    "expected": "SAFE"
+  },
+  {
+    "task": "unsafe_assert.json",
+    "expected": "UNSAFE"
+  },
+  {
+    "task": "bounded_loop.json",
+    "expected": "SAFE"
+  },
+  {
+    "task": "branch.json",
+    "expected": "SAFE"
+  },
+  {
+    "task": "array.json",
+    "expected": "UNSAFE"
+  },
+  {
+    "task": "arithmetic.json",
+    "expected": "SAFE"
+  }
+]
