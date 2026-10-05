@@ -1,0 +1,89 @@
+[
+  {
+    "program": "CBMC 6.11.0 (cbmc-6.11.0)"
+  },
+  {
+    "messageText": "CBMC version 6.11.0 (cbmc-6.11.0) 64-bit arm64 macos",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Type-checking safe_assert",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (arm64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "arithmetic overflow on signed + in x + 1",
+        "property": "main.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on signed + in x + 1",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/safe/input/c/safe_assert.c",
+          "function": "main",
+          "line": "6",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.1",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on signed + in i + 1",
+        "property": "main.overflow.2",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on signed + in i + 1",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/safe/input/c/safe_assert.c",
+          "function": "main",
+          "line": "5",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.2",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion x == 10",
+        "property": "main.assertion.1",
+        "sourceLocation": {
+          "comment": "assertion x == 10",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/safe/input/c/safe_assert.c",
+          "function": "main",
+          "line": "7",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.1",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION SUCCESSFUL",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "success"
+  }
+]

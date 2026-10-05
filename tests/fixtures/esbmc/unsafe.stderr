@@ -1,0 +1,170 @@
+Target: 64-bit little-endian aarch64-unknown-macos with esbmclibc
+Parsing <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.054s
+GOTO program processing time: 0.000s
+Starting Bounded Model Checking
+Unwinding loop 3 iteration 1   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 2   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 3   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 4   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 5   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 6   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 7   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 8   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 9   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Unwinding loop 3 iteration 10   file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 5 function main
+Symex completed in: 0.000s (55 assignments)
+Caching time: 0.000s (removed 10 assertions)
+Slicing time: 0.000s (removed 33 assignments)
+Generated 21 VCC(s), 11 remaining after simplification (12 assignments)
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 6 column 9 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'arithmetic overflow on add at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 5 column 29 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+Slicing time: 0.000s (removed 0 assignments)
+Solving claim 'assertion x < 10 at file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 7 column 5 function main' with solver Z3 v5.1.0
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Z3 v5.1.0
+Runtime decision procedure: 0.000s
+
+[Counterexample]
+
+
+State 1 file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 7 column 5 function main thread 0
+----------------------------------------------------
+Violated property:
+  file <REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c line 7 column 5 function main
+  assertion x < 10
+  !((_Bool)((signed long int)(!(x < 10))))
+
+BMC program time: 0.028s
+
+** Results:
+<REPO>/.veriruntime/smoke/esbmc/unsafe/input/c/unsafe_assert.c, function main
+  PASSED       [main.arithmetic-overflow.1]  line 5  arithmetic overflow on add
+  PASSED       [main.arithmetic-overflow.2]  line 6  arithmetic overflow on add
+  FAILED       [main.assertion.1]            line 7  assertion x < 10
+
+** 1 of 3 properties failed, 2 passed
+Solver: Z3 v5.1.0 • Decision procedure total time: 0.000s • Avg: 0.000s/property
+
+VERIFICATION FAILED

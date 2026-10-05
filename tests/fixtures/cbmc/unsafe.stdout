@@ -1,0 +1,998 @@
+[
+  {
+    "program": "CBMC 6.11.0 (cbmc-6.11.0)"
+  },
+  {
+    "messageText": "CBMC version 6.11.0 (cbmc-6.11.0) 64-bit arm64 macos",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Type-checking unsafe_assert",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generating GOTO Program",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Adding CPROVER library (arm64)",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Removal of function pointers and virtual functions",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Generic Property Instrumentation",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Starting Bounded Model Checking",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Passing problem to propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "converting SSA",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Running propositional reduction",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "SAT checker: instance is SATISFIABLE",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "messageText": "Building error trace",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "result": [
+      {
+        "description": "arithmetic overflow on signed + in x + 1",
+        "property": "main.overflow.1",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on signed + in x + 1",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+          "function": "main",
+          "line": "6",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.1",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "arithmetic overflow on signed + in i + 1",
+        "property": "main.overflow.2",
+        "sourceLocation": {
+          "comment": "arithmetic overflow on signed + in i + 1",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+          "function": "main",
+          "line": "5",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check", "checked:memory-leak-check", "checked:memory-cleanup-check", "checked:float-div-by-zero-check", "checked:enum-range-check", "checked:unsigned-overflow-check", "checked:pointer-overflow-check", "checked:conversion-check", "checked:float-overflow-check", "checked:nan-check" ],
+          "propertyClass": "overflow",
+          "propertyId": "main.overflow.2",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "SUCCESS"
+      },
+      {
+        "description": "assertion x < 10",
+        "property": "main.assertion.1",
+        "sourceLocation": {
+          "comment": "assertion x < 10",
+          "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+          "function": "main",
+          "line": "7",
+          "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+          "propertyClass": "assertion",
+          "propertyId": "main.assertion.1",
+          "workingDirectory": "<REPO>"
+        },
+        "status": "FAILURE",
+        "trace": [
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "26",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "location-only",
+            "thread": 0
+          },
+          {
+            "function": {
+              "displayName": "__CPROVER_initialize",
+              "identifier": "__CPROVER_initialize",
+              "sourceLocation": {
+                "file": "<built-in-additions>",
+                "line": "26",
+                "workingDirectory": "<REPO>"
+              }
+            },
+            "hidden": true,
+            "internal": false,
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "26",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "function-call",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "__CPROVER_dead_object",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "10",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "data": "NULL",
+              "name": "pointer",
+              "type": "const void *"
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "__CPROVER_deallocated",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "9",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "data": "NULL",
+              "name": "pointer",
+              "type": "const void *"
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "__CPROVER_max_malloc_size",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "14",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "0000000010000000000000000000000000000000000000000000000000000000",
+              "data": "36028797018963968ul",
+              "name": "integer",
+              "type": "__CPROVER_size_t",
+              "width": 64
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "__CPROVER_memory_leak",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "11",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "data": "NULL",
+              "name": "pointer",
+              "type": "const void *"
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "__CPROVER_rounding_mode",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<built-in-additions>",
+              "line": "18",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "function": {
+              "displayName": "__CPROVER_initialize",
+              "identifier": "__CPROVER_initialize",
+              "sourceLocation": {
+                "file": "<built-in-additions>",
+                "line": "26",
+                "workingDirectory": "<REPO>"
+              }
+            },
+            "hidden": true,
+            "internal": false,
+            "stepType": "function-return",
+            "thread": 0
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "line": "3",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "location-only",
+            "thread": 0
+          },
+          {
+            "function": {
+              "displayName": "main",
+              "identifier": "main",
+              "sourceLocation": {
+                "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+                "line": "3",
+                "workingDirectory": "<REPO>"
+              }
+            },
+            "hidden": false,
+            "internal": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "line": "3",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "function-call",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "hide": true,
+              "line": "4",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "4",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": true,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "hide": true,
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000001",
+              "data": "1",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000001",
+              "data": "1",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000010",
+              "data": "2",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000010",
+              "data": "2",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000011",
+              "data": "3",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000011",
+              "data": "3",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000100",
+              "data": "4",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000100",
+              "data": "4",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000101",
+              "data": "5",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000101",
+              "data": "5",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000110",
+              "data": "6",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000110",
+              "data": "6",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000111",
+              "data": "7",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000000111",
+              "data": "7",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001000",
+              "data": "8",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001000",
+              "data": "8",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001001",
+              "data": "9",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001001",
+              "data": "9",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "x",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "6",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001010",
+              "data": "10",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "assignmentType": "variable",
+            "hidden": false,
+            "internal": false,
+            "lhs": "i",
+            "mode": "C",
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "assignment",
+            "thread": 0,
+            "value": {
+              "binary": "00000000000000000000000000001010",
+              "data": "10",
+              "name": "integer",
+              "type": "signed int",
+              "width": 32
+            }
+          },
+          {
+            "hidden": false,
+            "sourceLocation": {
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "5",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "loop-head",
+            "thread": 0
+          },
+          {
+            "hidden": false,
+            "internal": false,
+            "property": "main.assertion.1",
+            "reason": "assertion x < 10",
+            "sourceLocation": {
+              "comment": "assertion x < 10",
+              "file": "<REPO>/.veriruntime/smoke/cbmc/unsafe/input/c/unsafe_assert.c",
+              "function": "main",
+              "line": "7",
+              "pragma": [ "checked:bounds-check", "checked:pointer-check", "checked:div-by-zero-check", "checked:signed-overflow-check", "checked:undefined-shift-check", "checked:pointer-primitive-check" ],
+              "propertyClass": "assertion",
+              "propertyId": "main.assertion.1",
+              "workingDirectory": "<REPO>"
+            },
+            "stepType": "failure",
+            "thread": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "messageText": "VERIFICATION FAILED",
+    "messageType": "STATUS-MESSAGE"
+  },
+  {
+    "cProverStatus": "failure"
+  }
+]

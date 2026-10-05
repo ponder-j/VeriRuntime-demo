@@ -1,0 +1,117 @@
+"""Backend-local CLI knowledge. No scheduling or cache policy lives here."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+import os
+import shutil
+import subprocess
+
+from veriruntime.model import (ExecutionStatus, ProgramSnapshot, ToolProfile,
+                               VerificationTask, Verdict, digest)
+
+
+@dataclass(frozen=True)
+class ParsedResult:
+    verdict: Verdict
+    status: ExecutionStatus = ExecutionStatus.COMPLETED
+    message: str = ""
+
+
+def materialize(program: ProgramSnapshot, workspace: Path) -> tuple[str, ...]:
+    root = (workspace / "input").resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    for file in program.files:
+        path = (root / file.logical_path).resolve()
+        if not path.is_relative_to(root):
+            raise ValueError("Snapshot path escapes workspace")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(file.content.encode("utf-8"))
+    return tuple(str(root / p) for p in program.sources)
+
+
+class ToolAdapter:
+    name = ""
+    family = ""
+    required_flags: tuple[str, ...] = ()
+    config: dict = {}
+    estimated_memory_mb = 512
+    prior_runtime_sec = 1.0
+
+    def __init__(self, root: Path | str = "."):
+        self.root = Path(root).resolve()
+        self._profile: ToolProfile | None = None
+
+    def candidates(self) -> list[Path]:
+        override = os.environ.get(f"VRUN_{self.name.upper()}")
+        if override:
+            return [Path(override).expanduser()]
+        found = shutil.which(self.name)
+        paths = [Path(found)] if found else []
+        local = self.root / ".veriruntime/toolchains" / self.name
+        paths += sorted(local.glob(f"**/bin/{self.name}"))
+        paths += [Path.home() / ".local/bin" / self.name]
+        return paths
+
+    def environment(self) -> dict[str, str]:
+        env = dict(os.environ)
+        env["LC_ALL"] = "C"
+        # An undeclared host include path would violate snapshot identity.
+        for key in ("CPATH", "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH"):
+            env.pop(key, None)
+        if os.uname().sysname == "Darwin":
+            local_libs = sorted((self.root / ".veriruntime/toolchains/deps").glob("*/*/lib"))
+            host_libs = sorted(Path("/opt/homebrew/opt").glob("*/lib"))
+            if local_libs:
+                env["DYLD_LIBRARY_PATH"] = ":".join(map(str, local_libs + host_libs))
+        return env
+
+    def detect(self) -> ToolProfile:
+        diagnostics = []
+        for path in self.candidates():
+            if not path.is_file():
+                continue
+            try:
+                version_run = subprocess.run([str(path), "--version"], capture_output=True,
+                                             text=True, timeout=15, env=self.environment())
+                version = (version_run.stdout + version_run.stderr).strip()
+                if version_run.returncode != 0 or not version:
+                    diagnostics.append(f"{path}: version probe failed: {version[:400]}")
+                    continue
+                help_run = subprocess.run([str(path), "--help"], capture_output=True,
+                                          text=True, timeout=15, env=self.environment())
+                help_text = help_run.stdout + help_run.stderr
+                missing = [f for f in self.required_flags if f not in help_text]
+                if help_run.returncode != 0 or missing:
+                    diagnostics.append(f"{path}: unsupported CLI flags {missing}")
+                    continue
+                self._profile = ToolProfile(self.name, self.family, True, version,
+                    str(path.resolve()), estimated_memory_mb=self.estimated_memory_mb,
+                    prior_runtime_sec=self.prior_runtime_sec, config_id=digest(self.config))
+                return self._profile
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                diagnostics.append(f"{path}: {exc}")
+        self._profile = ToolProfile(self.name, self.family, False, "", None,
+            config_id=digest(self.config), diagnostic="; ".join(diagnostics) or "Executable not found")
+        return self._profile
+
+    def profile(self) -> ToolProfile:
+        return self._profile or self.detect()
+
+    def version(self) -> str:
+        return self.profile().version
+
+    def supports(self, task: VerificationTask) -> bool:
+        p = self.profile()
+        return (p.available and task.language in p.languages and
+                task.property.kind in p.properties and task.semantics.c_standard in p.c_standards
+                and task.semantics.data_model in p.data_models)
+
+    def build_command(self, task: VerificationTask, workspace: Path) -> tuple[str, ...]:
+        raise NotImplementedError
+
+    def parse_result(self, stdout: str, stderr: str, exit_code: int) -> ParsedResult:
+        raise NotImplementedError
+
+    def collect_artifacts(self, workspace: Path) -> tuple[tuple[str, Path], ...]:
+        return ()

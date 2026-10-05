@@ -1,0 +1,134 @@
+{
+  "platform": "macOS ARM64 (Tahoe)",
+  "packages": [
+    {
+      "name": "cbmc",
+      "version": "6.11.0",
+      "url": "https://ghcr.io/v2/homebrew/core/cbmc/blobs/sha256:3fb094c69d4a877d89c3471c0c0adff0526220261e593f7ffb6f13d4224129f8",
+      "sha256": "3fb094c69d4a877d89c3471c0c0adff0526220261e593f7ffb6f13d4224129f8",
+      "destination": "cbmc",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "z3",
+      "version": "5.1.0",
+      "url": "https://ghcr.io/v2/homebrew/core/z3/blobs/sha256:5968f6ca3a4c4f2b12e4711b9ca7556fa65a82937f1af7a2a210456ab754adb7",
+      "sha256": "5968f6ca3a4c4f2b12e4711b9ca7556fa65a82937f1af7a2a210456ab754adb7",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "boost",
+      "version": "1.92.0",
+      "url": "https://ghcr.io/v2/homebrew/core/boost/blobs/sha256:686277661ee32946032c02d6e365b0183dd7763f2e220be6c7949595458cef57",
+      "sha256": "686277661ee32946032c02d6e365b0183dd7763f2e220be6c7949595458cef57",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "llvm@21",
+      "version": "21.1.8",
+      "url": "https://ghcr.io/v2/homebrew/core/llvm/21/blobs/sha256:e3a3579a56ca64c479040de7eb4d0748efe369338216e81af2e59e3aed608c58",
+      "sha256": "e3a3579a56ca64c479040de7eb4d0748efe369338216e81af2e59e3aed608c58",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": [
+        "lib/libLLVM.dylib",
+        "lib/libclang-cpp.dylib",
+        "lib/clang/21/include/"
+      ]
+    },
+    {
+      "name": "bash",
+      "version": "5.3.20",
+      "url": "https://ghcr.io/v2/homebrew/core/bash/blobs/sha256:ac5b291d5571c2aaf30bd17e0df16f0a43723dad8aac2023b9c5904742fdd2da",
+      "sha256": "ac5b291d5571c2aaf30bd17e0df16f0a43723dad8aac2023b9c5904742fdd2da",
+      "destination": "bash",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "readline",
+      "version": "8.3.6",
+      "url": "https://ghcr.io/v2/homebrew/core/readline/blobs/sha256:15cdd69af824537192843db389cbfd2459b3797cf4f36c906f8f8ab617d7d59f",
+      "sha256": "15cdd69af824537192843db389cbfd2459b3797cf4f36c906f8f8ab617d7d59f",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "gmp",
+      "version": "6.3.0",
+      "url": "https://ghcr.io/v2/homebrew/core/gmp/blobs/sha256:fa46330de5d003bd9294ae042c8f4ae0a51bcb8c57de2c94c073ff4a7ffa10c3",
+      "sha256": "fa46330de5d003bd9294ae042c8f4ae0a51bcb8c57de2c94c073ff4a7ffa10c3",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "mpfr",
+      "version": "4.2.2",
+      "url": "https://ghcr.io/v2/homebrew/core/mpfr/blobs/sha256:495b04c82ef8638368a5cc62141e7ac195377d292503f5b30e5915b1ff478dda",
+      "sha256": "495b04c82ef8638368a5cc62141e7ac195377d292503f5b30e5915b1ff478dda",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "xz",
+      "version": "5.8.4",
+      "url": "https://ghcr.io/v2/homebrew/core/xz/blobs/sha256:d291ad2277682238329b0e4d249e5e2c948c4b10cd64dba1963d897330ad88dd",
+      "sha256": "d291ad2277682238329b0e4d249e5e2c948c4b10cd64dba1963d897330ad88dd",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "zstd",
+      "version": "1.5.7",
+      "url": "https://ghcr.io/v2/homebrew/core/zstd/blobs/sha256:628a4ef53428d0078e3d76d297171ce8d0294f5ec1de3f20305e08c4dd333565",
+      "sha256": "628a4ef53428d0078e3d76d297171ce8d0294f5ec1de3f20305e08c4dd333565",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "ncurses",
+      "version": "6.6",
+      "url": "https://ghcr.io/v2/homebrew/core/ncurses/blobs/sha256:b43443ba3c3c8728e79413c7c3fed4a0eb293bd77c8492c1ec4c5d05233a97f1",
+      "sha256": "b43443ba3c3c8728e79413c7c3fed4a0eb293bd77c8492c1ec4c5d05233a97f1",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "gettext",
+      "version": "1.0",
+      "url": "https://ghcr.io/v2/homebrew/core/gettext/blobs/sha256:3af5392939e50a6ef73e42799fc3ead6ef72fe0040c0a45183d04a4008306d6a",
+      "sha256": "3af5392939e50a6ef73e42799fc3ead6ef72fe0040c0a45183d04a4008306d6a",
+      "destination": "deps",
+      "format": "tar.gz",
+      "select": []
+    },
+    {
+      "name": "esbmc",
+      "version": "8.5.0",
+      "url": "https://github.com/esbmc/esbmc/releases/download/v8.5/esbmc-macos.zip",
+      "sha256": "a5a9b4443775c346ed14c9a20c36e459c460f61ebeaa33f89daa14f9ae4d786d",
+      "destination": "esbmc",
+      "format": "zip"
+    },
+    {
+      "name": "cpachecker",
+      "version": "4.2.2",
+      "url": "https://cpachecker.sosy-lab.org/CPAchecker-4.2.2-unix.zip",
+      "sha256": "183adce15ced2641784dd16dd1dda3c4d88bb463674d8adb688fb28c3656525f",
+      "destination": "cpachecker",
+      "format": "zip",
+      "optional": true
+    }
+  ]
+}

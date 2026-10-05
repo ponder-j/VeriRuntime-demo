@@ -96,3 +96,11 @@ Program content is captured before execution; local quoted headers participate
 in identity, while macro/absolute/symlink includes are rejected when replay is
 unsupported. The IR supports multiple translation units. `memory_safety` is a
 valid proposition but must be filtered out by adapters lacking that capability.
+
+## M2 review
+
+YES: tool-specific flags and result interpretation live only in adapters; the
+registry performs capability lookup. Actual command, version, output, and exit
+code were retained during smoke verification. Installed backends run real tests;
+missing backends explicitly skip only integration tests. No runtime fake backend
+or DSL tool directive was introduced.
