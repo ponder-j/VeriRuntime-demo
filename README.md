@@ -34,7 +34,44 @@ OBLIGATION SHOULD BE EXECUTED.** An optional Codex planner and bounded experimen
 runner live upstream in `veriruntime/planner/`. Runtime never adds assumptions,
 invariants or lemmas, weakens a property, or creates subgoals after UNKNOWN.
 
-## Quick start
+## Docker Linux on Windows / Linux
+
+The demo now runs on Docker Desktop's Linux amd64 engine with a small control
+container and a fresh isolated container for each verifier attempt. Default builds
+use CBMC 6.11.0 and ESBMC 8.5.0; CPAchecker 4.2.2 / Java 21 is optional and also
+qualified on Linux. No verifier services or web server stay running.
+
+```powershell
+# PowerShell 7; build, run regression tests, and export real acceptance evidence
+./scripts/docker-demo.ps1
+# This host's Docker DNS needs the per-build workaround:
+./scripts/docker-demo.ps1 -BuildDns 1.1.1.1
+# Optional third family (larger Java/Clang image)
+./scripts/docker-demo.ps1 -WithCPAchecker -BuildDns 1.1.1.1
+# Existing images: repeat fresh-store acceptance without downloading/building
+./scripts/docker-demo.ps1 -WithCPAchecker -SkipBuild
+```
+
+```sh
+docker compose build runtime cbmc esbmc
+docker compose run --rm runtime doctor
+docker compose run --rm runtime verify examples/tasks/unsafe_assert_crosscheck.json --data-dir /data/my-demo --explain
+docker compose run --rm runtime verify examples/tasks/unsafe_assert_crosscheck.json --data-dir /data/my-demo --explain
+```
+
+Each worker has its own filesystem mount, HOME, temporary directories, process
+namespace and cgroup memory limit. It runs without network or Linux capabilities,
+with a read-only root filesystem and no access to the result store or Docker
+socket. Evidence cache hits now require the current tool family, version and
+configuration identity to match; Docker identities include the exact image ID.
+
+Open the offline [DSL dispatch explorer](docs/runtime-explorer.html) for real
+Linux records, JSON requests, generated plan ASTs, scheduling steps and commands.
+The [interactive overview](docs/dispatch.html) shows the complete path and cache
+shortcut. See [Linux Docker reproduction and acceptance](docs/linux-docker.md)
+for architecture, resources, evidence locations and current limits.
+
+## Native macOS quick start
 
 Python 3.11+ is required. The pinned bootstrap is tested on macOS ARM64 Tahoe
 with Command Line Tools (`clang`, `xcrun`) and Homebrew. CPAchecker additionally
@@ -59,9 +96,9 @@ shows CacheLookup, CACHE HIT and **verifier executions: 0**. Discovery still use
 version/help probes; zero executions means no verification command was started.
 SAFE/UNSAFE are distinct from process status, and UNKNOWN is an honest outcome.
 
-On Linux, install official tools and put them in PATH or set `VRUN_CBMC`,
-`VRUN_ESBMC`, `VRUN_CPACHECKER` to executable paths. Native Linux bootstrap and
-Windows process supervision are not implemented. See [verifier support](docs/verifier-support.md)
+For native Linux without the container transport, install official tools and put them in PATH or set `VRUN_CBMC`,
+`VRUN_ESBMC`, `VRUN_CPACHECKER` to executable paths. The original native bootstrap
+still targets macOS; Windows uses Docker Linux process supervision. See [verifier support](docs/verifier-support.md)
 for versions, CLI qualification, installation sources and configuration limits.
 `verifiers.lock.json` pins archive hashes. If Homebrew has moved to a new formula
 version, its archive is rejected rather than silently replacing the pinned tool;
@@ -220,7 +257,8 @@ extensions are cost-based planning, adaptive scheduling, evidence-aware optimiza
 witness/invariant reuse, incremental verification and learned verifier selection.
 
 Current limits: exact per-goal cache only; no witness reuse, checkpoints, incremental
-proofs, dynamic CPU allocation or strict memory isolation. The cost model is a small
+proofs or dynamic CPU allocation. Native execution samples RSS; Docker workers
+have hard cgroup limits with conservative fixed per-attempt memory shares. The cost model is a small
 history heuristic, including selection/cancellation bias. BMC proofs require complete
 unwinding; loops beyond the configured bound return UNKNOWN. `memory_safety` parses
 as a logical property but currently has no compatible adapter. CPAchecker rejects

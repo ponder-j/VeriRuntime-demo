@@ -84,12 +84,21 @@ async def execute(adapter, task, workspace: Path, execution_id: str, deadline: f
     reason = TerminationReason.START_FAILURE
     message = ""
     diagnostic_code = ""
-    env = adapter.environment()
+    env = adapter.attempt_environment(workspace)
     try:
         argv = adapter.build_command(task, workspace)
+        # A cancelled HTTP create can finish at the daemon after the client died.
+        # Let reservation finish before cleanup, even on coroutine cancellation.
+        preparation = asyncio.create_task(asyncio.to_thread(adapter.prepare, task, workspace))
+        try:
+            await asyncio.shield(preparation)
+        except asyncio.CancelledError:
+            await preparation
+            raise
         (workspace / "command.json").write_text(json.dumps({"argv": argv, "version": profile.version,
             "config_id": profile.config_id, "semantic_key": task.semantic_key,
-            "environment": {k: env.get(k) for k in ("LC_ALL", "DYLD_LIBRARY_PATH", "PATH", "JAVA")}}, indent=2))
+            "environment": {k: env.get(k) for k in ("LC_ALL", "DYLD_LIBRARY_PATH", "PATH", "JAVA",
+                "HOME", "TMPDIR", "XDG_CACHE_HOME", "XDG_CONFIG_HOME")}}, indent=2))
         with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
             cancel_reason = cancellation.reason or (external_cancel.reason if external_cancel else None)
             if cancel_reason:
@@ -125,16 +134,19 @@ async def execute(adapter, task, workspace: Path, execution_id: str, deadline: f
         if process is not None:
             await cleanup_group(process)
             memory.pids.discard(process.pid)
+        await asyncio.to_thread(adapter.cleanup, workspace)
         stdout_path.touch(exist_ok=True)
         stderr_path.touch(exist_ok=True)
     if status == ExecutionStatus.COMPLETED:
         try:
-            parsed = adapter.parse_result(stdout_path.read_text(errors="replace"),
-                                          stderr_path.read_text(errors="replace"), process.returncode)
+            parsed = adapter.parse_attempt_result(stdout_path.read_text(errors="replace"),
+                                          stderr_path.read_text(errors="replace"), process.returncode, workspace)
             verdict, status, message = parsed.verdict, parsed.status, parsed.message
             diagnostic_code = parsed.diagnostic_code
             if status != ExecutionStatus.COMPLETED:
-                verdict, reason = Verdict.UNKNOWN, TerminationReason.PROCESS_ERROR
+                verdict = Verdict.UNKNOWN
+                reason = (TerminationReason.MEMORY_BUDGET if status == ExecutionStatus.OOM
+                          else TerminationReason.PROCESS_ERROR)
         except Exception as exc:
             status, reason, message = ExecutionStatus.ERROR, TerminationReason.PROCESS_ERROR, f"Adapter parse failed: {exc}"
     attempt = ExecutionAttempt(attempt_id, execution_id, task.semantic_key, profile.name, profile.family,

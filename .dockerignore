@@ -1,0 +1,10 @@
+.git
+.venv
+.veriruntime
+**/__pycache__
+.pytest_cache
+*.egg-info
+build
+dist
+docs/*.html
+docs/*.png

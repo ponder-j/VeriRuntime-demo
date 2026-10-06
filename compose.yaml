@@ -1,0 +1,58 @@
+name: veriruntime
+services:
+  runtime:
+    image: veriruntime/runtime:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: runtime
+    platform: linux/amd64
+    init: true
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 384m
+    cpus: 1.0
+    pids_limit: 128
+    environment:
+      VRUN_BACKEND: docker
+      VRUN_DOCKER_VOLUME: veriruntime-data
+      VRUN_DOCKER_DATA_ROOT: /data
+      TMPDIR: /tmp
+      PYTHONPATH: /workspace
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - veriruntime-data:/data
+      - .:/workspace:ro
+    working_dir: /workspace
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    command: [doctor]
+  cbmc:
+    image: veriruntime/cbmc:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: cbmc
+    platform: linux/amd64
+    profiles: [tools]
+  esbmc:
+    image: veriruntime/esbmc:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: esbmc
+    platform: linux/amd64
+    profiles: [tools]
+  cpachecker:
+    image: veriruntime/cpachecker:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: cpachecker
+    platform: linux/amd64
+    profiles: [cpa]
+volumes:
+  veriruntime-data:
+    name: veriruntime-data

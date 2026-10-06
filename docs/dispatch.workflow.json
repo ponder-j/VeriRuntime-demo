@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "VeriRuntime · 从声明式 DSL 到验证证据",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "viewBox": [
+      720,
+      344
+    ]
+  },
+  "lanes": [
+    {
+      "id": "logical",
+      "label": "声明式目标与物理规划"
+    },
+    {
+      "id": "physical",
+      "label": "隔离执行与证据反馈"
+    }
+  ],
+  "mainPath": [
+    "dsl",
+    "dependencies",
+    "optimizer",
+    "cache"
+  ],
+  "nodes": [
+    {
+      "id": "dsl",
+      "lane": "logical",
+      "col": 0,
+      "type": "external",
+      "label": "DSL 校验与快照",
+      "sublabel": "load_workflow",
+      "width": 94,
+      "height": 60
+    },
+    {
+      "id": "dependencies",
+      "lane": "logical",
+      "col": 1,
+      "type": "backend",
+      "label": "工作流依赖门控",
+      "sublabel": "就绪目标串行推进",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "cache",
+      "lane": "logical",
+      "col": 5,
+      "type": "database",
+      "label": "语义缓存检查",
+      "sublabel": "目标 + 环境 + 证据",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "optimizer",
+      "lane": "logical",
+      "col": 3,
+      "type": "backend",
+      "label": "优化与生成计划",
+      "sublabel": "Run / Parallel / Sequence",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "scheduler",
+      "lane": "physical",
+      "col": 0,
+      "type": "backend",
+      "label": "解释计划与监督",
+      "sublabel": "限时 / 并发 / 取消",
+      "width": 94,
+      "height": 60
+    },
+    {
+      "id": "workers",
+      "lane": "physical",
+      "col": 1,
+      "type": "security",
+      "label": "独立验证容器",
+      "sublabel": "CBMC / ESBMC / CPAchecker",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "reconcile",
+      "lane": "physical",
+      "col": 3,
+      "type": "backend",
+      "label": "归并独立家族",
+      "sublabel": "一致确认 / 冲突优先",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "store",
+      "lane": "physical",
+      "col": 5,
+      "type": "database",
+      "label": "保存证据与反馈",
+      "sublabel": "SQLite / SHA-256 / 诊断",
+      "width": 100,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "from": "dsl",
+      "to": "dependencies"
+    },
+    {
+      "from": "dependencies",
+      "to": "optimizer"
+    },
+    {
+      "from": "optimizer",
+      "to": "cache",
+      "route": "straight"
+    },
+    {
+      "from": "cache",
+      "to": "scheduler",
+      "role": "return",
+      "bias": 0.8,
+      "label": "MISS"
+    },
+    {
+      "from": "scheduler",
+      "to": "workers",
+      "route": "straight"
+    },
+    {
+      "from": "workers",
+      "to": "reconcile"
+    },
+    {
+      "from": "reconcile",
+      "to": "store",
+      "route": "straight"
+    },
+    {
+      "from": "cache",
+      "to": "store",
+      "label": "HIT",
+      "variant": "dashed",
+      "role": "branch",
+      "labelAt": [
+        625,
+        163
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "固定目标，自动选工具",
+      "items": [
+        "DSL 固定属性、C 语义、确认数与预算",
+        "先按能力、历史与预算生成计划；缓存通过后替换为 CacheLookup"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "独立执行，保留证据",
+      "items": [
+        "每次尝试独享容器与目录；镜像指纹约束缓存",
+        "确定结论按家族计数；冲突、错误与超时不缓存"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3918 @@
+{
+  "generated_at_utc": "2026-10-06T04:07:49.382612+00:00",
+  "platform": "linux/amd64",
+  "profiles": [
+    {
+      "name": "cbmc",
+      "family": "cbmc",
+      "available": true,
+      "version": "6.11.0 (cbmc-6.11.0)",
+      "path": "sha256:04ec339d4dea67e5c7ead21db93aa1ec0f860d853996598e44e0e428ddff8a21",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 256,
+      "prior_runtime_sec": 0.5,
+      "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+      "diagnostic": ""
+    },
+    {
+      "name": "esbmc",
+      "family": "esbmc",
+      "available": true,
+      "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+      "path": "sha256:eeb7ee5968bd8d07cc95dd512d28c06283f310735790d8170e14afef27bf0e5f",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 512,
+      "prior_runtime_sec": 0.7,
+      "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+      "diagnostic": ""
+    },
+    {
+      "name": "cpachecker",
+      "family": "cpachecker",
+      "available": true,
+      "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+      "path": "sha256:8203a6555ffe7950c77275f258e8fd28065e4285e9308247782dd58d3dba4221",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 1024,
+      "prior_runtime_sec": 4.0,
+      "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+      "diagnostic": ""
+    }
+  ],
+  "scenarios": {
+    "safe-first": {
+      "request": {
+        "version": "0.1",
+        "task": {
+          "id": "safe-assert",
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 3
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        }
+      },
+      "execution": {
+        "optimization": {
+          "physical_plan": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "tool": "cbmc",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  },
+                  {
+                    "tool": "esbmc",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  }
+                ],
+                "max_parallel": 2,
+                "operator": "Parallel"
+              },
+              {
+                "tool": "cpachecker",
+                "time_slice_sec": 15.0,
+                "operator": "Run"
+              }
+            ],
+            "operator": "Sequence"
+          },
+          "explanation": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "safe-assert",
+            "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+            "cache": "MISS",
+            "selected_tools": [
+              "cbmc",
+              "esbmc",
+              "cpachecker"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 3,
+            "independent_candidates": 3,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 30,
+              "memory_mb": 2048,
+              "max_parallel": 2
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "cbmc",
+                "esbmc"
+              ],
+              [
+                "cpachecker"
+              ]
+            ]
+          },
+          "candidate_scores": [
+            {
+              "tool": "cbmc",
+              "family": "cbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": null,
+              "expected_runtime_sec": 0.5,
+              "success_rate": 0.5,
+              "score": 1.0,
+              "selected": true
+            },
+            {
+              "tool": "esbmc",
+              "family": "esbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": null,
+              "expected_runtime_sec": 0.7,
+              "success_rate": 0.5,
+              "score": 0.7142857142857143,
+              "selected": true
+            },
+            {
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "compatible": true,
+              "reasons": [],
+              "history": null,
+              "expected_runtime_sec": 4.0,
+              "success_rate": 0.5,
+              "score": 0.125,
+              "selected": true
+            }
+          ]
+        },
+        "report": {
+          "result": {
+            "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+            "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+            "verdict": "SAFE",
+            "confirmations": 3,
+            "requirement_satisfied": true,
+            "termination_reason": "REQUIREMENTS_MET",
+            "attempt_ids": [
+              "08b61d49f173459b93488256c6572800",
+              "499338bfb1e24c229c89a7d953b0c2de",
+              "8b06bc91a927410096af01d93c9e803f"
+            ],
+            "wall_time_sec": 4.504857592000008,
+            "cache_hit": false,
+            "source_execution_id": null,
+            "goal_id": "safe-assert",
+            "status": "COMPLETED",
+            "artifacts": [
+              "1497fa2da64da8462ceff4b2b9dc0d2755a5fb0d4cfdb059e14c1c22ed401665",
+              "c8e85e106af824595b11f2759a5c9dca24e0c09b8430eb71a86cc38ca85f2c79",
+              "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+              "82e81776ca881ed439edbf7080595071e7ec0170030f007775a1257a286377f7",
+              "4504d13846ba2a43fcfca933ae64116a021ebea68e87e1c06b2e9be548cda457",
+              "63972a34ae7f5b3b99b7d78ebb0af8a21d584b943d602970f1c35d565c65938a",
+              "7e44cfe88936d664b61fd447f8bf142a883cea373afe341ececa6ff77dace205",
+              "da8e7da13bcd56c8e70905b5faf5723ebc54d0445715a21c4e14fcda55f1c28b",
+              "b1dd2d2c2525bbbc5aee46efbd34e977fa218ab89b0ea94e5e0930b4520637ed",
+              "e86fbb7ee16ac3b2eb2f2a33ab90ec5fb879721a7f75f6ddcef8740460f77cb3",
+              "b0ba1586da8e1c6f46a8671a04e803df82e1b425d465bbc76b953216614c9569",
+              "27de7c22395c7ed70701c94a5f521c8634a258d4e44705258cbfc43316264029",
+              "f511d389eace45b3e6f82ef02bb06c147ed1ab9c22e8ba96b0ed7cd40107ee81",
+              "f357708081c92dd3ae8121669b5ee51cc18fefe9d65b7785a4aed65d648130a6",
+              "157c6a0b6a3a481f33fc485aac1a4198ec154c791acaea9776ede292821f80f6",
+              "7252bdbe3f0cbdd299af1c8d7fb5dbb9dff68495bed78105b1bce39714b4d156",
+              "d5fc9323aba2e4c787fdac5104c7b6f2f27b6a8b5c8c3d27d6d8e19baea468ba",
+              "15bdd222b8ee225c20e6acd09ccbe283abfae785f312634001487d3f6b9451ca",
+              "8ef2ffa08b65dca71b055dd67a30a2084da0bf7ea580d83e7dd7e330df50fc70",
+              "b659ca25c55b67490649496cf17bfe0d26d82c87573019de7b99ea0a4b079df1",
+              "8efb07d3a4ba4f07c3e7a3cf3718a41c01cfc0f10ae0984de5fec872e6f73a96",
+              "ca4a2471f3ea9431a1afd6e95eda529861583b6f09320aad73ff3dba48972604",
+              "24872b5b802b861800d28ac8066124db5a2155a0fe6129a0920418d550eb95c8",
+              "af430a18bb09903c29549bed47c5c03d751334053d861b06dbfd811533de56b1",
+              "44858c13a9606fb1a73cf24d4ef0cd82b63f59d150d0b51d40c7743981e81ab9",
+              "ddfe5a310ceb7fbc8a9b8da3be2d653e1db05a2ee8e733ab8212443e8af069d9",
+              "6432fa11999f0dffb4e7552580784c1cededa34de59796631b84bdb6f3707707",
+              "c74f5970fe00f4c0538505d21b50c12649955db656d3b5af30209a33fb8e54a3",
+              "39fab4201b49e0c101bfa52eeed23904ba63c28b1e5d7935f384f2e0bada0ca5",
+              "5bb47f7dea75867b42a5e121dc33bf5273ad2f06bbffef0788850ca476fd8d48",
+              "ad87cfcc5e66ba16939cf3b2b085d22ca7578d906849680e58bc8c397eac87c3",
+              "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+              "7cb6e0c3f220c332873a60df978743c45f56b95c28a975ea7c548e5a361a6d41",
+              "863c6f63014d4e2ad0d8b0fa6f19ac4a848cbb21de9492edd984d97deedfed95",
+              "c62904e49f6c9e56677e793031f65135d6713792d0033b1386846555402d9892",
+              "66907843e18d240efc8ea280298d327d2c6a21be1f489dfcc10c965746ce66fd",
+              "26be7cd67dfeca8d860ee8ebc5903d191a339de1495e76d9bccaa99587b10c1c",
+              "2fe187341029f320f0b30afecfcc1068d004c439b232fabc7f46e70a48772e00",
+              "14661464d24d18afd2024eaa144c01347ca693b05f163222a8fb79a392d13caa",
+              "c95319e9eeb8a1537cb1e6b78177e835f9664d21181babfe809694009366af34",
+              "dfbf2be1797f9b9f04599d890fc73f2ad6349471292461c103188c0ca4a7cbd2",
+              "22b50aef41ad26c331aa14634f8d4d417596044ff7ae5431cb10cae7c1e899f1",
+              "a013dbea4cb3eba99ba234b68e54065a850666b2eef5f03e35888317f642dc8b",
+              "fedd778bb136182f9d7dfde1ffb6614a92847497db9f0aa8fbcf7f83820f376a"
+            ],
+            "diagnostics": [],
+            "optimizer_summary": {
+              "optimizer": "cost-aware-v1",
+              "goal_id": "safe-assert",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+              "cache": "MISS",
+              "selected_tools": [
+                "cbmc",
+                "esbmc",
+                "cpachecker"
+              ],
+              "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+              "min_confirmations": 3,
+              "independent_candidates": 3,
+              "trust_feasible": true,
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              },
+              "hints_applied": false,
+              "tiny_budget": false,
+              "stages": [
+                [
+                  "cbmc",
+                  "esbmc"
+                ],
+                [
+                  "cpachecker"
+                ]
+              ]
+            },
+            "failure_reasons": []
+          },
+          "attempts": [
+            {
+              "id": "08b61d49f173459b93488256c6572800",
+              "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+              "tool": "cbmc",
+              "family": "cbmc",
+              "version": "6.11.0 (cbmc-6.11.0)",
+              "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800"
+              ],
+              "start_time": "2026-10-06T04:07:15.029017+00:00",
+              "end_time": "2026-10-06T04:07:15.805822+00:00",
+              "wall_time_sec": 0.7768132659998628,
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 0,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800/stderr.txt",
+              "message": "Complete assertion proof with unwinding checks",
+              "artifact_ids": [
+                "63972a34ae7f5b3b99b7d78ebb0af8a21d584b943d602970f1c35d565c65938a",
+                "7e44cfe88936d664b61fd447f8bf142a883cea373afe341ececa6ff77dace205",
+                "da8e7da13bcd56c8e70905b5faf5723ebc54d0445715a21c4e14fcda55f1c28b",
+                "b1dd2d2c2525bbbc5aee46efbd34e977fa218ab89b0ea94e5e0930b4520637ed",
+                "e86fbb7ee16ac3b2eb2f2a33ab90ec5fb879721a7f75f6ddcef8740460f77cb3",
+                "b0ba1586da8e1c6f46a8671a04e803df82e1b425d465bbc76b953216614c9569",
+                "27de7c22395c7ed70701c94a5f521c8634a258d4e44705258cbfc43316264029"
+              ],
+              "diagnostic_code": ""
+            },
+            {
+              "id": "499338bfb1e24c229c89a7d953b0c2de",
+              "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+              "tool": "esbmc",
+              "family": "esbmc",
+              "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+              "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de"
+              ],
+              "start_time": "2026-10-06T04:07:15.029683+00:00",
+              "end_time": "2026-10-06T04:07:16.106579+00:00",
+              "wall_time_sec": 1.0769033269998545,
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 0,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de/stderr.txt",
+              "message": "Complete assertion proof with unwinding checks",
+              "artifact_ids": [
+                "f511d389eace45b3e6f82ef02bb06c147ed1ab9c22e8ba96b0ed7cd40107ee81",
+                "f357708081c92dd3ae8121669b5ee51cc18fefe9d65b7785a4aed65d648130a6",
+                "157c6a0b6a3a481f33fc485aac1a4198ec154c791acaea9776ede292821f80f6",
+                "7252bdbe3f0cbdd299af1c8d7fb5dbb9dff68495bed78105b1bce39714b4d156",
+                "d5fc9323aba2e4c787fdac5104c7b6f2f27b6a8b5c8c3d27d6d8e19baea468ba",
+                "15bdd222b8ee225c20e6acd09ccbe283abfae785f312634001487d3f6b9451ca",
+                "8ef2ffa08b65dca71b055dd67a30a2084da0bf7ea580d83e7dd7e330df50fc70"
+              ],
+              "diagnostic_code": ""
+            },
+            {
+              "id": "8b06bc91a927410096af01d93c9e803f",
+              "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+              "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f"
+              ],
+              "start_time": "2026-10-06T04:07:16.222944+00:00",
+              "end_time": "2026-10-06T04:07:19.181056+00:00",
+              "wall_time_sec": 2.958119244000045,
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 0,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f/stderr.txt",
+              "message": "CPAchecker assertion reachability proof",
+              "artifact_ids": [
+                "b659ca25c55b67490649496cf17bfe0d26d82c87573019de7b99ea0a4b079df1",
+                "8efb07d3a4ba4f07c3e7a3cf3718a41c01cfc0f10ae0984de5fec872e6f73a96",
+                "ca4a2471f3ea9431a1afd6e95eda529861583b6f09320aad73ff3dba48972604",
+                "24872b5b802b861800d28ac8066124db5a2155a0fe6129a0920418d550eb95c8",
+                "af430a18bb09903c29549bed47c5c03d751334053d861b06dbfd811533de56b1",
+                "44858c13a9606fb1a73cf24d4ef0cd82b63f59d150d0b51d40c7743981e81ab9",
+                "ddfe5a310ceb7fbc8a9b8da3be2d653e1db05a2ee8e733ab8212443e8af069d9",
+                "6432fa11999f0dffb4e7552580784c1cededa34de59796631b84bdb6f3707707",
+                "c74f5970fe00f4c0538505d21b50c12649955db656d3b5af30209a33fb8e54a3",
+                "39fab4201b49e0c101bfa52eeed23904ba63c28b1e5d7935f384f2e0bada0ca5",
+                "5bb47f7dea75867b42a5e121dc33bf5273ad2f06bbffef0788850ca476fd8d48",
+                "ad87cfcc5e66ba16939cf3b2b085d22ca7578d906849680e58bc8c397eac87c3",
+                "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+                "7cb6e0c3f220c332873a60df978743c45f56b95c28a975ea7c548e5a361a6d41",
+                "863c6f63014d4e2ad0d8b0fa6f19ac4a848cbb21de9492edd984d97deedfed95",
+                "c62904e49f6c9e56677e793031f65135d6713792d0033b1386846555402d9892",
+                "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+                "66907843e18d240efc8ea280298d327d2c6a21be1f489dfcc10c965746ce66fd",
+                "26be7cd67dfeca8d860ee8ebc5903d191a339de1495e76d9bccaa99587b10c1c",
+                "2fe187341029f320f0b30afecfcc1068d004c439b232fabc7f46e70a48772e00",
+                "14661464d24d18afd2024eaa144c01347ca693b05f163222a8fb79a392d13caa",
+                "c95319e9eeb8a1537cb1e6b78177e835f9664d21181babfe809694009366af34",
+                "dfbf2be1797f9b9f04599d890fc73f2ad6349471292461c103188c0ca4a7cbd2",
+                "22b50aef41ad26c331aa14634f8d4d417596044ff7ae5431cb10cae7c1e899f1",
+                "a013dbea4cb3eba99ba234b68e54065a850666b2eef5f03e35888317f642dc8b",
+                "fedd778bb136182f9d7dfde1ffb6614a92847497db9f0aa8fbcf7f83820f376a"
+              ],
+              "diagnostic_code": ""
+            }
+          ],
+          "events": [
+            {
+              "time": "2026-10-06T04:07:15.028728+00:00",
+              "kind": "execution_start",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a"
+            },
+            {
+              "time": "2026-10-06T04:07:15.028869+00:00",
+              "kind": "tool_start",
+              "tool": "cbmc",
+              "remaining_wall_sec": 29.997147914999914
+            },
+            {
+              "time": "2026-10-06T04:07:15.029576+00:00",
+              "kind": "tool_start",
+              "tool": "esbmc",
+              "remaining_wall_sec": 29.996440845000052
+            },
+            {
+              "time": "2026-10-06T04:07:15.959541+00:00",
+              "kind": "tool_end",
+              "tool": "cbmc",
+              "attempt_id": "08b61d49f173459b93488256c6572800",
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 0.7768132659998628
+            },
+            {
+              "time": "2026-10-06T04:07:16.222536+00:00",
+              "kind": "tool_end",
+              "tool": "esbmc",
+              "attempt_id": "499338bfb1e24c229c89a7d953b0c2de",
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 1.0769033269998545
+            },
+            {
+              "time": "2026-10-06T04:07:16.222678+00:00",
+              "kind": "fallback",
+              "reason": "requirements_not_satisfied"
+            },
+            {
+              "time": "2026-10-06T04:07:16.222729+00:00",
+              "kind": "tool_start",
+              "tool": "cpachecker",
+              "remaining_wall_sec": 28.80328858599978
+            },
+            {
+              "time": "2026-10-06T04:07:19.530752+00:00",
+              "kind": "tool_end",
+              "tool": "cpachecker",
+              "attempt_id": "8b06bc91a927410096af01d93c9e803f",
+              "verdict": "SAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 2.958119244000045
+            },
+            {
+              "time": "2026-10-06T04:07:19.530891+00:00",
+              "kind": "execution_end",
+              "verdict": "SAFE",
+              "confirmations": 3
+            }
+          ]
+        }
+      },
+      "attempts": [
+        {
+          "id": "08b61d49f173459b93488256c6572800",
+          "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+          "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+          "tool": "cbmc",
+          "family": "cbmc",
+          "version": "6.11.0 (cbmc-6.11.0)",
+          "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800"
+          ],
+          "start_time": "2026-10-06T04:07:15.029017+00:00",
+          "end_time": "2026-10-06T04:07:15.805822+00:00",
+          "wall_time_sec": 0.7768132659998628,
+          "verdict": "SAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 0,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800/stderr.txt",
+          "message": "Complete assertion proof with unwinding checks",
+          "artifact_ids": [
+            "63972a34ae7f5b3b99b7d78ebb0af8a21d584b943d602970f1c35d565c65938a",
+            "7e44cfe88936d664b61fd447f8bf142a883cea373afe341ececa6ff77dace205",
+            "da8e7da13bcd56c8e70905b5faf5723ebc54d0445715a21c4e14fcda55f1c28b",
+            "b1dd2d2c2525bbbc5aee46efbd34e977fa218ab89b0ea94e5e0930b4520637ed",
+            "e86fbb7ee16ac3b2eb2f2a33ab90ec5fb879721a7f75f6ddcef8740460f77cb3",
+            "b0ba1586da8e1c6f46a8671a04e803df82e1b425d465bbc76b953216614c9569",
+            "27de7c22395c7ed70701c94a5f521c8634a258d4e44705258cbfc43316264029"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/opt/cbmc/cbmc",
+            "/work/input/c/safe_assert.c",
+            "--function",
+            "main",
+            "--c11",
+            "--64",
+            "--unwind",
+            "64",
+            "--unwinding-assertions",
+            "--json-ui"
+          ],
+          "container": {
+            "id": "236f98b0a2526cf0cc64e8928901035c2c809a0b156e0404a5a398ae30b9996f",
+            "image": "sha256:04ec339d4dea67e5c7ead21db93aa1ec0f860d853996598e44e0e428ddff8a21",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 0,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:15.458551759Z",
+              "FinishedAt": "2026-10-06T04:07:15.667469304Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/08b61d49f173459b93488256c6572800"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": null
+        },
+        {
+          "id": "499338bfb1e24c229c89a7d953b0c2de",
+          "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+          "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+          "tool": "esbmc",
+          "family": "esbmc",
+          "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+          "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de"
+          ],
+          "start_time": "2026-10-06T04:07:15.029683+00:00",
+          "end_time": "2026-10-06T04:07:16.106579+00:00",
+          "wall_time_sec": 1.0769033269998545,
+          "verdict": "SAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 0,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de/stderr.txt",
+          "message": "Complete assertion proof with unwinding checks",
+          "artifact_ids": [
+            "f511d389eace45b3e6f82ef02bb06c147ed1ab9c22e8ba96b0ed7cd40107ee81",
+            "f357708081c92dd3ae8121669b5ee51cc18fefe9d65b7785a4aed65d648130a6",
+            "157c6a0b6a3a481f33fc485aac1a4198ec154c791acaea9776ede292821f80f6",
+            "7252bdbe3f0cbdd299af1c8d7fb5dbb9dff68495bed78105b1bce39714b4d156",
+            "d5fc9323aba2e4c787fdac5104c7b6f2f27b6a8b5c8c3d27d6d8e19baea468ba",
+            "15bdd222b8ee225c20e6acd09ccbe283abfae785f312634001487d3f6b9451ca",
+            "8ef2ffa08b65dca71b055dd67a30a2084da0bf7ea580d83e7dd7e330df50fc70"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/opt/esbmc/release/bin/esbmc",
+            "/work/input/c/safe_assert.c",
+            "--function",
+            "main",
+            "--std",
+            "c11",
+            "--64",
+            "--unwind",
+            "64",
+            "--z3",
+            "--multi-property",
+            "--overflow-check",
+            "--ub-shift-check"
+          ],
+          "container": {
+            "id": "bd563fa4974b49362f01a3483a2e776f4117cd71c6f6ac7f0b0be243e576757a",
+            "image": "sha256:eeb7ee5968bd8d07cc95dd512d28c06283f310735790d8170e14afef27bf0e5f",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 0,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:15.508605816Z",
+              "FinishedAt": "2026-10-06T04:07:15.974569477Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/499338bfb1e24c229c89a7d953b0c2de"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": null
+        },
+        {
+          "id": "8b06bc91a927410096af01d93c9e803f",
+          "execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+          "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+          "tool": "cpachecker",
+          "family": "cpachecker",
+          "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+          "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f"
+          ],
+          "start_time": "2026-10-06T04:07:16.222944+00:00",
+          "end_time": "2026-10-06T04:07:19.181056+00:00",
+          "wall_time_sec": 2.958119244000045,
+          "verdict": "SAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 0,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f/stderr.txt",
+          "message": "CPAchecker assertion reachability proof",
+          "artifact_ids": [
+            "b659ca25c55b67490649496cf17bfe0d26d82c87573019de7b99ea0a4b079df1",
+            "8efb07d3a4ba4f07c3e7a3cf3718a41c01cfc0f10ae0984de5fec872e6f73a96",
+            "ca4a2471f3ea9431a1afd6e95eda529861583b6f09320aad73ff3dba48972604",
+            "24872b5b802b861800d28ac8066124db5a2155a0fe6129a0920418d550eb95c8",
+            "af430a18bb09903c29549bed47c5c03d751334053d861b06dbfd811533de56b1",
+            "44858c13a9606fb1a73cf24d4ef0cd82b63f59d150d0b51d40c7743981e81ab9",
+            "ddfe5a310ceb7fbc8a9b8da3be2d653e1db05a2ee8e733ab8212443e8af069d9",
+            "6432fa11999f0dffb4e7552580784c1cededa34de59796631b84bdb6f3707707",
+            "c74f5970fe00f4c0538505d21b50c12649955db656d3b5af30209a33fb8e54a3",
+            "39fab4201b49e0c101bfa52eeed23904ba63c28b1e5d7935f384f2e0bada0ca5",
+            "5bb47f7dea75867b42a5e121dc33bf5273ad2f06bbffef0788850ca476fd8d48",
+            "ad87cfcc5e66ba16939cf3b2b085d22ca7578d906849680e58bc8c397eac87c3",
+            "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+            "7cb6e0c3f220c332873a60df978743c45f56b95c28a975ea7c548e5a361a6d41",
+            "863c6f63014d4e2ad0d8b0fa6f19ac4a848cbb21de9492edd984d97deedfed95",
+            "c62904e49f6c9e56677e793031f65135d6713792d0033b1386846555402d9892",
+            "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+            "66907843e18d240efc8ea280298d327d2c6a21be1f489dfcc10c965746ce66fd",
+            "26be7cd67dfeca8d860ee8ebc5903d191a339de1495e76d9bccaa99587b10c1c",
+            "2fe187341029f320f0b30afecfcc1068d004c439b232fabc7f46e70a48772e00",
+            "14661464d24d18afd2024eaa144c01347ca693b05f163222a8fb79a392d13caa",
+            "c95319e9eeb8a1537cb1e6b78177e835f9664d21181babfe809694009366af34",
+            "dfbf2be1797f9b9f04599d890fc73f2ad6349471292461c103188c0ca4a7cbd2",
+            "22b50aef41ad26c331aa14634f8d4d417596044ff7ae5431cb10cae7c1e899f1",
+            "a013dbea4cb3eba99ba234b68e54065a850666b2eef5f03e35888317f642dc8b",
+            "fedd778bb136182f9d7dfde1ffb6614a92847497db9f0aa8fbcf7f83820f376a"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/usr/local/bin/python3",
+            "/opt/runtime/veriruntime/tools/cpa_driver.py",
+            "/work/adapter-command.json"
+          ],
+          "container": {
+            "id": "419bb490206fec7a94ca4139effad3e45d4242817a208694e8fac226db767785",
+            "image": "sha256:8203a6555ffe7950c77275f258e8fd28065e4285e9308247782dd58d3dba4221",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 0,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:16.532687686Z",
+              "FinishedAt": "2026-10-06T04:07:19.035841676Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/e701a0d481a342d9a9a042bfe64d8f9d/8b06bc91a927410096af01d93c9e803f"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": {
+            "preprocessor_commands": [
+              [
+                "/usr/bin/clang",
+                "-E",
+                "-P",
+                "-std=c11",
+                "-m64",
+                "-I",
+                "/work/adapter-headers",
+                "/work/input/c/safe_assert.c"
+              ]
+            ],
+            "compiled_sources": [
+              "/work/translation-0.i"
+            ],
+            "verifier_argv": [
+              "/opt/cpachecker/CPAchecker-4.2.2-unix/bin/cpachecker",
+              "--valueAnalysis",
+              "--heap",
+              "768M",
+              "--option",
+              "cpa.value.ignoreCallsToUnknownFunctions=false",
+              "--option",
+              "solver.solver=PRINCESS",
+              "--option",
+              "cpa.predicate.encodeFloatAs=UNSUPPORTED",
+              "--option",
+              "counterexample.checker.config=/work/counterexample.properties",
+              "--entry-function",
+              "main",
+              "--spec",
+              "/work/assertion.spc",
+              "--output-path",
+              "/work/tool-output",
+              "--64",
+              "/work/translation-0.i"
+            ]
+          }
+        }
+      ],
+      "program": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n"
+    },
+    "safe-repeat": {
+      "request": {
+        "version": "0.1",
+        "task": {
+          "id": "safe-assert",
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 3
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        }
+      },
+      "execution": {
+        "optimization": {
+          "physical_plan": {
+            "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+            "source_execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+            "fallback": {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "tool": "cbmc",
+                      "time_slice_sec": 15.0,
+                      "operator": "Run"
+                    },
+                    {
+                      "tool": "esbmc",
+                      "time_slice_sec": 15.0,
+                      "operator": "Run"
+                    }
+                  ],
+                  "max_parallel": 2,
+                  "operator": "Parallel"
+                },
+                {
+                  "tool": "cpachecker",
+                  "time_slice_sec": 15.0,
+                  "operator": "Run"
+                }
+              ],
+              "operator": "Sequence"
+            },
+            "operator": "CacheLookup"
+          },
+          "explanation": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "safe-assert",
+            "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+            "cache": "HIT",
+            "selected_tools": [],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 3,
+            "independent_candidates": 3,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 30,
+              "memory_mb": 2048,
+              "max_parallel": 2
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "cbmc",
+                "esbmc"
+              ],
+              [
+                "cpachecker"
+              ]
+            ],
+            "fallback_selected_tools": [
+              "cbmc",
+              "esbmc",
+              "cpachecker"
+            ],
+            "cache_source_execution": "e701a0d481a342d9a9a042bfe64d8f9d"
+          },
+          "candidate_scores": [
+            {
+              "tool": "cbmc",
+              "family": "cbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 0.7768132659998628,
+                "median_runtime_sec": 0.7768132659998628,
+                "recent_runtime_sec": 0.7768132659998628
+              },
+              "expected_runtime_sec": 0.7768132659998628,
+              "success_rate": 0.75,
+              "score": 0.9654829967851405,
+              "selected": true
+            },
+            {
+              "tool": "esbmc",
+              "family": "esbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "esbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 1.0769033269998545,
+                "median_runtime_sec": 1.0769033269998545,
+                "recent_runtime_sec": 1.0769033269998545
+              },
+              "expected_runtime_sec": 1.0769033269998545,
+              "success_rate": 0.75,
+              "score": 0.6964413436157035,
+              "selected": true
+            },
+            {
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cpachecker",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 2.958119244000045,
+                "median_runtime_sec": 2.958119244000045,
+                "recent_runtime_sec": 2.958119244000045
+              },
+              "expected_runtime_sec": 2.958119244000045,
+              "success_rate": 0.75,
+              "score": 0.25353947496241924,
+              "selected": true
+            }
+          ]
+        },
+        "report": {
+          "result": {
+            "execution_id": "874cbba125ea49618598b921a3fd868e",
+            "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+            "verdict": "SAFE",
+            "confirmations": 3,
+            "requirement_satisfied": true,
+            "termination_reason": "REQUIREMENTS_MET",
+            "attempt_ids": [],
+            "wall_time_sec": 0.024135314999966795,
+            "cache_hit": true,
+            "source_execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+            "goal_id": "safe-assert",
+            "status": "COMPLETED",
+            "artifacts": [
+              "1497fa2da64da8462ceff4b2b9dc0d2755a5fb0d4cfdb059e14c1c22ed401665",
+              "c8e85e106af824595b11f2759a5c9dca24e0c09b8430eb71a86cc38ca85f2c79",
+              "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+              "82e81776ca881ed439edbf7080595071e7ec0170030f007775a1257a286377f7",
+              "4504d13846ba2a43fcfca933ae64116a021ebea68e87e1c06b2e9be548cda457",
+              "63972a34ae7f5b3b99b7d78ebb0af8a21d584b943d602970f1c35d565c65938a",
+              "7e44cfe88936d664b61fd447f8bf142a883cea373afe341ececa6ff77dace205",
+              "da8e7da13bcd56c8e70905b5faf5723ebc54d0445715a21c4e14fcda55f1c28b",
+              "b1dd2d2c2525bbbc5aee46efbd34e977fa218ab89b0ea94e5e0930b4520637ed",
+              "e86fbb7ee16ac3b2eb2f2a33ab90ec5fb879721a7f75f6ddcef8740460f77cb3",
+              "b0ba1586da8e1c6f46a8671a04e803df82e1b425d465bbc76b953216614c9569",
+              "27de7c22395c7ed70701c94a5f521c8634a258d4e44705258cbfc43316264029",
+              "f511d389eace45b3e6f82ef02bb06c147ed1ab9c22e8ba96b0ed7cd40107ee81",
+              "f357708081c92dd3ae8121669b5ee51cc18fefe9d65b7785a4aed65d648130a6",
+              "157c6a0b6a3a481f33fc485aac1a4198ec154c791acaea9776ede292821f80f6",
+              "7252bdbe3f0cbdd299af1c8d7fb5dbb9dff68495bed78105b1bce39714b4d156",
+              "d5fc9323aba2e4c787fdac5104c7b6f2f27b6a8b5c8c3d27d6d8e19baea468ba",
+              "15bdd222b8ee225c20e6acd09ccbe283abfae785f312634001487d3f6b9451ca",
+              "8ef2ffa08b65dca71b055dd67a30a2084da0bf7ea580d83e7dd7e330df50fc70",
+              "b659ca25c55b67490649496cf17bfe0d26d82c87573019de7b99ea0a4b079df1",
+              "8efb07d3a4ba4f07c3e7a3cf3718a41c01cfc0f10ae0984de5fec872e6f73a96",
+              "ca4a2471f3ea9431a1afd6e95eda529861583b6f09320aad73ff3dba48972604",
+              "24872b5b802b861800d28ac8066124db5a2155a0fe6129a0920418d550eb95c8",
+              "af430a18bb09903c29549bed47c5c03d751334053d861b06dbfd811533de56b1",
+              "44858c13a9606fb1a73cf24d4ef0cd82b63f59d150d0b51d40c7743981e81ab9",
+              "ddfe5a310ceb7fbc8a9b8da3be2d653e1db05a2ee8e733ab8212443e8af069d9",
+              "6432fa11999f0dffb4e7552580784c1cededa34de59796631b84bdb6f3707707",
+              "c74f5970fe00f4c0538505d21b50c12649955db656d3b5af30209a33fb8e54a3",
+              "39fab4201b49e0c101bfa52eeed23904ba63c28b1e5d7935f384f2e0bada0ca5",
+              "5bb47f7dea75867b42a5e121dc33bf5273ad2f06bbffef0788850ca476fd8d48",
+              "ad87cfcc5e66ba16939cf3b2b085d22ca7578d906849680e58bc8c397eac87c3",
+              "72d8c639401fbed07557ffc8cebd5a6be4fb5d888890c2448b3b71ee4432a2a7",
+              "7cb6e0c3f220c332873a60df978743c45f56b95c28a975ea7c548e5a361a6d41",
+              "863c6f63014d4e2ad0d8b0fa6f19ac4a848cbb21de9492edd984d97deedfed95",
+              "c62904e49f6c9e56677e793031f65135d6713792d0033b1386846555402d9892",
+              "66907843e18d240efc8ea280298d327d2c6a21be1f489dfcc10c965746ce66fd",
+              "26be7cd67dfeca8d860ee8ebc5903d191a339de1495e76d9bccaa99587b10c1c",
+              "2fe187341029f320f0b30afecfcc1068d004c439b232fabc7f46e70a48772e00",
+              "14661464d24d18afd2024eaa144c01347ca693b05f163222a8fb79a392d13caa",
+              "c95319e9eeb8a1537cb1e6b78177e835f9664d21181babfe809694009366af34",
+              "dfbf2be1797f9b9f04599d890fc73f2ad6349471292461c103188c0ca4a7cbd2",
+              "22b50aef41ad26c331aa14634f8d4d417596044ff7ae5431cb10cae7c1e899f1",
+              "a013dbea4cb3eba99ba234b68e54065a850666b2eef5f03e35888317f642dc8b",
+              "fedd778bb136182f9d7dfde1ffb6614a92847497db9f0aa8fbcf7f83820f376a",
+              "3bf3390caa1b3bda9ee9519c957ec7874a72f3ff5415be61626a5846b5adab72",
+              "1566540eb2c3fa5d3a2f10d9e9cd7da04e7c0bede6c3b143546ea4d93051b5a1",
+              "3501f544157c4a948ab9bf78e0af193198a73e2d0ca3211f2f4b979ca25c9829",
+              "74031ee7ea3956e0cbded45e7bbbe079d632cd6e51e32dfa10a1a9190d59d0f1"
+            ],
+            "diagnostics": [],
+            "optimizer_summary": {
+              "optimizer": "cost-aware-v1",
+              "goal_id": "safe-assert",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a",
+              "cache": "HIT",
+              "selected_tools": [],
+              "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+              "min_confirmations": 3,
+              "independent_candidates": 3,
+              "trust_feasible": true,
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              },
+              "hints_applied": false,
+              "tiny_budget": false,
+              "stages": [
+                [
+                  "cbmc",
+                  "esbmc"
+                ],
+                [
+                  "cpachecker"
+                ]
+              ],
+              "fallback_selected_tools": [
+                "cbmc",
+                "esbmc",
+                "cpachecker"
+              ],
+              "cache_source_execution": "e701a0d481a342d9a9a042bfe64d8f9d"
+            },
+            "failure_reasons": []
+          },
+          "attempts": [],
+          "events": [
+            {
+              "kind": "cache_hit",
+              "time": "2026-10-06T04:07:19.742913+00:00",
+              "source_execution_id": "e701a0d481a342d9a9a042bfe64d8f9d",
+              "semantic_key": "d197b8cefa87a5ae7741975d912bc111d380765243988cc64b4e96196d8e628a"
+            }
+          ]
+        }
+      },
+      "attempts": [],
+      "program": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n"
+    },
+    "unsafe-first": {
+      "request": {
+        "version": "0.1",
+        "task": {
+          "id": "unsafe-assert",
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/unsafe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 3
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        }
+      },
+      "execution": {
+        "optimization": {
+          "physical_plan": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "tool": "cbmc",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  },
+                  {
+                    "tool": "esbmc",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  }
+                ],
+                "max_parallel": 2,
+                "operator": "Parallel"
+              },
+              {
+                "tool": "cpachecker",
+                "time_slice_sec": 15.0,
+                "operator": "Run"
+              }
+            ],
+            "operator": "Sequence"
+          },
+          "explanation": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "unsafe-assert",
+            "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+            "cache": "MISS",
+            "selected_tools": [
+              "cbmc",
+              "esbmc",
+              "cpachecker"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 3,
+            "independent_candidates": 3,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 30,
+              "memory_mb": 2048,
+              "max_parallel": 2
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "cbmc",
+                "esbmc"
+              ],
+              [
+                "cpachecker"
+              ]
+            ]
+          },
+          "candidate_scores": [
+            {
+              "tool": "cbmc",
+              "family": "cbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 0.7768132659998628,
+                "median_runtime_sec": 0.7768132659998628,
+                "recent_runtime_sec": 0.7768132659998628
+              },
+              "expected_runtime_sec": 0.7768132659998628,
+              "success_rate": 0.75,
+              "score": 0.9654829967851405,
+              "selected": true
+            },
+            {
+              "tool": "esbmc",
+              "family": "esbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "esbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 1.0769033269998545,
+                "median_runtime_sec": 1.0769033269998545,
+                "recent_runtime_sec": 1.0769033269998545
+              },
+              "expected_runtime_sec": 1.0769033269998545,
+              "success_rate": 0.75,
+              "score": 0.6964413436157035,
+              "selected": true
+            },
+            {
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cpachecker",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 1,
+                "definitive_count": 1,
+                "safe_count": 1,
+                "unsafe_count": 0,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 2.958119244000045,
+                "median_runtime_sec": 2.958119244000045,
+                "recent_runtime_sec": 2.958119244000045
+              },
+              "expected_runtime_sec": 2.958119244000045,
+              "success_rate": 0.75,
+              "score": 0.25353947496241924,
+              "selected": true
+            }
+          ]
+        },
+        "report": {
+          "result": {
+            "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+            "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+            "verdict": "UNSAFE",
+            "confirmations": 3,
+            "requirement_satisfied": true,
+            "termination_reason": "REQUIREMENTS_MET",
+            "attempt_ids": [
+              "e69f25b33c7b4e3da62925b4001943b7",
+              "c3a8618078fb4e8bb88147604d54a2aa",
+              "2a309dbfc61d49369e59f267311965d3"
+            ],
+            "wall_time_sec": 6.087967922000189,
+            "cache_hit": false,
+            "source_execution_id": null,
+            "goal_id": "unsafe-assert",
+            "status": "COMPLETED",
+            "artifacts": [
+              "de22fd06f0ff35636d2ab1f9bafc096f4292a8ec33106d81ff2046db24d46094",
+              "09dff44a41239d9e49c76e5f43aabb7392bf686699519d25418e2aa285ce0a1a",
+              "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+              "d783314ab2a991e79a8edfc04e4eea2c062aaba43a89dee072bdfbdfca3683dc",
+              "2590866860e6c02ddf46f2d40e54f069539dc1b05a813eb007cb394cc667dbef",
+              "9ea19c137ce504cb6db724e53f82c3d0c9b8728a52c8aad1a7b6f79a29f9c21d",
+              "b5710a567e67308eb6ddc9ee768116a9b52816365933bd02bd0ec898d5edeec5",
+              "ce38987f1ecdf15e72686699a594b2038cab1fa586ac5306536b45651e476f85",
+              "adfc0ada84a857644bf3d981bffc5c283e8d401c685804011212e4b1f911d2c4",
+              "84ac5379d2a6e417e3b42ed89c9c98c183d8ea315c7691b8c4fde068b78e0447",
+              "7230e9b564079f8ab995a90d18eb20f1d7d1e4e555aa1b276fc1636a54c299ef",
+              "08f8a3453ab2ad13cccbbe5a6be391455843340c8626bedb4216028d3566dab6",
+              "21ae46d621f4ee53b2b89dd19cb4aa818933da40b3e6cb8734303182e58784a2",
+              "dc5ed797972389dcc714df91f86cb354d9a4440b4b4a31c9554f0355ade55fdc",
+              "af9458777813c023d991de68e1a1df69a59d92f415e7d9fb58b5369870abc0c1",
+              "798ee0e9d15f519c6760cb6c4efd544173af15cd68d18f1589568bb8b28e2fc9",
+              "4d7a4c246c3961352b61359ec8ec59d0243f251cd850986d279a00a759a90bbe",
+              "57c9a4b58498acdc2a72f51cff7d50008c612f74af767984d024d549363e7a4b",
+              "933386f110ebf354e96c4a3ed88e5a725b40ab4a309f1cb9e5f2518749db6f32",
+              "f71f5597339e9059005838d70ccd5cae88f75a484c04710c764ea2d270f5c40a",
+              "1dfa06eec1c82fc16fa78c5cdf65c9aa8c0e99c4f53579c5d34bda0d3b9d68eb",
+              "354f1dde5a93a02a590ed9b1d8d1d688c37628969a33abc3cb3c328fa5a7c5c5",
+              "9121ef837f54e7f8aab2bab794fd3e8f06d12b6921e72b6fc9cc53555676c63a",
+              "5f643f7ca9a7695867872ef1663f686385e8a434afab49af405536622138d26c",
+              "dfde701059d055dca541659f3535e577dee3596f22aa07f7c0e830c70eb0fbad",
+              "4b05bd32075150e48fca541a4204909e51b816af9b6d3c674539d85a608a8b5a",
+              "9d8d7ffa083b4566a1e09bbe9673bb4564c74fa92cf2f56336a4998334c6d76d",
+              "ad40de63f2cb69c4b5a029cb5c0a02053e6348b31bc0dccedbaf1f16faa7a92b",
+              "99082c58023469b96c7280d206beaed6420456ce3958203effca1a590d0eb505",
+              "d7179f09a848b20ce752f2a0973cceabfc0dad2512fbbe063876134116772406",
+              "904fff17bce8ee2bca8e8ecb5859099f5148c2cc976d835e9c1049c0a6ec5b7d",
+              "40a2bca2abcc0d807d43047032146fccca8e10e4388fe6a71df8e12e4f502726",
+              "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+              "84a2894e1d7791aab3b8b5fe3c571f8d289c0aa394ca62d4dcb4f14014754332",
+              "19e4aa6df6a844952b4378962e9428e716d407b9e920b3dd7b95fd6c6a88315c",
+              "aeaa3ee9a13f6e2827f53e95b8248778236e1a70cac62bc4d5837abdc2b6c802",
+              "0ce71b2c3f20ea3fef53ae10247d8e31e3e01620961c1ee6be66a90e0176d2bd",
+              "0fe953a78369d36e7328100375f0f5b2d5bac671e698e5a7cf67bc64d18d44a5",
+              "866d0d3ab4b3c0ec39c84b7d30681c4e8ea70b7baa15e11006bb54815a2de025",
+              "93ce03e3a3f82e591c9bf0f7b909c873f31643f48c4fe5f90f05a3951f4e7eab",
+              "c22d03c06fd8bfb5ccc22c48d6b6e12f0a042a8046de197789232aeb9381f9c3",
+              "883212c6afdda414f26a7192cee9ed78c97ee16f20c99d96aebc3fd8f8f72fb8",
+              "e123d647b409e141ea05606825dc78e21b9614cb8f4887c71c6433d11d2855eb",
+              "23b7d0a8f64c61c1059ca333dd6eff637b132a636427ccd5d335cf6127e3a3eb",
+              "08ef16cbb48df157709590565eaa3225616a0cf95f77f1773fea2f4e1497be5a",
+              "76375aeff69f0309da13061ef44c435fc0d29a2e63f9f525e6d87f38394a49d2",
+              "da164bad76da279134acab0385a893c8326c6960d1508c37e8ee6dbaac1ebc13",
+              "3d078f46b91546bb21b56f615608cb1a4126c1d01f980a0987f7673d22c13f0a",
+              "260ef51384557c7fb2a47a0e3968ca411a5354d1447105250ee9262565faa001",
+              "7b137684627e6f44f577cec1a264b93dafc3bce473a703d86d7be00fb618b4b5",
+              "44423ec6be5f809c7b8cdf0e38f6ae9131a3f6bc89d1178c614d28d1300a2580",
+              "1e5b2f62931fd7a0ed8a393ed6b354a934323b178bce1de19d4748ec27e7bb04"
+            ],
+            "diagnostics": [],
+            "optimizer_summary": {
+              "optimizer": "cost-aware-v1",
+              "goal_id": "unsafe-assert",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+              "cache": "MISS",
+              "selected_tools": [
+                "cbmc",
+                "esbmc",
+                "cpachecker"
+              ],
+              "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+              "min_confirmations": 3,
+              "independent_candidates": 3,
+              "trust_feasible": true,
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              },
+              "hints_applied": false,
+              "tiny_budget": false,
+              "stages": [
+                [
+                  "cbmc",
+                  "esbmc"
+                ],
+                [
+                  "cpachecker"
+                ]
+              ]
+            },
+            "failure_reasons": []
+          },
+          "attempts": [
+            {
+              "id": "e69f25b33c7b4e3da62925b4001943b7",
+              "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+              "tool": "cbmc",
+              "family": "cbmc",
+              "version": "6.11.0 (cbmc-6.11.0)",
+              "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7"
+              ],
+              "start_time": "2026-10-06T04:07:19.892506+00:00",
+              "end_time": "2026-10-06T04:07:20.699196+00:00",
+              "wall_time_sec": 0.8066984430001867,
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 10,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7/stderr.txt",
+              "message": "Assertion counterexample",
+              "artifact_ids": [
+                "9ea19c137ce504cb6db724e53f82c3d0c9b8728a52c8aad1a7b6f79a29f9c21d",
+                "b5710a567e67308eb6ddc9ee768116a9b52816365933bd02bd0ec898d5edeec5",
+                "ce38987f1ecdf15e72686699a594b2038cab1fa586ac5306536b45651e476f85",
+                "adfc0ada84a857644bf3d981bffc5c283e8d401c685804011212e4b1f911d2c4",
+                "84ac5379d2a6e417e3b42ed89c9c98c183d8ea315c7691b8c4fde068b78e0447",
+                "7230e9b564079f8ab995a90d18eb20f1d7d1e4e555aa1b276fc1636a54c299ef",
+                "08f8a3453ab2ad13cccbbe5a6be391455843340c8626bedb4216028d3566dab6"
+              ],
+              "diagnostic_code": ""
+            },
+            {
+              "id": "c3a8618078fb4e8bb88147604d54a2aa",
+              "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+              "tool": "esbmc",
+              "family": "esbmc",
+              "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+              "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa"
+              ],
+              "start_time": "2026-10-06T04:07:19.893237+00:00",
+              "end_time": "2026-10-06T04:07:20.952878+00:00",
+              "wall_time_sec": 1.0596508270000413,
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 1,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa/stderr.txt",
+              "message": "Assertion counterexample",
+              "artifact_ids": [
+                "21ae46d621f4ee53b2b89dd19cb4aa818933da40b3e6cb8734303182e58784a2",
+                "dc5ed797972389dcc714df91f86cb354d9a4440b4b4a31c9554f0355ade55fdc",
+                "af9458777813c023d991de68e1a1df69a59d92f415e7d9fb58b5369870abc0c1",
+                "798ee0e9d15f519c6760cb6c4efd544173af15cd68d18f1589568bb8b28e2fc9",
+                "4d7a4c246c3961352b61359ec8ec59d0243f251cd850986d279a00a759a90bbe",
+                "57c9a4b58498acdc2a72f51cff7d50008c612f74af767984d024d549363e7a4b",
+                "933386f110ebf354e96c4a3ed88e5a725b40ab4a309f1cb9e5f2518749db6f32"
+              ],
+              "diagnostic_code": ""
+            },
+            {
+              "id": "2a309dbfc61d49369e59f267311965d3",
+              "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+              "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+              "command": [
+                "/usr/local/bin/python",
+                "-m",
+                "veriruntime.tools.container_driver",
+                "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3"
+              ],
+              "start_time": "2026-10-06T04:07:21.072389+00:00",
+              "end_time": "2026-10-06T04:07:25.516830+00:00",
+              "wall_time_sec": 4.444445351000013,
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "termination_reason": "NORMAL",
+              "exit_code": 0,
+              "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3",
+              "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3/stdout.txt",
+              "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3/stderr.txt",
+              "message": "CPAchecker counterexample confirmed with Princess",
+              "artifact_ids": [
+                "f71f5597339e9059005838d70ccd5cae88f75a484c04710c764ea2d270f5c40a",
+                "1dfa06eec1c82fc16fa78c5cdf65c9aa8c0e99c4f53579c5d34bda0d3b9d68eb",
+                "354f1dde5a93a02a590ed9b1d8d1d688c37628969a33abc3cb3c328fa5a7c5c5",
+                "9121ef837f54e7f8aab2bab794fd3e8f06d12b6921e72b6fc9cc53555676c63a",
+                "5f643f7ca9a7695867872ef1663f686385e8a434afab49af405536622138d26c",
+                "dfde701059d055dca541659f3535e577dee3596f22aa07f7c0e830c70eb0fbad",
+                "4b05bd32075150e48fca541a4204909e51b816af9b6d3c674539d85a608a8b5a",
+                "9d8d7ffa083b4566a1e09bbe9673bb4564c74fa92cf2f56336a4998334c6d76d",
+                "ad40de63f2cb69c4b5a029cb5c0a02053e6348b31bc0dccedbaf1f16faa7a92b",
+                "99082c58023469b96c7280d206beaed6420456ce3958203effca1a590d0eb505",
+                "d7179f09a848b20ce752f2a0973cceabfc0dad2512fbbe063876134116772406",
+                "904fff17bce8ee2bca8e8ecb5859099f5148c2cc976d835e9c1049c0a6ec5b7d",
+                "40a2bca2abcc0d807d43047032146fccca8e10e4388fe6a71df8e12e4f502726",
+                "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+                "84a2894e1d7791aab3b8b5fe3c571f8d289c0aa394ca62d4dcb4f14014754332",
+                "19e4aa6df6a844952b4378962e9428e716d407b9e920b3dd7b95fd6c6a88315c",
+                "aeaa3ee9a13f6e2827f53e95b8248778236e1a70cac62bc4d5837abdc2b6c802",
+                "0ce71b2c3f20ea3fef53ae10247d8e31e3e01620961c1ee6be66a90e0176d2bd",
+                "0fe953a78369d36e7328100375f0f5b2d5bac671e698e5a7cf67bc64d18d44a5",
+                "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+                "866d0d3ab4b3c0ec39c84b7d30681c4e8ea70b7baa15e11006bb54815a2de025",
+                "93ce03e3a3f82e591c9bf0f7b909c873f31643f48c4fe5f90f05a3951f4e7eab",
+                "c22d03c06fd8bfb5ccc22c48d6b6e12f0a042a8046de197789232aeb9381f9c3",
+                "883212c6afdda414f26a7192cee9ed78c97ee16f20c99d96aebc3fd8f8f72fb8",
+                "e123d647b409e141ea05606825dc78e21b9614cb8f4887c71c6433d11d2855eb",
+                "23b7d0a8f64c61c1059ca333dd6eff637b132a636427ccd5d335cf6127e3a3eb",
+                "08ef16cbb48df157709590565eaa3225616a0cf95f77f1773fea2f4e1497be5a",
+                "76375aeff69f0309da13061ef44c435fc0d29a2e63f9f525e6d87f38394a49d2",
+                "da164bad76da279134acab0385a893c8326c6960d1508c37e8ee6dbaac1ebc13",
+                "3d078f46b91546bb21b56f615608cb1a4126c1d01f980a0987f7673d22c13f0a",
+                "260ef51384557c7fb2a47a0e3968ca411a5354d1447105250ee9262565faa001",
+                "7b137684627e6f44f577cec1a264b93dafc3bce473a703d86d7be00fb618b4b5",
+                "44423ec6be5f809c7b8cdf0e38f6ae9131a3f6bc89d1178c614d28d1300a2580",
+                "1e5b2f62931fd7a0ed8a393ed6b354a934323b178bce1de19d4748ec27e7bb04"
+              ],
+              "diagnostic_code": ""
+            }
+          ],
+          "events": [
+            {
+              "time": "2026-10-06T04:07:19.892224+00:00",
+              "kind": "execution_start",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2"
+            },
+            {
+              "time": "2026-10-06T04:07:19.892334+00:00",
+              "kind": "tool_start",
+              "tool": "cbmc",
+              "remaining_wall_sec": 29.999848192999707
+            },
+            {
+              "time": "2026-10-06T04:07:19.893120+00:00",
+              "kind": "tool_start",
+              "tool": "esbmc",
+              "remaining_wall_sec": 29.99906212699989
+            },
+            {
+              "time": "2026-10-06T04:07:20.845847+00:00",
+              "kind": "tool_end",
+              "tool": "cbmc",
+              "attempt_id": "e69f25b33c7b4e3da62925b4001943b7",
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 0.8066984430001867
+            },
+            {
+              "time": "2026-10-06T04:07:21.071832+00:00",
+              "kind": "tool_end",
+              "tool": "esbmc",
+              "attempt_id": "c3a8618078fb4e8bb88147604d54a2aa",
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 1.0596508270000413
+            },
+            {
+              "time": "2026-10-06T04:07:21.071992+00:00",
+              "kind": "fallback",
+              "reason": "requirements_not_satisfied"
+            },
+            {
+              "time": "2026-10-06T04:07:21.072045+00:00",
+              "kind": "tool_start",
+              "tool": "cpachecker",
+              "remaining_wall_sec": 28.82013744799997
+            },
+            {
+              "time": "2026-10-06T04:07:25.980033+00:00",
+              "kind": "tool_end",
+              "tool": "cpachecker",
+              "attempt_id": "2a309dbfc61d49369e59f267311965d3",
+              "verdict": "UNSAFE",
+              "status": "COMPLETED",
+              "wall_time_sec": 4.444445351000013
+            },
+            {
+              "time": "2026-10-06T04:07:25.980163+00:00",
+              "kind": "execution_end",
+              "verdict": "UNSAFE",
+              "confirmations": 3
+            }
+          ]
+        }
+      },
+      "attempts": [
+        {
+          "id": "e69f25b33c7b4e3da62925b4001943b7",
+          "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+          "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+          "tool": "cbmc",
+          "family": "cbmc",
+          "version": "6.11.0 (cbmc-6.11.0)",
+          "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7"
+          ],
+          "start_time": "2026-10-06T04:07:19.892506+00:00",
+          "end_time": "2026-10-06T04:07:20.699196+00:00",
+          "wall_time_sec": 0.8066984430001867,
+          "verdict": "UNSAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 10,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7/stderr.txt",
+          "message": "Assertion counterexample",
+          "artifact_ids": [
+            "9ea19c137ce504cb6db724e53f82c3d0c9b8728a52c8aad1a7b6f79a29f9c21d",
+            "b5710a567e67308eb6ddc9ee768116a9b52816365933bd02bd0ec898d5edeec5",
+            "ce38987f1ecdf15e72686699a594b2038cab1fa586ac5306536b45651e476f85",
+            "adfc0ada84a857644bf3d981bffc5c283e8d401c685804011212e4b1f911d2c4",
+            "84ac5379d2a6e417e3b42ed89c9c98c183d8ea315c7691b8c4fde068b78e0447",
+            "7230e9b564079f8ab995a90d18eb20f1d7d1e4e555aa1b276fc1636a54c299ef",
+            "08f8a3453ab2ad13cccbbe5a6be391455843340c8626bedb4216028d3566dab6"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/opt/cbmc/cbmc",
+            "/work/input/c/unsafe_assert.c",
+            "--function",
+            "main",
+            "--c11",
+            "--64",
+            "--unwind",
+            "64",
+            "--unwinding-assertions",
+            "--json-ui"
+          ],
+          "container": {
+            "id": "b4c341d6de34b4923c04699c2840ebed9ccabc472cca5518dd1b054dfaf83258",
+            "image": "sha256:04ec339d4dea67e5c7ead21db93aa1ec0f860d853996598e44e0e428ddff8a21",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 10,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:20.337779678Z",
+              "FinishedAt": "2026-10-06T04:07:20.568247042Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/e69f25b33c7b4e3da62925b4001943b7"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": null
+        },
+        {
+          "id": "c3a8618078fb4e8bb88147604d54a2aa",
+          "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+          "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+          "tool": "esbmc",
+          "family": "esbmc",
+          "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+          "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa"
+          ],
+          "start_time": "2026-10-06T04:07:19.893237+00:00",
+          "end_time": "2026-10-06T04:07:20.952878+00:00",
+          "wall_time_sec": 1.0596508270000413,
+          "verdict": "UNSAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 1,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa/stderr.txt",
+          "message": "Assertion counterexample",
+          "artifact_ids": [
+            "21ae46d621f4ee53b2b89dd19cb4aa818933da40b3e6cb8734303182e58784a2",
+            "dc5ed797972389dcc714df91f86cb354d9a4440b4b4a31c9554f0355ade55fdc",
+            "af9458777813c023d991de68e1a1df69a59d92f415e7d9fb58b5369870abc0c1",
+            "798ee0e9d15f519c6760cb6c4efd544173af15cd68d18f1589568bb8b28e2fc9",
+            "4d7a4c246c3961352b61359ec8ec59d0243f251cd850986d279a00a759a90bbe",
+            "57c9a4b58498acdc2a72f51cff7d50008c612f74af767984d024d549363e7a4b",
+            "933386f110ebf354e96c4a3ed88e5a725b40ab4a309f1cb9e5f2518749db6f32"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/opt/esbmc/release/bin/esbmc",
+            "/work/input/c/unsafe_assert.c",
+            "--function",
+            "main",
+            "--std",
+            "c11",
+            "--64",
+            "--unwind",
+            "64",
+            "--z3",
+            "--multi-property",
+            "--overflow-check",
+            "--ub-shift-check"
+          ],
+          "container": {
+            "id": "073d132e1951b56ba0f1ef7ead2b5c3552e51f0634abf51ce4502310c7789adb",
+            "image": "sha256:eeb7ee5968bd8d07cc95dd512d28c06283f310735790d8170e14afef27bf0e5f",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 1,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:20.341783328Z",
+              "FinishedAt": "2026-10-06T04:07:20.822616835Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/c3a8618078fb4e8bb88147604d54a2aa"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": null
+        },
+        {
+          "id": "2a309dbfc61d49369e59f267311965d3",
+          "execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+          "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+          "tool": "cpachecker",
+          "family": "cpachecker",
+          "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+          "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3"
+          ],
+          "start_time": "2026-10-06T04:07:21.072389+00:00",
+          "end_time": "2026-10-06T04:07:25.516830+00:00",
+          "wall_time_sec": 4.444445351000013,
+          "verdict": "UNSAFE",
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 0,
+          "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3",
+          "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3/stdout.txt",
+          "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3/stderr.txt",
+          "message": "CPAchecker counterexample confirmed with Princess",
+          "artifact_ids": [
+            "f71f5597339e9059005838d70ccd5cae88f75a484c04710c764ea2d270f5c40a",
+            "1dfa06eec1c82fc16fa78c5cdf65c9aa8c0e99c4f53579c5d34bda0d3b9d68eb",
+            "354f1dde5a93a02a590ed9b1d8d1d688c37628969a33abc3cb3c328fa5a7c5c5",
+            "9121ef837f54e7f8aab2bab794fd3e8f06d12b6921e72b6fc9cc53555676c63a",
+            "5f643f7ca9a7695867872ef1663f686385e8a434afab49af405536622138d26c",
+            "dfde701059d055dca541659f3535e577dee3596f22aa07f7c0e830c70eb0fbad",
+            "4b05bd32075150e48fca541a4204909e51b816af9b6d3c674539d85a608a8b5a",
+            "9d8d7ffa083b4566a1e09bbe9673bb4564c74fa92cf2f56336a4998334c6d76d",
+            "ad40de63f2cb69c4b5a029cb5c0a02053e6348b31bc0dccedbaf1f16faa7a92b",
+            "99082c58023469b96c7280d206beaed6420456ce3958203effca1a590d0eb505",
+            "d7179f09a848b20ce752f2a0973cceabfc0dad2512fbbe063876134116772406",
+            "904fff17bce8ee2bca8e8ecb5859099f5148c2cc976d835e9c1049c0a6ec5b7d",
+            "40a2bca2abcc0d807d43047032146fccca8e10e4388fe6a71df8e12e4f502726",
+            "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+            "84a2894e1d7791aab3b8b5fe3c571f8d289c0aa394ca62d4dcb4f14014754332",
+            "19e4aa6df6a844952b4378962e9428e716d407b9e920b3dd7b95fd6c6a88315c",
+            "aeaa3ee9a13f6e2827f53e95b8248778236e1a70cac62bc4d5837abdc2b6c802",
+            "0ce71b2c3f20ea3fef53ae10247d8e31e3e01620961c1ee6be66a90e0176d2bd",
+            "0fe953a78369d36e7328100375f0f5b2d5bac671e698e5a7cf67bc64d18d44a5",
+            "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+            "866d0d3ab4b3c0ec39c84b7d30681c4e8ea70b7baa15e11006bb54815a2de025",
+            "93ce03e3a3f82e591c9bf0f7b909c873f31643f48c4fe5f90f05a3951f4e7eab",
+            "c22d03c06fd8bfb5ccc22c48d6b6e12f0a042a8046de197789232aeb9381f9c3",
+            "883212c6afdda414f26a7192cee9ed78c97ee16f20c99d96aebc3fd8f8f72fb8",
+            "e123d647b409e141ea05606825dc78e21b9614cb8f4887c71c6433d11d2855eb",
+            "23b7d0a8f64c61c1059ca333dd6eff637b132a636427ccd5d335cf6127e3a3eb",
+            "08ef16cbb48df157709590565eaa3225616a0cf95f77f1773fea2f4e1497be5a",
+            "76375aeff69f0309da13061ef44c435fc0d29a2e63f9f525e6d87f38394a49d2",
+            "da164bad76da279134acab0385a893c8326c6960d1508c37e8ee6dbaac1ebc13",
+            "3d078f46b91546bb21b56f615608cb1a4126c1d01f980a0987f7673d22c13f0a",
+            "260ef51384557c7fb2a47a0e3968ca411a5354d1447105250ee9262565faa001",
+            "7b137684627e6f44f577cec1a264b93dafc3bce473a703d86d7be00fb618b4b5",
+            "44423ec6be5f809c7b8cdf0e38f6ae9131a3f6bc89d1178c614d28d1300a2580",
+            "1e5b2f62931fd7a0ed8a393ed6b354a934323b178bce1de19d4748ec27e7bb04"
+          ],
+          "diagnostic_code": "",
+          "native_command": [
+            "/usr/local/bin/python3",
+            "/opt/runtime/veriruntime/tools/cpa_driver.py",
+            "/work/adapter-command.json"
+          ],
+          "container": {
+            "id": "f5cb57dadb384a21b49b5542bb0dbf6e0fe189222b01377607bcfbfee3435478",
+            "image": "sha256:8203a6555ffe7950c77275f258e8fd28065e4285e9308247782dd58d3dba4221",
+            "state": {
+              "Status": "exited",
+              "Running": false,
+              "Paused": false,
+              "Restarting": false,
+              "OOMKilled": false,
+              "Dead": false,
+              "Pid": 0,
+              "ExitCode": 0,
+              "Error": "",
+              "StartedAt": "2026-10-06T04:07:21.402833448Z",
+              "FinishedAt": "2026-10-06T04:07:25.394444783Z"
+            },
+            "host_config": {
+              "Binds": null,
+              "ContainerIDFile": "",
+              "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+              },
+              "NetworkMode": "none",
+              "PortBindings": {},
+              "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+              },
+              "AutoRemove": false,
+              "VolumeDriver": "",
+              "VolumesFrom": null,
+              "ConsoleSize": [
+                0,
+                0
+              ],
+              "CapAdd": null,
+              "CapDrop": [
+                "ALL"
+              ],
+              "CgroupnsMode": "private",
+              "Dns": null,
+              "DnsOptions": null,
+              "DnsSearch": null,
+              "ExtraHosts": null,
+              "GroupAdd": null,
+              "IpcMode": "private",
+              "Cgroup": "",
+              "Links": null,
+              "OomScoreAdj": 0,
+              "PidMode": "",
+              "Privileged": false,
+              "PublishAllPorts": false,
+              "ReadonlyRootfs": true,
+              "SecurityOpt": [
+                "no-new-privileges"
+              ],
+              "Tmpfs": {
+                "/tmp": "rw,nosuid,nodev,size=64m,mode=1777"
+              },
+              "UTSMode": "",
+              "UsernsMode": "",
+              "ShmSize": 67108864,
+              "Runtime": "runc",
+              "Isolation": "",
+              "CpuShares": 0,
+              "Memory": 1073741824,
+              "NanoCpus": 1000000000,
+              "CgroupParent": "",
+              "BlkioWeight": 0,
+              "BlkioWeightDevice": null,
+              "BlkioDeviceReadBps": null,
+              "BlkioDeviceWriteBps": null,
+              "BlkioDeviceReadIOps": null,
+              "BlkioDeviceWriteIOps": null,
+              "CpuPeriod": 0,
+              "CpuQuota": 0,
+              "CpuRealtimePeriod": 0,
+              "CpuRealtimeRuntime": 0,
+              "CpusetCpus": "",
+              "CpusetMems": "",
+              "Devices": null,
+              "DeviceCgroupRules": null,
+              "DeviceRequests": null,
+              "MemoryReservation": 0,
+              "MemorySwap": 1073741824,
+              "MemorySwappiness": null,
+              "OomKillDisable": null,
+              "PidsLimit": 128,
+              "Ulimits": null,
+              "CpuCount": 0,
+              "CpuPercent": 0,
+              "IOMaximumIOps": 0,
+              "IOMaximumBandwidth": 0,
+              "Mounts": [
+                {
+                  "Type": "volume",
+                  "Source": "veriruntime-data",
+                  "Target": "/work",
+                  "VolumeOptions": {
+                    "NoCopy": true,
+                    "Subpath": "acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/2b177e42c6a2430abadf51ad819c99ac/2a309dbfc61d49369e59f267311965d3"
+                  }
+                }
+              ],
+              "MaskedPaths": [
+                "/proc/acpi",
+                "/proc/asound",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/sys/devices/virtual/powercap",
+                "/sys/firmware"
+              ],
+              "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+              ],
+              "Init": true
+            },
+            "mounts": [
+              {
+                "Type": "volume",
+                "Name": "veriruntime-data",
+                "Source": "/var/lib/docker/volumes/veriruntime-data/_data",
+                "Destination": "/work",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+              }
+            ]
+          },
+          "compilation": {
+            "preprocessor_commands": [
+              [
+                "/usr/bin/clang",
+                "-E",
+                "-P",
+                "-std=c11",
+                "-m64",
+                "-I",
+                "/work/adapter-headers",
+                "/work/input/c/unsafe_assert.c"
+              ]
+            ],
+            "compiled_sources": [
+              "/work/translation-0.i"
+            ],
+            "verifier_argv": [
+              "/opt/cpachecker/CPAchecker-4.2.2-unix/bin/cpachecker",
+              "--valueAnalysis",
+              "--heap",
+              "768M",
+              "--option",
+              "cpa.value.ignoreCallsToUnknownFunctions=false",
+              "--option",
+              "solver.solver=PRINCESS",
+              "--option",
+              "cpa.predicate.encodeFloatAs=UNSUPPORTED",
+              "--option",
+              "counterexample.checker.config=/work/counterexample.properties",
+              "--entry-function",
+              "main",
+              "--spec",
+              "/work/assertion.spc",
+              "--output-path",
+              "/work/tool-output",
+              "--64",
+              "/work/translation-0.i"
+            ]
+          }
+        }
+      ],
+      "program": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x < 10);\n    return 0;\n}\n"
+    },
+    "unsafe-repeat": {
+      "request": {
+        "version": "0.1",
+        "task": {
+          "id": "unsafe-assert",
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/unsafe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 3
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        }
+      },
+      "execution": {
+        "optimization": {
+          "physical_plan": {
+            "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+            "source_execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+            "fallback": {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "tool": "cbmc",
+                      "time_slice_sec": 15.0,
+                      "operator": "Run"
+                    },
+                    {
+                      "tool": "esbmc",
+                      "time_slice_sec": 15.0,
+                      "operator": "Run"
+                    }
+                  ],
+                  "max_parallel": 2,
+                  "operator": "Parallel"
+                },
+                {
+                  "tool": "cpachecker",
+                  "time_slice_sec": 15.0,
+                  "operator": "Run"
+                }
+              ],
+              "operator": "Sequence"
+            },
+            "operator": "CacheLookup"
+          },
+          "explanation": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "unsafe-assert",
+            "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+            "cache": "HIT",
+            "selected_tools": [],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 3,
+            "independent_candidates": 3,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 30,
+              "memory_mb": 2048,
+              "max_parallel": 2
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "cbmc",
+                "esbmc"
+              ],
+              [
+                "cpachecker"
+              ]
+            ],
+            "fallback_selected_tools": [
+              "cbmc",
+              "esbmc",
+              "cpachecker"
+            ],
+            "cache_source_execution": "2b177e42c6a2430abadf51ad819c99ac"
+          },
+          "candidate_scores": [
+            {
+              "tool": "cbmc",
+              "family": "cbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 2,
+                "definitive_count": 2,
+                "safe_count": 1,
+                "unsafe_count": 1,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 0.7917558545000247,
+                "median_runtime_sec": 0.7917558545000247,
+                "recent_runtime_sec": 0.8066984430001867
+              },
+              "expected_runtime_sec": 0.7917558545000247,
+              "success_rate": 0.8333333333333334,
+              "score": 1.0525130046048903,
+              "selected": true
+            },
+            {
+              "tool": "esbmc",
+              "family": "esbmc",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "esbmc",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 2,
+                "definitive_count": 2,
+                "safe_count": 1,
+                "unsafe_count": 1,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 1.068277076999948,
+                "median_runtime_sec": 1.068277076999948,
+                "recent_runtime_sec": 1.0596508270000413
+              },
+              "expected_runtime_sec": 1.068277076999948,
+              "success_rate": 0.8333333333333334,
+              "score": 0.780072278320893,
+              "selected": true
+            },
+            {
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "compatible": true,
+              "reasons": [],
+              "history": {
+                "tool": "cpachecker",
+                "property_kind": "assertion_safety",
+                "size_bucket": "tiny",
+                "run_count": 2,
+                "definitive_count": 2,
+                "safe_count": 1,
+                "unsafe_count": 1,
+                "unknown_count": 0,
+                "timeout_count": 0,
+                "mean_runtime_sec": 3.701282297500029,
+                "median_runtime_sec": 3.701282297500029,
+                "recent_runtime_sec": 4.444445351000013
+              },
+              "expected_runtime_sec": 3.701282297500029,
+              "success_rate": 0.8333333333333334,
+              "score": 0.22514719666105848,
+              "selected": true
+            }
+          ]
+        },
+        "report": {
+          "result": {
+            "execution_id": "0eb3e1337af04ff581c03dd8db004a2a",
+            "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+            "verdict": "UNSAFE",
+            "confirmations": 3,
+            "requirement_satisfied": true,
+            "termination_reason": "REQUIREMENTS_MET",
+            "attempt_ids": [],
+            "wall_time_sec": 0.02461231699999189,
+            "cache_hit": true,
+            "source_execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+            "goal_id": "unsafe-assert",
+            "status": "COMPLETED",
+            "artifacts": [
+              "de22fd06f0ff35636d2ab1f9bafc096f4292a8ec33106d81ff2046db24d46094",
+              "09dff44a41239d9e49c76e5f43aabb7392bf686699519d25418e2aa285ce0a1a",
+              "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+              "d783314ab2a991e79a8edfc04e4eea2c062aaba43a89dee072bdfbdfca3683dc",
+              "2590866860e6c02ddf46f2d40e54f069539dc1b05a813eb007cb394cc667dbef",
+              "9ea19c137ce504cb6db724e53f82c3d0c9b8728a52c8aad1a7b6f79a29f9c21d",
+              "b5710a567e67308eb6ddc9ee768116a9b52816365933bd02bd0ec898d5edeec5",
+              "ce38987f1ecdf15e72686699a594b2038cab1fa586ac5306536b45651e476f85",
+              "adfc0ada84a857644bf3d981bffc5c283e8d401c685804011212e4b1f911d2c4",
+              "84ac5379d2a6e417e3b42ed89c9c98c183d8ea315c7691b8c4fde068b78e0447",
+              "7230e9b564079f8ab995a90d18eb20f1d7d1e4e555aa1b276fc1636a54c299ef",
+              "08f8a3453ab2ad13cccbbe5a6be391455843340c8626bedb4216028d3566dab6",
+              "21ae46d621f4ee53b2b89dd19cb4aa818933da40b3e6cb8734303182e58784a2",
+              "dc5ed797972389dcc714df91f86cb354d9a4440b4b4a31c9554f0355ade55fdc",
+              "af9458777813c023d991de68e1a1df69a59d92f415e7d9fb58b5369870abc0c1",
+              "798ee0e9d15f519c6760cb6c4efd544173af15cd68d18f1589568bb8b28e2fc9",
+              "4d7a4c246c3961352b61359ec8ec59d0243f251cd850986d279a00a759a90bbe",
+              "57c9a4b58498acdc2a72f51cff7d50008c612f74af767984d024d549363e7a4b",
+              "933386f110ebf354e96c4a3ed88e5a725b40ab4a309f1cb9e5f2518749db6f32",
+              "f71f5597339e9059005838d70ccd5cae88f75a484c04710c764ea2d270f5c40a",
+              "1dfa06eec1c82fc16fa78c5cdf65c9aa8c0e99c4f53579c5d34bda0d3b9d68eb",
+              "354f1dde5a93a02a590ed9b1d8d1d688c37628969a33abc3cb3c328fa5a7c5c5",
+              "9121ef837f54e7f8aab2bab794fd3e8f06d12b6921e72b6fc9cc53555676c63a",
+              "5f643f7ca9a7695867872ef1663f686385e8a434afab49af405536622138d26c",
+              "dfde701059d055dca541659f3535e577dee3596f22aa07f7c0e830c70eb0fbad",
+              "4b05bd32075150e48fca541a4204909e51b816af9b6d3c674539d85a608a8b5a",
+              "9d8d7ffa083b4566a1e09bbe9673bb4564c74fa92cf2f56336a4998334c6d76d",
+              "ad40de63f2cb69c4b5a029cb5c0a02053e6348b31bc0dccedbaf1f16faa7a92b",
+              "99082c58023469b96c7280d206beaed6420456ce3958203effca1a590d0eb505",
+              "d7179f09a848b20ce752f2a0973cceabfc0dad2512fbbe063876134116772406",
+              "904fff17bce8ee2bca8e8ecb5859099f5148c2cc976d835e9c1049c0a6ec5b7d",
+              "40a2bca2abcc0d807d43047032146fccca8e10e4388fe6a71df8e12e4f502726",
+              "1622e3086b89126393312e965cbd1014f06e076a886bf9b608551aa238659b50",
+              "84a2894e1d7791aab3b8b5fe3c571f8d289c0aa394ca62d4dcb4f14014754332",
+              "19e4aa6df6a844952b4378962e9428e716d407b9e920b3dd7b95fd6c6a88315c",
+              "aeaa3ee9a13f6e2827f53e95b8248778236e1a70cac62bc4d5837abdc2b6c802",
+              "0ce71b2c3f20ea3fef53ae10247d8e31e3e01620961c1ee6be66a90e0176d2bd",
+              "0fe953a78369d36e7328100375f0f5b2d5bac671e698e5a7cf67bc64d18d44a5",
+              "866d0d3ab4b3c0ec39c84b7d30681c4e8ea70b7baa15e11006bb54815a2de025",
+              "93ce03e3a3f82e591c9bf0f7b909c873f31643f48c4fe5f90f05a3951f4e7eab",
+              "c22d03c06fd8bfb5ccc22c48d6b6e12f0a042a8046de197789232aeb9381f9c3",
+              "883212c6afdda414f26a7192cee9ed78c97ee16f20c99d96aebc3fd8f8f72fb8",
+              "e123d647b409e141ea05606825dc78e21b9614cb8f4887c71c6433d11d2855eb",
+              "23b7d0a8f64c61c1059ca333dd6eff637b132a636427ccd5d335cf6127e3a3eb",
+              "08ef16cbb48df157709590565eaa3225616a0cf95f77f1773fea2f4e1497be5a",
+              "76375aeff69f0309da13061ef44c435fc0d29a2e63f9f525e6d87f38394a49d2",
+              "da164bad76da279134acab0385a893c8326c6960d1508c37e8ee6dbaac1ebc13",
+              "3d078f46b91546bb21b56f615608cb1a4126c1d01f980a0987f7673d22c13f0a",
+              "260ef51384557c7fb2a47a0e3968ca411a5354d1447105250ee9262565faa001",
+              "7b137684627e6f44f577cec1a264b93dafc3bce473a703d86d7be00fb618b4b5",
+              "44423ec6be5f809c7b8cdf0e38f6ae9131a3f6bc89d1178c614d28d1300a2580",
+              "1e5b2f62931fd7a0ed8a393ed6b354a934323b178bce1de19d4748ec27e7bb04",
+              "7c6bf57434ba197d89b6b88e52e48b536e7aead2420f5ae3a339021c0e116195",
+              "b8e73b053042a9169c7ea3e85d0827258a90f18c980a059942d053b9b59a1e0f",
+              "d8213525f1c72d19c0436f7c1b743928ff55250fc972fdcdfba0be71db2de269",
+              "772ccdd6415bde601531ebe92a528c1bbded1675b44bb75b21c9c96f9bb3b0a2"
+            ],
+            "diagnostics": [],
+            "optimizer_summary": {
+              "optimizer": "cost-aware-v1",
+              "goal_id": "unsafe-assert",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2",
+              "cache": "HIT",
+              "selected_tools": [],
+              "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+              "min_confirmations": 3,
+              "independent_candidates": 3,
+              "trust_feasible": true,
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              },
+              "hints_applied": false,
+              "tiny_budget": false,
+              "stages": [
+                [
+                  "cbmc",
+                  "esbmc"
+                ],
+                [
+                  "cpachecker"
+                ]
+              ],
+              "fallback_selected_tools": [
+                "cbmc",
+                "esbmc",
+                "cpachecker"
+              ],
+              "cache_source_execution": "2b177e42c6a2430abadf51ad819c99ac"
+            },
+            "failure_reasons": []
+          },
+          "attempts": [],
+          "events": [
+            {
+              "kind": "cache_hit",
+              "time": "2026-10-06T04:07:26.186733+00:00",
+              "source_execution_id": "2b177e42c6a2430abadf51ad819c99ac",
+              "semantic_key": "cbffdf537851ab598a253c5ca6c7275e28ac06da454b75c879c839dd0415fcf2"
+            }
+          ]
+        }
+      },
+      "attempts": [],
+      "program": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x < 10);\n    return 0;\n}\n"
+    },
+    "workflow": {
+      "request": {
+        "version": "0.1",
+        "workflow": {
+          "id": "assertion-workflow",
+          "goals": [
+            {
+              "task": {
+                "language": "C",
+                "entry": "main",
+                "sources": [
+                  "../c/safe_assert.c"
+                ]
+              },
+              "property": {
+                "kind": "assertion_safety"
+              },
+              "semantics": {
+                "c_standard": "c11",
+                "data_model": "LP64"
+              },
+              "requirements": {
+                "min_confirmations": 1
+              },
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "id": "G1"
+            },
+            {
+              "task": {
+                "language": "C",
+                "entry": "main",
+                "sources": [
+                  "../c/unsafe_assert.c"
+                ]
+              },
+              "property": {
+                "kind": "assertion_safety"
+              },
+              "semantics": {
+                "c_standard": "c11",
+                "data_model": "LP64"
+              },
+              "requirements": {
+                "min_confirmations": 1
+              },
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "id": "G2"
+            }
+          ],
+          "dependencies": [
+            {
+              "from": "G1",
+              "to": "G2",
+              "required_verdict": "SAFE"
+            }
+          ],
+          "metadata": {
+            "description": "Two independent propositions with an explicit control dependency; no theorem composition."
+          }
+        }
+      },
+      "execution": {
+        "execution_id": "6ae787e0cda642cbaa94864beb487cf1",
+        "workflow": {
+          "workflow_id": "assertion-workflow",
+          "goals": [
+            {
+              "id": "G1",
+              "language": "C",
+              "entry": "main",
+              "program": {
+                "files": [
+                  {
+                    "logical_path": "c/safe_assert.c",
+                    "content": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n",
+                    "sha256": "48470bc7498b9918f3e5fc5ffd8cd7cb7eda977e50fb4ec271e036dfd2a0fd3c"
+                  }
+                ],
+                "sources": [
+                  "c/safe_assert.c"
+                ]
+              },
+              "property": {
+                "kind": "assertion_safety"
+              },
+              "semantics": {
+                "c_standard": "c11",
+                "data_model": "LP64"
+              },
+              "requirements": {
+                "min_confirmations": 1
+              },
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "version": "0.1",
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              }
+            },
+            {
+              "id": "G2",
+              "language": "C",
+              "entry": "main",
+              "program": {
+                "files": [
+                  {
+                    "logical_path": "c/unsafe_assert.c",
+                    "content": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x < 10);\n    return 0;\n}\n",
+                    "sha256": "cef41cf4b1e2240e2230d05a16f5ce033a1649bdc60376391c78146b70515937"
+                  }
+                ],
+                "sources": [
+                  "c/unsafe_assert.c"
+                ]
+              },
+              "property": {
+                "kind": "assertion_safety"
+              },
+              "semantics": {
+                "c_standard": "c11",
+                "data_model": "LP64"
+              },
+              "requirements": {
+                "min_confirmations": 1
+              },
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "version": "0.1",
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              }
+            }
+          ],
+          "dependencies": [
+            {
+              "predecessor": "G1",
+              "successor": "G2",
+              "required_verdict": "SAFE"
+            }
+          ],
+          "metadata": [
+            [
+              "description",
+              "Two independent propositions with an explicit control dependency; no theorem composition."
+            ]
+          ]
+        },
+        "goals": [
+          {
+            "optimization": {
+              "physical_plan": {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "tool": "cbmc",
+                        "time_slice_sec": 15.0,
+                        "operator": "Run"
+                      },
+                      {
+                        "tool": "esbmc",
+                        "time_slice_sec": 15.0,
+                        "operator": "Run"
+                      }
+                    ],
+                    "max_parallel": 2,
+                    "operator": "Parallel"
+                  },
+                  {
+                    "tool": "cpachecker",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  }
+                ],
+                "operator": "Sequence"
+              },
+              "explanation": {
+                "optimizer": "cost-aware-v1",
+                "goal_id": "G1",
+                "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1",
+                "cache": "MISS",
+                "selected_tools": [
+                  "cbmc",
+                  "esbmc",
+                  "cpachecker"
+                ],
+                "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+                "min_confirmations": 1,
+                "independent_candidates": 3,
+                "trust_feasible": true,
+                "budget": {
+                  "wall_time_sec": 30,
+                  "memory_mb": 2048,
+                  "max_parallel": 2
+                },
+                "hints": {
+                  "prefer_fast_counterexample": false,
+                  "expected_characteristics": [],
+                  "required_capabilities": []
+                },
+                "hints_applied": false,
+                "tiny_budget": false,
+                "stages": [
+                  [
+                    "cbmc",
+                    "esbmc"
+                  ],
+                  [
+                    "cpachecker"
+                  ]
+                ]
+              },
+              "candidate_scores": [
+                {
+                  "tool": "cbmc",
+                  "family": "cbmc",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "cbmc",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 2,
+                    "definitive_count": 2,
+                    "safe_count": 1,
+                    "unsafe_count": 1,
+                    "unknown_count": 0,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 0.7917558545000247,
+                    "median_runtime_sec": 0.7917558545000247,
+                    "recent_runtime_sec": 0.8066984430001867
+                  },
+                  "expected_runtime_sec": 0.7917558545000247,
+                  "success_rate": 0.8333333333333334,
+                  "score": 1.0525130046048903,
+                  "selected": true
+                },
+                {
+                  "tool": "esbmc",
+                  "family": "esbmc",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "esbmc",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 2,
+                    "definitive_count": 2,
+                    "safe_count": 1,
+                    "unsafe_count": 1,
+                    "unknown_count": 0,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 1.068277076999948,
+                    "median_runtime_sec": 1.068277076999948,
+                    "recent_runtime_sec": 1.0596508270000413
+                  },
+                  "expected_runtime_sec": 1.068277076999948,
+                  "success_rate": 0.8333333333333334,
+                  "score": 0.780072278320893,
+                  "selected": true
+                },
+                {
+                  "tool": "cpachecker",
+                  "family": "cpachecker",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "cpachecker",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 2,
+                    "definitive_count": 2,
+                    "safe_count": 1,
+                    "unsafe_count": 1,
+                    "unknown_count": 0,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 3.701282297500029,
+                    "median_runtime_sec": 3.701282297500029,
+                    "recent_runtime_sec": 4.444445351000013
+                  },
+                  "expected_runtime_sec": 3.701282297500029,
+                  "success_rate": 0.8333333333333334,
+                  "score": 0.22514719666105848,
+                  "selected": true
+                }
+              ]
+            },
+            "report": {
+              "result": {
+                "execution_id": "5b62cd009b0446df8c1bd8c672e076f3",
+                "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1",
+                "verdict": "SAFE",
+                "confirmations": 1,
+                "requirement_satisfied": true,
+                "termination_reason": "REQUIREMENTS_MET",
+                "attempt_ids": [
+                  "413a1b3ff9dd499b9684571cb2bc04bc",
+                  "70b44f8e195547d286de0274fa9ab4dd"
+                ],
+                "wall_time_sec": 1.1879824380002901,
+                "cache_hit": false,
+                "source_execution_id": null,
+                "goal_id": "G1",
+                "status": "COMPLETED",
+                "artifacts": [
+                  "f77e6f809c606c9ea88dcef29326f5a22cf43c3059e0846ef51c9fd080a9db97",
+                  "30c6b1ced1fb4362a7c56220ed631d52cde0d383eb860ee0dad00e0a11c5e822",
+                  "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+                  "b506210ea0a80eb9a36572aa0f702672839acb59bdc0f25fcb967a3f6ecbd2a2",
+                  "ac3cc92db5f90b3ab8b2364b96d77b2c27f9c202e866734b40e3165383fc7d35",
+                  "6c11b45c5ce90ed08c92dd026a410681c44914f198f86083f75097d8643b3f9c",
+                  "cdb03123fb5e642aca293ad83cf07a437c963711bdca1ccb6950b49aed963f44",
+                  "9780a0a2d862b23c8dc863267698aa76fa0ff9c154cb061004d52fbce1fd1ecd",
+                  "1d10c45e5da64417186700052d10b9a57bcee69fd34ed658680a05ff1958e55b",
+                  "f5d2498eb3297139ff37a66157b2b9777c714dadf984d6b8aadc8e3fc13a622b",
+                  "d45554af591cdd7c36400cda283b2bc74cf36b9a75d1067732e3316c55e86ab2",
+                  "df97a39e3dad73c2491d872740368b1eec35215b968fcea6008cf518541bc30e",
+                  "8437d07d2693237decdcf34842ac83a780ae91dd5340f1fa834ff34dfc2e6294",
+                  "ecbc55b010915a7ba51a8e0992985e71fcdcadc4e78baaeb6dfdf6d37a0b6f41",
+                  "d26bdb08e96f935ea903072f871739f65a698cc25e16b7749140a5a7aaaf8e91",
+                  "4bfa521757da77e7066b76af80ab0e12d967fc63b51c1bac26f3394027dc0c33",
+                  "b02bbb35ba1032c052a1f0452852c0b784d666c807afec334809ee6042ba0528",
+                  "56b69a9f084be991b135d526c0617ba2157ae90e419240f03a369deec12e5401",
+                  "4e505f7e51d0754d8fea85a5046cf8537e0e41c51fdc87023162df35174b097d"
+                ],
+                "diagnostics": [
+                  {
+                    "code": "cancellation",
+                    "goal_id": "G1",
+                    "tool": "esbmc",
+                    "attempt_id": "70b44f8e195547d286de0274fa9ab4dd",
+                    "detail": ""
+                  }
+                ],
+                "optimizer_summary": {
+                  "optimizer": "cost-aware-v1",
+                  "goal_id": "G1",
+                  "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1",
+                  "cache": "MISS",
+                  "selected_tools": [
+                    "cbmc",
+                    "esbmc",
+                    "cpachecker"
+                  ],
+                  "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+                  "min_confirmations": 1,
+                  "independent_candidates": 3,
+                  "trust_feasible": true,
+                  "budget": {
+                    "wall_time_sec": 30,
+                    "memory_mb": 2048,
+                    "max_parallel": 2
+                  },
+                  "hints": {
+                    "prefer_fast_counterexample": false,
+                    "expected_characteristics": [],
+                    "required_capabilities": []
+                  },
+                  "hints_applied": false,
+                  "tiny_budget": false,
+                  "stages": [
+                    [
+                      "cbmc",
+                      "esbmc"
+                    ],
+                    [
+                      "cpachecker"
+                    ]
+                  ]
+                },
+                "failure_reasons": [
+                  "cancellation"
+                ]
+              },
+              "attempts": [
+                {
+                  "id": "413a1b3ff9dd499b9684571cb2bc04bc",
+                  "execution_id": "5b62cd009b0446df8c1bd8c672e076f3",
+                  "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1",
+                  "tool": "cbmc",
+                  "family": "cbmc",
+                  "version": "6.11.0 (cbmc-6.11.0)",
+                  "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+                  "command": [
+                    "/usr/local/bin/python",
+                    "-m",
+                    "veriruntime.tools.container_driver",
+                    "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/413a1b3ff9dd499b9684571cb2bc04bc"
+                  ],
+                  "start_time": "2026-10-06T04:07:26.351748+00:00",
+                  "end_time": "2026-10-06T04:07:27.164796+00:00",
+                  "wall_time_sec": 0.8130562710002778,
+                  "verdict": "SAFE",
+                  "status": "COMPLETED",
+                  "termination_reason": "NORMAL",
+                  "exit_code": 0,
+                  "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/413a1b3ff9dd499b9684571cb2bc04bc",
+                  "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/413a1b3ff9dd499b9684571cb2bc04bc/stdout.txt",
+                  "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/413a1b3ff9dd499b9684571cb2bc04bc/stderr.txt",
+                  "message": "Complete assertion proof with unwinding checks",
+                  "artifact_ids": [
+                    "6c11b45c5ce90ed08c92dd026a410681c44914f198f86083f75097d8643b3f9c",
+                    "cdb03123fb5e642aca293ad83cf07a437c963711bdca1ccb6950b49aed963f44",
+                    "9780a0a2d862b23c8dc863267698aa76fa0ff9c154cb061004d52fbce1fd1ecd",
+                    "1d10c45e5da64417186700052d10b9a57bcee69fd34ed658680a05ff1958e55b",
+                    "f5d2498eb3297139ff37a66157b2b9777c714dadf984d6b8aadc8e3fc13a622b",
+                    "d45554af591cdd7c36400cda283b2bc74cf36b9a75d1067732e3316c55e86ab2",
+                    "df97a39e3dad73c2491d872740368b1eec35215b968fcea6008cf518541bc30e"
+                  ],
+                  "diagnostic_code": ""
+                },
+                {
+                  "id": "70b44f8e195547d286de0274fa9ab4dd",
+                  "execution_id": "5b62cd009b0446df8c1bd8c672e076f3",
+                  "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1",
+                  "tool": "esbmc",
+                  "family": "esbmc",
+                  "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+                  "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+                  "command": [
+                    "/usr/local/bin/python",
+                    "-m",
+                    "veriruntime.tools.container_driver",
+                    "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/70b44f8e195547d286de0274fa9ab4dd"
+                  ],
+                  "start_time": "2026-10-06T04:07:26.352529+00:00",
+                  "end_time": "2026-10-06T04:07:27.416036+00:00",
+                  "wall_time_sec": 1.063514970000142,
+                  "verdict": "UNKNOWN",
+                  "status": "CANCELLED",
+                  "termination_reason": "REQUIREMENTS_MET",
+                  "exit_code": 143,
+                  "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/70b44f8e195547d286de0274fa9ab4dd",
+                  "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/70b44f8e195547d286de0274fa9ab4dd/stdout.txt",
+                  "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/5b62cd009b0446df8c1bd8c672e076f3/70b44f8e195547d286de0274fa9ab4dd/stderr.txt",
+                  "message": "",
+                  "artifact_ids": [
+                    "8437d07d2693237decdcf34842ac83a780ae91dd5340f1fa834ff34dfc2e6294",
+                    "ecbc55b010915a7ba51a8e0992985e71fcdcadc4e78baaeb6dfdf6d37a0b6f41",
+                    "d26bdb08e96f935ea903072f871739f65a698cc25e16b7749140a5a7aaaf8e91",
+                    "4bfa521757da77e7066b76af80ab0e12d967fc63b51c1bac26f3394027dc0c33",
+                    "b02bbb35ba1032c052a1f0452852c0b784d666c807afec334809ee6042ba0528",
+                    "56b69a9f084be991b135d526c0617ba2157ae90e419240f03a369deec12e5401",
+                    "4e505f7e51d0754d8fea85a5046cf8537e0e41c51fdc87023162df35174b097d"
+                  ],
+                  "diagnostic_code": "cancellation"
+                }
+              ],
+              "events": [
+                {
+                  "time": "2026-10-06T04:07:26.351506+00:00",
+                  "kind": "execution_start",
+                  "semantic_key": "2df3989d16ea81611d944e4b8fcd2c60491ed6ef2e5e7240445cfbd5ba9d32d1"
+                },
+                {
+                  "time": "2026-10-06T04:07:26.351609+00:00",
+                  "kind": "tool_start",
+                  "tool": "cbmc",
+                  "remaining_wall_sec": 29.999855186999866
+                },
+                {
+                  "time": "2026-10-06T04:07:26.352409+00:00",
+                  "kind": "tool_start",
+                  "tool": "esbmc",
+                  "remaining_wall_sec": 29.999054471999898
+                },
+                {
+                  "time": "2026-10-06T04:07:27.310136+00:00",
+                  "kind": "tool_end",
+                  "tool": "cbmc",
+                  "attempt_id": "413a1b3ff9dd499b9684571cb2bc04bc",
+                  "verdict": "SAFE",
+                  "status": "COMPLETED",
+                  "wall_time_sec": 0.8130562710002778
+                },
+                {
+                  "time": "2026-10-06T04:07:27.310283+00:00",
+                  "kind": "cancel_remaining",
+                  "reason": "REQUIREMENTS_MET"
+                },
+                {
+                  "time": "2026-10-06T04:07:27.539243+00:00",
+                  "kind": "tool_end",
+                  "tool": "esbmc",
+                  "attempt_id": "70b44f8e195547d286de0274fa9ab4dd",
+                  "verdict": "UNKNOWN",
+                  "status": "CANCELLED",
+                  "wall_time_sec": 1.063514970000142
+                },
+                {
+                  "time": "2026-10-06T04:07:27.539352+00:00",
+                  "kind": "cancel_remaining",
+                  "reason": "REQUIREMENTS_MET"
+                },
+                {
+                  "time": "2026-10-06T04:07:27.539464+00:00",
+                  "kind": "execution_end",
+                  "verdict": "SAFE",
+                  "confirmations": 1
+                }
+              ]
+            }
+          },
+          {
+            "optimization": {
+              "physical_plan": {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "tool": "cbmc",
+                        "time_slice_sec": 15.0,
+                        "operator": "Run"
+                      },
+                      {
+                        "tool": "esbmc",
+                        "time_slice_sec": 15.0,
+                        "operator": "Run"
+                      }
+                    ],
+                    "max_parallel": 2,
+                    "operator": "Parallel"
+                  },
+                  {
+                    "tool": "cpachecker",
+                    "time_slice_sec": 15.0,
+                    "operator": "Run"
+                  }
+                ],
+                "operator": "Sequence"
+              },
+              "explanation": {
+                "optimizer": "cost-aware-v1",
+                "goal_id": "G2",
+                "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c",
+                "cache": "MISS",
+                "selected_tools": [
+                  "cbmc",
+                  "esbmc",
+                  "cpachecker"
+                ],
+                "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+                "min_confirmations": 1,
+                "independent_candidates": 3,
+                "trust_feasible": true,
+                "budget": {
+                  "wall_time_sec": 30,
+                  "memory_mb": 2048,
+                  "max_parallel": 2
+                },
+                "hints": {
+                  "prefer_fast_counterexample": false,
+                  "expected_characteristics": [],
+                  "required_capabilities": []
+                },
+                "hints_applied": false,
+                "tiny_budget": false,
+                "stages": [
+                  [
+                    "cbmc",
+                    "esbmc"
+                  ],
+                  [
+                    "cpachecker"
+                  ]
+                ]
+              },
+              "candidate_scores": [
+                {
+                  "tool": "cbmc",
+                  "family": "cbmc",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "cbmc",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 3,
+                    "definitive_count": 3,
+                    "safe_count": 2,
+                    "unsafe_count": 1,
+                    "unknown_count": 0,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 0.7988559933334424,
+                    "median_runtime_sec": 0.8066984430001867,
+                    "recent_runtime_sec": 0.8130562710002778
+                  },
+                  "expected_runtime_sec": 0.8066984430001867,
+                  "success_rate": 0.875,
+                  "score": 1.0846680163975444,
+                  "selected": true
+                },
+                {
+                  "tool": "esbmc",
+                  "family": "esbmc",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "esbmc",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 3,
+                    "definitive_count": 2,
+                    "safe_count": 1,
+                    "unsafe_count": 1,
+                    "unknown_count": 1,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 1.068277076999948,
+                    "median_runtime_sec": 1.068277076999948,
+                    "recent_runtime_sec": 1.0596508270000413
+                  },
+                  "expected_runtime_sec": 1.068277076999948,
+                  "success_rate": 0.625,
+                  "score": 0.5850542087406697,
+                  "selected": true
+                },
+                {
+                  "tool": "cpachecker",
+                  "family": "cpachecker",
+                  "compatible": true,
+                  "reasons": [],
+                  "history": {
+                    "tool": "cpachecker",
+                    "property_kind": "assertion_safety",
+                    "size_bucket": "tiny",
+                    "run_count": 2,
+                    "definitive_count": 2,
+                    "safe_count": 1,
+                    "unsafe_count": 1,
+                    "unknown_count": 0,
+                    "timeout_count": 0,
+                    "mean_runtime_sec": 3.701282297500029,
+                    "median_runtime_sec": 3.701282297500029,
+                    "recent_runtime_sec": 4.444445351000013
+                  },
+                  "expected_runtime_sec": 3.701282297500029,
+                  "success_rate": 0.8333333333333334,
+                  "score": 0.22514719666105848,
+                  "selected": true
+                }
+              ]
+            },
+            "report": {
+              "result": {
+                "execution_id": "cd7fd8d11444452cb87a8b399e110993",
+                "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c",
+                "verdict": "UNSAFE",
+                "confirmations": 1,
+                "requirement_satisfied": true,
+                "termination_reason": "REQUIREMENTS_MET",
+                "attempt_ids": [
+                  "63716f3aef114ee49eb05ce09ebdc323",
+                  "8c189557e2a34f25b4733cc6c09aa056"
+                ],
+                "wall_time_sec": 1.143076777999795,
+                "cache_hit": false,
+                "source_execution_id": null,
+                "goal_id": "G2",
+                "status": "COMPLETED",
+                "artifacts": [
+                  "4138bd4b117c89b3b0fafaf8342c994905c2d4349d246b31c90491ecefd85c7f",
+                  "3359280f78071e6996d471437fb8397f3e57fd458d8bd1198b71615a1c6836bd",
+                  "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+                  "fc61a98f8e7dcfcad42dd1ada74175d75d0b5b93600733b93e8b9ef2967a91ca",
+                  "2a20ba3ab8f7284a7debc2e5c5be2c10eb2fc22fa4000a3c9f1b4f46632adcd7",
+                  "d0400b6c36de021d0972759809e4daf78325d48244bbb697ea76ccb7a93c7c67",
+                  "21006f4a9fb771b8889ccee36d342dfc9ac6a4f2eb9d46057bcb045297655057",
+                  "acd34ac3c8a040e9be916ff839b165dd30480b7bde19a76229cf46a453f99202",
+                  "628fdfddb293bd14623096cbe95d3796c4aef216ef87a9c7e30eff717dcc8252",
+                  "634da8e1723549092fcd522c9329e907bafdee59947cbd988f9f310ab6e5aab0",
+                  "94111a30464040588d6855165605adf50371781f9ecfadc288c64923aac713f5",
+                  "bb468613a49c45e69125b1a9b9406804e9245b073093d644ad42933ef8659ed6",
+                  "bfa0d8a5b7ef79b5003c6476f8ade6852a1a8bb39a4ea860c1904a4eb9b5fb95",
+                  "302f6b417a349fa12f96e108dbe5b43670c93ac982a34ad9382bc75d47c015bf",
+                  "49cfe04c1cc65931559ab4619431347d8bf0c829a3f0cbcac3a7ed7f4e6a54dc",
+                  "0bff2d003a6d4fcaed12098f3a86b880f5f7ca3e40caa8bd80af8cb989cfba1c",
+                  "0e90f140b3b3b69fa477a716e3f4230f7bdfd3f334ec6c24822980203e3dffa4",
+                  "3e332d3a46c41b795e6df6014e678c22c97987b27775c2bde33c23599183457e",
+                  "cc0e55827856d2fe509e81fb6bd5728ab4354c30e220dca27ba74252fc5938e8"
+                ],
+                "diagnostics": [
+                  {
+                    "code": "cancellation",
+                    "goal_id": "G2",
+                    "tool": "esbmc",
+                    "attempt_id": "8c189557e2a34f25b4733cc6c09aa056",
+                    "detail": ""
+                  }
+                ],
+                "optimizer_summary": {
+                  "optimizer": "cost-aware-v1",
+                  "goal_id": "G2",
+                  "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c",
+                  "cache": "MISS",
+                  "selected_tools": [
+                    "cbmc",
+                    "esbmc",
+                    "cpachecker"
+                  ],
+                  "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+                  "min_confirmations": 1,
+                  "independent_candidates": 3,
+                  "trust_feasible": true,
+                  "budget": {
+                    "wall_time_sec": 30,
+                    "memory_mb": 2048,
+                    "max_parallel": 2
+                  },
+                  "hints": {
+                    "prefer_fast_counterexample": false,
+                    "expected_characteristics": [],
+                    "required_capabilities": []
+                  },
+                  "hints_applied": false,
+                  "tiny_budget": false,
+                  "stages": [
+                    [
+                      "cbmc",
+                      "esbmc"
+                    ],
+                    [
+                      "cpachecker"
+                    ]
+                  ]
+                },
+                "failure_reasons": [
+                  "cancellation"
+                ]
+              },
+              "attempts": [
+                {
+                  "id": "63716f3aef114ee49eb05ce09ebdc323",
+                  "execution_id": "cd7fd8d11444452cb87a8b399e110993",
+                  "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c",
+                  "tool": "cbmc",
+                  "family": "cbmc",
+                  "version": "6.11.0 (cbmc-6.11.0)",
+                  "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+                  "command": [
+                    "/usr/local/bin/python",
+                    "-m",
+                    "veriruntime.tools.container_driver",
+                    "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/63716f3aef114ee49eb05ce09ebdc323"
+                  ],
+                  "start_time": "2026-10-06T04:07:27.702772+00:00",
+                  "end_time": "2026-10-06T04:07:28.491818+00:00",
+                  "wall_time_sec": 0.7890118840000468,
+                  "verdict": "UNSAFE",
+                  "status": "COMPLETED",
+                  "termination_reason": "NORMAL",
+                  "exit_code": 10,
+                  "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/63716f3aef114ee49eb05ce09ebdc323",
+                  "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/63716f3aef114ee49eb05ce09ebdc323/stdout.txt",
+                  "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/63716f3aef114ee49eb05ce09ebdc323/stderr.txt",
+                  "message": "Assertion counterexample",
+                  "artifact_ids": [
+                    "d0400b6c36de021d0972759809e4daf78325d48244bbb697ea76ccb7a93c7c67",
+                    "21006f4a9fb771b8889ccee36d342dfc9ac6a4f2eb9d46057bcb045297655057",
+                    "acd34ac3c8a040e9be916ff839b165dd30480b7bde19a76229cf46a453f99202",
+                    "628fdfddb293bd14623096cbe95d3796c4aef216ef87a9c7e30eff717dcc8252",
+                    "634da8e1723549092fcd522c9329e907bafdee59947cbd988f9f310ab6e5aab0",
+                    "94111a30464040588d6855165605adf50371781f9ecfadc288c64923aac713f5",
+                    "bb468613a49c45e69125b1a9b9406804e9245b073093d644ad42933ef8659ed6"
+                  ],
+                  "diagnostic_code": ""
+                },
+                {
+                  "id": "8c189557e2a34f25b4733cc6c09aa056",
+                  "execution_id": "cd7fd8d11444452cb87a8b399e110993",
+                  "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c",
+                  "tool": "esbmc",
+                  "family": "esbmc",
+                  "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+                  "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+                  "command": [
+                    "/usr/local/bin/python",
+                    "-m",
+                    "veriruntime.tools.container_driver",
+                    "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/8c189557e2a34f25b4733cc6c09aa056"
+                  ],
+                  "start_time": "2026-10-06T04:07:27.703567+00:00",
+                  "end_time": "2026-10-06T04:07:28.725907+00:00",
+                  "wall_time_sec": 1.0223485930000606,
+                  "verdict": "UNKNOWN",
+                  "status": "CANCELLED",
+                  "termination_reason": "REQUIREMENTS_MET",
+                  "exit_code": 1,
+                  "workspace": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/8c189557e2a34f25b4733cc6c09aa056",
+                  "stdout_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/8c189557e2a34f25b4733cc6c09aa056/stdout.txt",
+                  "stderr_path": "/data/acceptance/latest/6ef9bf08cd9a46bea9b1f00a6d5a9c8f/executions/cd7fd8d11444452cb87a8b399e110993/8c189557e2a34f25b4733cc6c09aa056/stderr.txt",
+                  "message": "",
+                  "artifact_ids": [
+                    "bfa0d8a5b7ef79b5003c6476f8ade6852a1a8bb39a4ea860c1904a4eb9b5fb95",
+                    "302f6b417a349fa12f96e108dbe5b43670c93ac982a34ad9382bc75d47c015bf",
+                    "49cfe04c1cc65931559ab4619431347d8bf0c829a3f0cbcac3a7ed7f4e6a54dc",
+                    "0bff2d003a6d4fcaed12098f3a86b880f5f7ca3e40caa8bd80af8cb989cfba1c",
+                    "0e90f140b3b3b69fa477a716e3f4230f7bdfd3f334ec6c24822980203e3dffa4",
+                    "3e332d3a46c41b795e6df6014e678c22c97987b27775c2bde33c23599183457e",
+                    "cc0e55827856d2fe509e81fb6bd5728ab4354c30e220dca27ba74252fc5938e8"
+                  ],
+                  "diagnostic_code": "cancellation"
+                }
+              ],
+              "events": [
+                {
+                  "time": "2026-10-06T04:07:27.702550+00:00",
+                  "kind": "execution_start",
+                  "semantic_key": "de49038a8472a810ae2df29f1784043889fb506f7e69931c32e4817202b62f2c"
+                },
+                {
+                  "time": "2026-10-06T04:07:27.702646+00:00",
+                  "kind": "tool_start",
+                  "tool": "cbmc",
+                  "remaining_wall_sec": 29.999864686000365
+                },
+                {
+                  "time": "2026-10-06T04:07:27.703447+00:00",
+                  "kind": "tool_start",
+                  "tool": "esbmc",
+                  "remaining_wall_sec": 29.99906407000026
+                },
+                {
+                  "time": "2026-10-06T04:07:28.666237+00:00",
+                  "kind": "tool_end",
+                  "tool": "cbmc",
+                  "attempt_id": "63716f3aef114ee49eb05ce09ebdc323",
+                  "verdict": "UNSAFE",
+                  "status": "COMPLETED",
+                  "wall_time_sec": 0.7890118840000468
+                },
+                {
+                  "time": "2026-10-06T04:07:28.666456+00:00",
+                  "kind": "cancel_remaining",
+                  "reason": "REQUIREMENTS_MET"
+                },
+                {
+                  "time": "2026-10-06T04:07:28.845353+00:00",
+                  "kind": "tool_end",
+                  "tool": "esbmc",
+                  "attempt_id": "8c189557e2a34f25b4733cc6c09aa056",
+                  "verdict": "UNKNOWN",
+                  "status": "CANCELLED",
+                  "wall_time_sec": 1.0223485930000606
+                },
+                {
+                  "time": "2026-10-06T04:07:28.845480+00:00",
+                  "kind": "cancel_remaining",
+                  "reason": "REQUIREMENTS_MET"
+                },
+                {
+                  "time": "2026-10-06T04:07:28.845606+00:00",
+                  "kind": "execution_end",
+                  "verdict": "UNSAFE",
+                  "confirmations": 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "unsupported": {
+      "request": {
+        "version": "0.1",
+        "task": {
+          "id": "safe-assert",
+          "language": "C",
+          "entry": "main",
+          "sources": [
+            "../c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "memory_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 1
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        }
+      },
+      "execution": {
+        "optimization": {
+          "physical_plan": {
+            "children": [],
+            "operator": "Sequence"
+          },
+          "explanation": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "safe-assert",
+            "semantic_key": "28991a88c6fcfaf353de95252c6f27d0081a08b52677a54af320ce43c3d3998f",
+            "cache": "MISS",
+            "selected_tools": [],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 0,
+            "trust_feasible": false,
+            "budget": {
+              "wall_time_sec": 30,
+              "memory_mb": 2048,
+              "max_parallel": 2
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": []
+          },
+          "candidate_scores": [
+            {
+              "tool": "cbmc",
+              "family": "cbmc",
+              "compatible": false,
+              "reasons": [
+                "unsupported_property"
+              ],
+              "history": null,
+              "expected_runtime_sec": 0.5,
+              "success_rate": 0.5,
+              "score": 1.0,
+              "selected": false
+            },
+            {
+              "tool": "esbmc",
+              "family": "esbmc",
+              "compatible": false,
+              "reasons": [
+                "unsupported_property"
+              ],
+              "history": null,
+              "expected_runtime_sec": 0.7,
+              "success_rate": 0.5,
+              "score": 0.7142857142857143,
+              "selected": false
+            },
+            {
+              "tool": "cpachecker",
+              "family": "cpachecker",
+              "compatible": false,
+              "reasons": [
+                "unsupported_property"
+              ],
+              "history": null,
+              "expected_runtime_sec": 4.0,
+              "success_rate": 0.5,
+              "score": 0.125,
+              "selected": false
+            }
+          ]
+        },
+        "report": {
+          "result": {
+            "execution_id": "bee35611afff47f09dea7c73d779e396",
+            "semantic_key": "28991a88c6fcfaf353de95252c6f27d0081a08b52677a54af320ce43c3d3998f",
+            "verdict": "UNKNOWN",
+            "confirmations": 0,
+            "requirement_satisfied": false,
+            "termination_reason": "NO_CANDIDATES",
+            "attempt_ids": [],
+            "wall_time_sec": 9.271899989471422e-05,
+            "cache_hit": false,
+            "source_execution_id": null,
+            "goal_id": "safe-assert",
+            "status": "COMPLETED",
+            "artifacts": [
+              "4b1f7a52deaf06fca6e23118a70219d1a82996bcb60383cc5b39175283c3f78a",
+              "b2e894cfe7ce7187fac9fd06a4867adfe9e789936c0d131262af8e186674fc01",
+              "2fcf1cca9e77199eead064f86eeed898494fc3f55f836a7b6feaf152dfe37adb",
+              "096e0e1b61737ea728a180fd94fbbddffbfe4e85c6fba6cde2fe33ede7a43155",
+              "7ecde98a59c344274af8d77d1560bec29bb13192cf36fc0dd3fd6669df22b694"
+            ],
+            "diagnostics": [
+              {
+                "code": "no_compatible_tool",
+                "goal_id": "safe-assert",
+                "tool": null,
+                "attempt_id": null,
+                "detail": ""
+              },
+              {
+                "code": "unsupported_property",
+                "goal_id": "safe-assert",
+                "tool": null,
+                "attempt_id": null,
+                "detail": ""
+              }
+            ],
+            "optimizer_summary": {
+              "optimizer": "cost-aware-v1",
+              "goal_id": "safe-assert",
+              "semantic_key": "28991a88c6fcfaf353de95252c6f27d0081a08b52677a54af320ce43c3d3998f",
+              "cache": "MISS",
+              "selected_tools": [],
+              "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+              "min_confirmations": 1,
+              "independent_candidates": 0,
+              "trust_feasible": false,
+              "budget": {
+                "wall_time_sec": 30,
+                "memory_mb": 2048,
+                "max_parallel": 2
+              },
+              "hints": {
+                "prefer_fast_counterexample": false,
+                "expected_characteristics": [],
+                "required_capabilities": []
+              },
+              "hints_applied": false,
+              "tiny_budget": false,
+              "stages": []
+            },
+            "failure_reasons": [
+              "no_compatible_tool",
+              "unsupported_property"
+            ]
+          },
+          "attempts": [],
+          "events": [
+            {
+              "time": "2026-10-06T04:07:28.990637+00:00",
+              "kind": "execution_start",
+              "semantic_key": "28991a88c6fcfaf353de95252c6f27d0081a08b52677a54af320ce43c3d3998f"
+            },
+            {
+              "time": "2026-10-06T04:07:28.990711+00:00",
+              "kind": "execution_end",
+              "verdict": "UNKNOWN",
+              "confirmations": 0
+            }
+          ]
+        }
+      },
+      "attempts": []
+    }
+  },
+  "checks": {
+    "platform": "linux/amd64",
+    "confirmations": 3,
+    "safe": "SAFE",
+    "unsafe": "UNSAFE",
+    "cache_repeat_verifier_executions": 0,
+    "workflow": [
+      "SAFE",
+      "UNSAFE"
+    ],
+    "unsupported": "UNKNOWN",
+    "timeout": "UNKNOWN",
+    "isolated_mounts": true,
+    "oom": "UNKNOWN / OOM",
+    "remaining_worker_containers": 0
+  }
+}

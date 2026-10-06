@@ -7,3 +7,6 @@ __pycache__/
 build/
 dist/
 .DS_Store
+docker/downloads/*
+!docker/downloads/.gitkeep
+docs/dispatch.visual-check*

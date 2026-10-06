@@ -40,7 +40,7 @@ class VerificationService:
         self.optimizer = optimizer or CostAwareOptimizer()
         self.cache_enabled = cache_enabled
         self.artifacts = ArtifactStore(self.data_dir, self.store)
-        self.cache = SemanticCache(self.store, self.artifacts)
+        self.cache = SemanticCache(self.store, self.artifacts, self.registry)
 
     def optimize_goal(self, task):
         return self.optimizer.optimize(LogicalPlan(task), RuntimeContext(self.registry, self.store,

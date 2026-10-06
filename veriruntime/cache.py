@@ -17,10 +17,11 @@ class CacheEntry:
 
 
 class SemanticCache:
-    contract = "definitive-cache-v2"
+    contract = "definitive-cache-v3"
 
-    def __init__(self, store, artifacts):
+    def __init__(self, store, artifacts, registry=None):
         self.store, self.artifacts = store, artifacts
+        self.registry = registry
 
     def lookup(self, task):
         with self.store.connection() as db:
@@ -42,6 +43,14 @@ class SemanticCache:
             if not result or result["verdict"] != verdict.value or not result["requirement_satisfied"]:
                 return None
             evidence = [a for a in source["attempts"] if a["status"] == "COMPLETED" and a["verdict"] == verdict.value]
+            # System headers and native libraries are part of a Docker image's
+            # config identity. Never replay evidence from another tool environment.
+            if self.registry:
+                profiles = {p.name: p for p in self.registry.profiles() if p.available}
+                if any(not (p := profiles.get(a['tool'])) or
+                       (p.family, p.version, p.config_id) != (a['family'], a['version'], a['config_id'])
+                       for a in evidence):
+                    return None
             if any(a["status"] == "COMPLETED" and a["verdict"] in ("SAFE", "UNSAFE") and a["verdict"] != verdict.value
                    for a in source["attempts"]):
                 return None

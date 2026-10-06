@@ -1,0 +1,8 @@
+{
+  "platform": "linux/amd64",
+  "packages": [
+    {"name": "cbmc", "version": "6.11.0", "url": "https://github.com/diffblue/cbmc/releases/download/cbmc-6.11.0/ubuntu-24.04-cbmc-6.11.0-Linux.deb", "sha256": "b3721aa541038384d7801ea3aeabbcddc3e8845ac8f1cbff637cf8dec7481ac8", "format": "deb"},
+    {"name": "esbmc", "version": "8.5.0", "url": "https://github.com/esbmc/esbmc/releases/download/v8.5/esbmc-linux.zip", "sha256": "d8da304dd0dfce6c9f488379f03a72e768bce8598c22478c980e1704247352f1", "format": "zip"},
+    {"name": "cpachecker", "version": "4.2.2", "url": "https://cpachecker.sosy-lab.org/CPAchecker-4.2.2-unix.zip", "sha256": "183adce15ced2641784dd16dd1dda3c4d88bb463674d8adb688fb28c3656525f", "size_bytes": 160189450, "format": "zip"}
+  ]
+}

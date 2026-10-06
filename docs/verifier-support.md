@@ -6,6 +6,13 @@ verifier families for the confirmation policy (distinct current implementations
 and solving engines); ESBMC originated as an old CBMC fork, so this is not a
 claim of mathematically independent proof trust.
 
+The Docker Linux amd64 port is also qualified on this Windows host: CBMC 6.11.0,
+ESBMC 8.5.0 and CPAchecker 4.2.2 / OpenJDK 21.0.12.1 pass SAFE/UNSAFE, multi-source
+inputs and the six-case benchmark. Linux archives and SHA-256 are recorded in
+`docker/verifiers-linux.lock.json`. Separate attempt containers isolate native
+dependencies, outputs, HOME, temporary files and resource limits. See
+[Linux reproduction](linux-docker.md) and [the dispatch explorer](runtime-explorer.html).
+
 `scripts/bootstrap_verifiers.sh` installs pinned, hash-checked packages in
 `.veriruntime/toolchains/`. It uses the official ESBMC release and Homebrew bottles
 for CBMC and native libraries. The bootstrap currently targets macOS ARM64 Tahoe;

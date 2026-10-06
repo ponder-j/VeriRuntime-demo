@@ -30,8 +30,16 @@ class ToolRegistry:
         return self.get(tool).profile()
 
 
-def default_registry(root: str | Path = ".") -> ToolRegistry:
+def default_registry(root: str | Path = ".", backend=None) -> ToolRegistry:
+    import os
     from .cbmc import CBMCAdapter
     from .esbmc import ESBMCAdapter
     from .cpachecker import CPAcheckerAdapter
-    return ToolRegistry((CBMCAdapter(root), ESBMCAdapter(root), CPAcheckerAdapter(root)))
+    adapters = (CBMCAdapter(root), ESBMCAdapter(root), CPAcheckerAdapter(root))
+    backend = backend or os.environ.get('VRUN_BACKEND', 'native')
+    if backend == 'docker':
+        from .docker import DockerAdapter
+        adapters = tuple(DockerAdapter(a) for a in adapters)
+    elif backend != 'native':
+        raise ValueError(f'Unsupported verifier backend: {backend}')
+    return ToolRegistry(adapters)

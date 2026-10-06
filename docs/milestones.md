@@ -16,6 +16,7 @@ arrived during M3 and was integrated in M3–M7 without modifying M0–M2 histor
 | M6 | Two-level EXPLAIN/ANALYZE, structured events, history/show and acceptance script | 59 tests; real demo script passed |
 | M7 | Third real verifier, cross-checks, six-case benchmark, final soundness review and docs | Final test counts and evidence in delivery report |
 | M8 | Optional upstream Codex planner, validated Workflow export and bounded feedback experiments | Real default-sol DAG, two-family miss/hit and honest UNKNOWN feedback; final checks in llm-experiments.md |
+| M9 | Docker Linux reproduction, per-attempt verifier isolation, environment-bound cache and real dispatch explorer | 113 Linux tests; three-family SAFE/UNSAFE and miss/hit; 18-run benchmark; cgroup OOM, mount isolation and reservation-cancellation cleanup; details in linux-docker.md |
 
 Every milestone was reviewed for module boundaries, DSL tool leakage, logical versus
 physical planning, semantic cache validity, fixture isolation, status definitions

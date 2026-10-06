@@ -58,7 +58,8 @@ class ToolAdapter:
         env = dict(os.environ)
         env["LC_ALL"] = "C"
         # An undeclared host include path would violate snapshot identity.
-        for key in ("CPATH", "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH"):
+        for key in ("CPATH", "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH", "LD_PRELOAD",
+                    "JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS"):
             env.pop(key, None)
         if os.uname().sysname == "Darwin":
             local_libs = sorted((self.root / ".veriruntime/toolchains/deps").glob("*/*/lib"))
@@ -66,6 +67,24 @@ class ToolAdapter:
             if local_libs:
                 env["DYLD_LIBRARY_PATH"] = ":".join(map(str, local_libs + host_libs))
         return env
+
+    def attempt_environment(self, workspace: Path) -> dict[str, str]:
+        env = self.environment()
+        for name, folder in (("HOME", "home"), ("TMPDIR", "tmp"),
+                             ("XDG_CACHE_HOME", "cache"), ("XDG_CONFIG_HOME", "config")):
+            path = workspace / '.environment' / folder
+            path.mkdir(parents=True, exist_ok=True)
+            env[name] = str(path)
+        return env
+
+    def cleanup(self, workspace: Path) -> None:
+        """Transport cleanup after process group termination; native tools need none."""
+
+    def prepare(self, task, workspace: Path) -> None:
+        """Reserve transport resources before launching a supervised process."""
+
+    def parse_attempt_result(self, stdout, stderr, exit_code, workspace):
+        return self.parse_result(stdout, stderr, exit_code)
 
     def detect(self) -> ToolProfile:
         diagnostics = []
