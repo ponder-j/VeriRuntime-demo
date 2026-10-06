@@ -1,0 +1,8 @@
+{
+  "platform": "linux/amd64",
+  "packages": [
+    {"name":"ultimate","version":"0.3.1 / 35a84365","url":"https://github.com/ultimate-pa/ultimate/releases/download/v0.3.1/UltimateAutomizer-linux.zip","file":"ultimate.zip","sha256":"b2ec7e2384224f9e9a0228413c4d29e3235108451584dc803ed03c13b16cf01b"},
+    {"name":"framac","version":"33.0 Arsenic","url":"https://www.frama-c.com/download/frama-c-linux-x86-64-33.0-Arsenic.run","file":"frama-c.run","size_bytes":255973573,"sha256":"c754c31bb32d151acf7db3bcfdc5181b076bdbff813b19049e984f639eba3735"},
+    {"name":"rocq","version":"9.1.1","url":"https://github.com/rocq-prover/rocq/releases/download/V9.1.1/rocq-9.1.1.tar.gz","file":"rocq.tar.gz","sha256":"35cd03fc4193969b1cce01190340e5c129c1ba8f02242a9e6dff4b83be118759"}
+  ]
+}

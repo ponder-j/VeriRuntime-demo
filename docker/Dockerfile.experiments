@@ -1,0 +1,38 @@
+FROM python:3.11-slim@sha256:9534e5a8e315485d4061ed659af0fd78a284c015f9b73661b41d6bab25604534 AS base
+ENV DEBIAN_FRONTEND=noninteractive PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 LC_ALL=C PYTHONPATH=/opt/runtime
+WORKDIR /opt/runtime
+ENTRYPOINT ["python3", "-m", "veriruntime.tools.container_worker"]
+
+FROM base AS ultimate-fetch
+COPY docker/downloads/ultimate.zip /archive.zip
+RUN python3 -c "import hashlib,zipfile; from pathlib import Path; p=Path('/archive.zip'); assert hashlib.sha256(p.read_bytes()).hexdigest()=='b2ec7e2384224f9e9a0228413c4d29e3235108451584dc803ed03c13b16cf01b'; zipfile.ZipFile(p).extractall('/opt/ultimate')" && find /opt/ultimate -type f -name '*.py' -exec chmod +x {} + && chmod +x /opt/ultimate/UAutomizer-linux/z3 /opt/ultimate/UAutomizer-linux/cvc4 /opt/ultimate/UAutomizer-linux/mathsat
+FROM base AS ultimate
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev openjdk-21-jre-headless && rm -rf /var/lib/apt/lists/*
+COPY --from=ultimate-fetch /opt/ultimate /opt/ultimate
+COPY veriruntime ./veriruntime
+ENV VRUN_ULTIMATE=/opt/ultimate/UAutomizer-linux/Ultimate.py
+CMD ["probe", "ultimate"]
+
+FROM base AS rocq-build
+RUN apt-get update && apt-get install -y --no-install-recommends ocaml-nox ocaml-findlib libfindlib-ocaml-dev ocaml-dune libzarith-ocaml-dev make gcc libc6-dev libgmp-dev && rm -rf /var/lib/apt/lists/*
+COPY docker/downloads/rocq.tar.gz /archive.tar.gz
+RUN python3 -c "import hashlib; from pathlib import Path; assert hashlib.sha256(Path('/archive.tar.gz').read_bytes()).hexdigest()=='35cd03fc4193969b1cce01190340e5c129c1ba8f02242a9e6dff4b83be118759'" && mkdir /src && tar -xzf /archive.tar.gz -C /src --strip-components=1
+WORKDIR /src
+RUN make dunestrap && dune build -j 2 -p rocq-runtime,coq-core,rocq-core && dune install --prefix=/opt/rocq rocq-runtime coq-core rocq-core
+FROM base AS rocq
+RUN apt-get update && apt-get install -y --no-install-recommends ocaml-findlib libzarith-ocaml && rm -rf /var/lib/apt/lists/*
+COPY --from=rocq-build /opt/rocq /opt/rocq
+ENV PATH=/opt/rocq/bin:$PATH OCAMLPATH=/opt/rocq/lib
+COPY veriruntime ./veriruntime
+CMD ["probe", "rocq"]
+
+FROM base AS framac-fetch
+COPY docker/downloads/frama-c.run /archive.run
+RUN python3 -c "import hashlib; from pathlib import Path; assert hashlib.sha256(Path('/archive.run').read_bytes()).hexdigest()=='c754c31bb32d151acf7db3bcfdc5181b076bdbff813b19049e984f639eba3735'" && sh /archive.run --noexec --nox11 --nochown --noprogress --target /opt/framac
+RUN rm -rf /opt/framac/lib/frama-c/gui && rm -f /opt/framac/bin/frama-c-ptests /opt/framac/bin/frama-c-wtests
+FROM base AS framac
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev libgmp10 z3 cvc5 why3 && rm -rf /var/lib/apt/lists/*
+COPY --from=framac-fetch /opt/framac /opt/framac
+ENV VRUN_FRAMAC=/opt/framac/bin/frama-c FRAMAC_SHARE=/opt/framac/share/frama-c FRAMAC_LIB=/opt/framac/lib/frama-c PATH=/opt/framac/bin:$PATH
+COPY veriruntime ./veriruntime
+CMD ["probe", "framac"]

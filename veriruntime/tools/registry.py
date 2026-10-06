@@ -30,12 +30,25 @@ class ToolRegistry:
         return self.get(tool).profile()
 
 
-def default_registry(root: str | Path = ".", backend=None) -> ToolRegistry:
+def default_registry(root: str | Path = ".", backend=None, extra_tools=None) -> ToolRegistry:
     import os
     from .cbmc import CBMCAdapter
     from .esbmc import ESBMCAdapter
     from .cpachecker import CPAcheckerAdapter
     adapters = (CBMCAdapter(root), ESBMCAdapter(root), CPAcheckerAdapter(root))
+    extra_tools = extra_tools if extra_tools is not None else tuple(filter(None,
+        os.environ.get('VRUN_EXPERIMENTAL_TOOLS', '').split(',')))
+    for name in dict.fromkeys(extra_tools):
+        if name in ('cbmc', 'esbmc', 'cpachecker'):
+            continue
+        if name == 'ultimate':
+            from .ultimate import UltimateAdapter
+            adapters += (UltimateAdapter(root),)
+        elif name == 'framac':
+            from .framac import FramaCAdapter
+            adapters += (FramaCAdapter(root),)
+        else:
+            raise ValueError(f'Unknown experimental verifier: {name}')
     backend = backend or os.environ.get('VRUN_BACKEND', 'native')
     if backend == 'docker':
         from .docker import DockerAdapter

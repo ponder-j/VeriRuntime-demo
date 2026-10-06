@@ -1,0 +1,12 @@
+{
+  "version": "0.2-proposal",
+  "goal": {
+    "id": "square-contract", "kind": "c_contract",
+    "program": {"language":"C", "entry":"square", "sources":["square.c"]},
+    "contract": {"format":"ACSL", "sources":["square.c"], "scope":"function_contract"},
+    "semantics": {"c_standard":"c11", "data_model":"LP64", "integer_arithmetic":"bounded_c", "memory":"iso_c_objects"}
+  },
+  "requirements": {"evidence":"kernel_checked", "coverage":["contract","runtime_errors"], "user_axioms":[]},
+  "proof_assets": [],
+  "budget": {"wall_time_sec":120,"memory_mb":2048,"max_parallel":2}
+}

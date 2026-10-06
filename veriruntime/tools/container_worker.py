@@ -20,7 +20,11 @@ def decode_task(data):
 
 def main():
     action, tool = sys.argv[1:3]
-    adapter = default_registry('/opt/runtime', backend='native').get(tool)
+    if tool == 'rocq':
+        from .rocq import RocqAdapter
+        adapter = RocqAdapter('/opt/runtime')
+    else:
+        adapter = default_registry('/opt/runtime', backend='native', extra_tools=(tool,)).get(tool)
     if action == 'probe':
         print(json.dumps(to_data(adapter.detect())))
         return 0
@@ -28,7 +32,11 @@ def main():
         raise ValueError('Unsupported worker action')
     workspace = Path('/work')
     manifest = json.loads((workspace / 'container-request.json').read_text())
-    task = decode_task(manifest['task'])
+    if tool == 'rocq':
+        from veriruntime.proofs.model import decode_proof
+        task = decode_proof(manifest['task'])
+    else:
+        task = decode_task(manifest['task'])
     # Image ID fixes the binary, system headers, Python and all native dependencies.
     profile = adapter.detect()
     if not profile.available:

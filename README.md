@@ -71,6 +71,27 @@ The [interactive overview](docs/dispatch.html) shows the complete path and cache
 shortcut. See [Linux Docker reproduction and acceptance](docs/linux-docker.md)
 for architecture, resources, evidence locations and current limits.
 
+## Optional verifier experiments and Rocq proofs
+
+The optional lab adds Ultimate Automizer and Frama-C Eva to the C portfolio,
+compares bounded loops, and runs Frama-C WP separately with Z3 and CVC5. Each
+attempt uses the same Docker isolation. These larger images are built only when
+requested by the lab script; the default runtime remains unchanged.
+
+```powershell
+./scripts/verifier-lab.ps1 -BuildDns 1.1.1.1
+./scripts/verifier-lab.ps1 -SkipBuild
+docker compose run --rm runtime check-proof examples/proofs/check.json --json
+```
+
+`check-proof` accepts an existing Rocq statement and proof supplied by a human or
+LLM. It compiles the modules, binds the supplied proof to the declared proposition,
+audits assumptions and independently rechecks compiled libraries. This result
+does not count as a C verifier confirmation. The complete Frama-C VC / Rocq / C
+coverage bridge is a proposed extension. See [the real experiment results and
+DSL design](docs/strong-verification.md), [the strong-proof scheduling diagram](docs/strong-verification.html)
+and [the recorded lab evidence](docs/verifier-lab.json).
+
 ## Native macOS quick start
 
 Python 3.11+ is required. The pinned bootstrap is tested on macOS ARM64 Tahoe
@@ -248,6 +269,7 @@ silently simulated features.
 | `veriruntime/store.py`, `artifacts.py`, `cache.py` | SQLite provenance, content-addressed artifacts and exact goal cache |
 | `veriruntime/observability.py`, `cli.py` | Structured events and human/machine interfaces |
 | `veriruntime/planner/` | Optional upstream Codex process, logical validation and bounded feedback rounds |
+| `veriruntime/proofs/` | Strict upstream proof DSL, module/type binding and separate kernel-check evidence |
 | `examples/`, `scripts/`, `tests/`, `docs/` | Real programs, runnable experiments, regression tests and contracts |
 
 This prototype explores declarative verification, logical/physical separation,

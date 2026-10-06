@@ -10,3 +10,4 @@ dist/
 docker/downloads/*
 !docker/downloads/.gitkeep
 docs/dispatch.visual-check*
+docs/strong-verification.visual-check*

@@ -13,6 +13,20 @@ inputs and the six-case benchmark. Linux archives and SHA-256 are recorded in
 dependencies, outputs, HOME, temporary files and resource limits. See
 [Linux reproduction](linux-docker.md) and [the dispatch explorer](runtime-explorer.html).
 
+Optional Linux experiments add Ultimate Automizer 0.3.1 and Frama-C 33.0 Eva.
+Enable them explicitly with `VRUN_EXPERIMENTAL_TOOLS=ultimate,framac` after building
+`compose.experiments.yaml`. Ultimate passes the six-case SAFE/UNSAFE matrix; its
+counterexamples are verifier reports without an independent witness check. Eva
+proves four safe cases and conservatively returns UNKNOWN on the two unsafe cases.
+It rejects source ACSL in the existing assertion DSL to avoid accepting assumptions
+that other families ignore. Both support the qualified main-entry assertion examples.
+
+Rocq 9.1.1 is a separate `check-proof` route for supplied statement/proof artifacts,
+with type binding, closed-assumption audit and compiled-library kernel recheck.
+It never contributes C confirmation votes. WP + Z3 / CVC5 are isolated lab
+experiments, rather than a completed C-to-Rocq proof bridge. See
+[experiment evidence and the proposed contract DSL](strong-verification.md).
+
 `scripts/bootstrap_verifiers.sh` installs pinned, hash-checked packages in
 `.veriruntime/toolchains/`. It uses the official ESBMC release and Homebrew bottles
 for CBMC and native libraries. The bootstrap currently targets macOS ARM64 Tahoe;

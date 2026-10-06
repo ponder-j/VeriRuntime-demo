@@ -1,0 +1,25 @@
+services:
+  framac:
+    image: veriruntime/framac:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.experiments
+      target: framac
+    platform: linux/amd64
+    profiles: [experiments]
+  ultimate:
+    image: veriruntime/ultimate:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.experiments
+      target: ultimate
+    platform: linux/amd64
+    profiles: [experiments]
+  rocq:
+    image: veriruntime/rocq:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.experiments
+      target: rocq
+    platform: linux/amd64
+    profiles: [experiments]

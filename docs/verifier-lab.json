@@ -1,0 +1,4120 @@
+{
+  "profiles": [
+    {
+      "name": "cbmc",
+      "family": "cbmc",
+      "available": true,
+      "version": "6.11.0 (cbmc-6.11.0)",
+      "path": "sha256:04ec339d4dea67e5c7ead21db93aa1ec0f860d853996598e44e0e428ddff8a21",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 256,
+      "prior_runtime_sec": 0.5,
+      "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+      "diagnostic": ""
+    },
+    {
+      "name": "esbmc",
+      "family": "esbmc",
+      "available": true,
+      "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+      "path": "sha256:eeb7ee5968bd8d07cc95dd512d28c06283f310735790d8170e14afef27bf0e5f",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 512,
+      "prior_runtime_sec": 0.7,
+      "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+      "diagnostic": ""
+    },
+    {
+      "name": "cpachecker",
+      "family": "cpachecker",
+      "available": true,
+      "version": "CPAchecker 4.2.2 (OpenJDK 64-Bit Server VM 21.0.12.1)",
+      "path": "sha256:8203a6555ffe7950c77275f258e8fd28065e4285e9308247782dd58d3dba4221",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 1024,
+      "prior_runtime_sec": 4.0,
+      "config_id": "b0d941be37f818783d63db5982c38785c7fc74036ebf4a7b06d440fdba4f0728",
+      "diagnostic": ""
+    },
+    {
+      "name": "ultimate",
+      "family": "ultimate",
+      "available": true,
+      "version": "35a84365",
+      "path": "sha256:c806cf4949733efd4c9c009c3302f9a373006c8cbae0db5a0cbb5caef60b5f46",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 1024,
+      "prior_runtime_sec": 8.0,
+      "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+      "diagnostic": ""
+    },
+    {
+      "name": "framac",
+      "family": "framac",
+      "available": true,
+      "version": "33.0 (Arsenic)",
+      "path": "sha256:3b4e5f93448f273e6032040069999531c2bb87644240911b797f2f3aebf8b629",
+      "languages": [
+        "C"
+      ],
+      "properties": [
+        "assertion_safety"
+      ],
+      "c_standards": [
+        "c11",
+        "c99"
+      ],
+      "data_models": [
+        "LP64",
+        "ILP32"
+      ],
+      "estimated_memory_mb": 512,
+      "prior_runtime_sec": 2.0,
+      "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+      "diagnostic": ""
+    }
+  ],
+  "rows": [
+    {
+      "tool": "ultimate",
+      "task": "bench-safe_assert",
+      "verdict": "SAFE",
+      "wall_time_sec": 7.155976627999735,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "ultimate",
+      "task": "bench-unsafe_assert",
+      "verdict": "UNSAFE",
+      "wall_time_sec": 6.62591316399994,
+      "expected": "UNSAFE"
+    },
+    {
+      "tool": "ultimate",
+      "task": "bench-bounded_loop",
+      "verdict": "SAFE",
+      "wall_time_sec": 9.264348019999488,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "ultimate",
+      "task": "bench-branch",
+      "verdict": "SAFE",
+      "wall_time_sec": 6.817187133000516,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "ultimate",
+      "task": "bench-array",
+      "verdict": "UNSAFE",
+      "wall_time_sec": 6.4631005050005115,
+      "expected": "UNSAFE"
+    },
+    {
+      "tool": "ultimate",
+      "task": "bench-arithmetic",
+      "verdict": "SAFE",
+      "wall_time_sec": 6.800114594000661,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-safe_assert",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.289757147000273,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-unsafe_assert",
+      "verdict": "UNKNOWN",
+      "wall_time_sec": 1.2756518280002638,
+      "expected": "UNKNOWN"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-bounded_loop",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.2559720469998865,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-branch",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.2838286920004975,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-array",
+      "verdict": "UNKNOWN",
+      "wall_time_sec": 1.2728368890002457,
+      "expected": "UNKNOWN"
+    },
+    {
+      "tool": "framac",
+      "task": "bench-arithmetic",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.332994050000707,
+      "expected": "SAFE"
+    },
+    {
+      "tool": "cbmc",
+      "task": "long-loop-100",
+      "verdict": "UNKNOWN",
+      "wall_time_sec": 0.7935990859996309
+    },
+    {
+      "tool": "esbmc",
+      "task": "long-loop-100",
+      "verdict": "UNKNOWN",
+      "wall_time_sec": 1.8336472350001713
+    },
+    {
+      "tool": "ultimate",
+      "task": "long-loop-100",
+      "verdict": "SAFE",
+      "wall_time_sec": 34.08496667200052
+    },
+    {
+      "tool": "framac",
+      "task": "long-loop-100",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.2538195679999262
+    }
+  ],
+  "executions": [
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-safe_assert",
+          "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 8.0,
+            "success_rate": 0.5,
+            "score": 0.0625,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "2eac806150cf48578c5998e586091e20",
+          "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "f2d9aab2edbf4f86a63d0307c8d201f5"
+          ],
+          "wall_time_sec": 7.155976627999735,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-safe_assert",
+          "status": "COMPLETED",
+          "artifacts": [
+            "765b6ae423619c9fe1e93c9bdb42193e13a34eafb89df4399f1acd29baa836d6",
+            "5f5e263d30c1b391f5148ef993d4a4ce38fbee29f84affaf23fe7c2c828acd70",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "037e61194d7e600f2f4a2458f2dbd9b32daed5985063d6008909ff0ee6384a9f",
+            "e32ac0a11553f329b721ab73798c84efd1f9be76c25f45f0cb27a0f5c1685504",
+            "c4448a8ffe977822b7092195b5d714424b06b460e526875ed13dce744a396ba8",
+            "dc14c7bef76457e7da9c62b9026b7c0441e9965cfac2523f5a7da7a3eb035ffd",
+            "38ed0d4c7b089b3bd2becbd5de6ee45b6fa2722218e1bf20ba40cc0fa3090344",
+            "56822fbeb0083594f173d9a563e525aefa31eeb599935386b88b39324a361463",
+            "56c2a295da60427dcad243862c1913672c5ce1eec6487fc992df26c3b4e778b0",
+            "60f03f67450d25168b3d3ceca437491160b1b9355a9e474db28b9b141e4e8c04",
+            "298be76d8bca26d9bba41c08b84ca278b8b6a2c202a194675f213285a2425a42",
+            "3a2d82989f22930fb5a31b8467400e830f32f9abd3c296c765514ffb3d62e60b",
+            "269be4697da1ca9c21da963418a8a1dd756a32f81e94d412620ca9ee8e38011b",
+            "d8841ed5541e642a020b634a1596505fb6b2b53790948238801bf9f8a4d147a5",
+            "bd7595d8c814ca87333dbcbfb58a7f296657acbde8aaf5a0ea613eb2891915f2",
+            "25eeb465c2a2bc1dfb2076a4f268472ad83f7b38c0eb1218dad2569a3a227fba",
+            "102a852b551dd91b4715fe8e79f89fc86798e5195bf05a6948b498ed62053a88",
+            "3fe16d42d7abb98b2641c41c716dbba88851e99ad3ecabecfafe40110562b97a",
+            "08347ffa03c8467a656fd530c50f8aa4bb87bdaec6473240fa0b6202d09b60a5"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-safe_assert",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "f2d9aab2edbf4f86a63d0307c8d201f5",
+            "execution_id": "2eac806150cf48578c5998e586091e20",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/2eac806150cf48578c5998e586091e20/f2d9aab2edbf4f86a63d0307c8d201f5"
+            ],
+            "start_time": "2026-10-06T05:18:34.139975+00:00",
+            "end_time": "2026-10-06T05:18:41.070061+00:00",
+            "wall_time_sec": 6.930091571999583,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/2eac806150cf48578c5998e586091e20/f2d9aab2edbf4f86a63d0307c8d201f5",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/2eac806150cf48578c5998e586091e20/f2d9aab2edbf4f86a63d0307c8d201f5/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/2eac806150cf48578c5998e586091e20/f2d9aab2edbf4f86a63d0307c8d201f5/stderr.txt",
+            "message": "Ultimate assertion reachability proof",
+            "artifact_ids": [
+              "c4448a8ffe977822b7092195b5d714424b06b460e526875ed13dce744a396ba8",
+              "dc14c7bef76457e7da9c62b9026b7c0441e9965cfac2523f5a7da7a3eb035ffd",
+              "38ed0d4c7b089b3bd2becbd5de6ee45b6fa2722218e1bf20ba40cc0fa3090344",
+              "56822fbeb0083594f173d9a563e525aefa31eeb599935386b88b39324a361463",
+              "56c2a295da60427dcad243862c1913672c5ce1eec6487fc992df26c3b4e778b0",
+              "60f03f67450d25168b3d3ceca437491160b1b9355a9e474db28b9b141e4e8c04",
+              "298be76d8bca26d9bba41c08b84ca278b8b6a2c202a194675f213285a2425a42",
+              "3a2d82989f22930fb5a31b8467400e830f32f9abd3c296c765514ffb3d62e60b",
+              "269be4697da1ca9c21da963418a8a1dd756a32f81e94d412620ca9ee8e38011b",
+              "d8841ed5541e642a020b634a1596505fb6b2b53790948238801bf9f8a4d147a5",
+              "bd7595d8c814ca87333dbcbfb58a7f296657acbde8aaf5a0ea613eb2891915f2",
+              "25eeb465c2a2bc1dfb2076a4f268472ad83f7b38c0eb1218dad2569a3a227fba",
+              "102a852b551dd91b4715fe8e79f89fc86798e5195bf05a6948b498ed62053a88",
+              "3fe16d42d7abb98b2641c41c716dbba88851e99ad3ecabecfafe40110562b97a",
+              "08347ffa03c8467a656fd530c50f8aa4bb87bdaec6473240fa0b6202d09b60a5"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:18:34.139679+00:00",
+            "kind": "execution_start",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967"
+          },
+          {
+            "time": "2026-10-06T05:18:34.139794+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99630398499994
+          },
+          {
+            "time": "2026-10-06T05:18:41.291919+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "f2d9aab2edbf4f86a63d0307c8d201f5",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 6.930091571999583
+          },
+          {
+            "time": "2026-10-06T05:18:41.292091+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-unsafe_assert",
+          "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "ultimate",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 1,
+              "definitive_count": 1,
+              "safe_count": 1,
+              "unsafe_count": 0,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 6.930091571999583,
+              "median_runtime_sec": 6.930091571999583,
+              "recent_runtime_sec": 6.930091571999583
+            },
+            "expected_runtime_sec": 6.930091571999583,
+            "success_rate": 0.75,
+            "score": 0.10822367817336039,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "40b9b6d832a9438e913dd9463fad71aa",
+          "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+          "verdict": "UNSAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "8fd49f8a63d14713b2f9650d0af6b3fa"
+          ],
+          "wall_time_sec": 6.62591316399994,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-unsafe_assert",
+          "status": "COMPLETED",
+          "artifacts": [
+            "ff5cc6cedbacd4ac61a453732b7e88c36ca43f1846dba6fd2f2a6ae540bcf68a",
+            "28a2032f7b6e05e51f49426c5b57dea0603ef4a1e91bcb62a3eb883691069466",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "bec67ebd5425678957430dd1bcd89a30a258aac863f5409cf765f51254df3c8e",
+            "ca84cc49cae1047af8aea4e0cc482aa54994853badb6f94fe2904ea0ff05ae18",
+            "98f069b8a1cd8683a08ad9101a18ff7992641e7d03ef081d6916111d0f77856f",
+            "b5076c6347e7077b92aabda6e6451edba0fcb6bdf3ef3383026c761932945097",
+            "8d14dc84e2e06c23353d45a22840a3b32ae5d250574b8b2c88542ca094083859",
+            "7df11c6f16fd837160efaba51e78a35ac6230600ec8b81cb63091744da26da3b",
+            "4055c25c6dd2b8b74adb36707a0fb416cab6bb5117565c7ff262edd9ba89971e",
+            "2d6da84f4a4aa75147bbbb0c182881b01fdb18c1f848bc710ffcf75dbae56b77",
+            "81c8b6c6cb111d463df47bcb251d4a3dc9213e6ba9ccf9afeaeaee3c33b637ac",
+            "ccb49834d82cf9307074644b2918da33a2526883a72a267e1f94ac5d0d42f1e5",
+            "26175d8ff6a5040bc973203d4185e61669b4ee0abb424c96e202e093e5646f5b",
+            "a5c52ea58813ae6f3af70d13e1064197f543418b3e04b1d3671419ea73f10e0a",
+            "9788e53a7f82d269b91b54cf4a1af5e1739bc8eb4f140134740bdc15f0ec7ec3",
+            "7f7b6e5fed90939bdd9870d6be07ea376ea524b6dbdb8316da7658a39cf71a8b",
+            "789daed6dc9754c2cc9caf42e263e1cbf7055063efc6a8934699b10cafa8b3ce",
+            "cd68993844b587a14b2b92133b42466d5f70191a5c59e471b40d24d0d1bd619a",
+            "fcba04877d656e9d3c406c8e54091f9c810f4a074c4276eebe3627e3ab3544c2",
+            "311bb6aa1516a1bb115efb003394d2bc9eb89435f8762be16843a6eabbef1f9c"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-unsafe_assert",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "8fd49f8a63d14713b2f9650d0af6b3fa",
+            "execution_id": "40b9b6d832a9438e913dd9463fad71aa",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/40b9b6d832a9438e913dd9463fad71aa/8fd49f8a63d14713b2f9650d0af6b3fa"
+            ],
+            "start_time": "2026-10-06T05:18:41.427610+00:00",
+            "end_time": "2026-10-06T05:18:47.812194+00:00",
+            "wall_time_sec": 6.386280547999377,
+            "verdict": "UNSAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/40b9b6d832a9438e913dd9463fad71aa/8fd49f8a63d14713b2f9650d0af6b3fa",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/40b9b6d832a9438e913dd9463fad71aa/8fd49f8a63d14713b2f9650d0af6b3fa/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/40b9b6d832a9438e913dd9463fad71aa/8fd49f8a63d14713b2f9650d0af6b3fa/stderr.txt",
+            "message": "Ultimate assertion counterexample (not independently witness-checked)",
+            "artifact_ids": [
+              "98f069b8a1cd8683a08ad9101a18ff7992641e7d03ef081d6916111d0f77856f",
+              "b5076c6347e7077b92aabda6e6451edba0fcb6bdf3ef3383026c761932945097",
+              "8d14dc84e2e06c23353d45a22840a3b32ae5d250574b8b2c88542ca094083859",
+              "7df11c6f16fd837160efaba51e78a35ac6230600ec8b81cb63091744da26da3b",
+              "4055c25c6dd2b8b74adb36707a0fb416cab6bb5117565c7ff262edd9ba89971e",
+              "2d6da84f4a4aa75147bbbb0c182881b01fdb18c1f848bc710ffcf75dbae56b77",
+              "81c8b6c6cb111d463df47bcb251d4a3dc9213e6ba9ccf9afeaeaee3c33b637ac",
+              "ccb49834d82cf9307074644b2918da33a2526883a72a267e1f94ac5d0d42f1e5",
+              "26175d8ff6a5040bc973203d4185e61669b4ee0abb424c96e202e093e5646f5b",
+              "a5c52ea58813ae6f3af70d13e1064197f543418b3e04b1d3671419ea73f10e0a",
+              "9788e53a7f82d269b91b54cf4a1af5e1739bc8eb4f140134740bdc15f0ec7ec3",
+              "7f7b6e5fed90939bdd9870d6be07ea376ea524b6dbdb8316da7658a39cf71a8b",
+              "789daed6dc9754c2cc9caf42e263e1cbf7055063efc6a8934699b10cafa8b3ce",
+              "cd68993844b587a14b2b92133b42466d5f70191a5c59e471b40d24d0d1bd619a",
+              "fcba04877d656e9d3c406c8e54091f9c810f4a074c4276eebe3627e3ab3544c2",
+              "311bb6aa1516a1bb115efb003394d2bc9eb89435f8762be16843a6eabbef1f9c"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:18:41.427411+00:00",
+            "kind": "execution_start",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0"
+          },
+          {
+            "time": "2026-10-06T05:18:41.427475+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.999883471999965
+          },
+          {
+            "time": "2026-10-06T05:18:48.051452+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "8fd49f8a63d14713b2f9650d0af6b3fa",
+            "verdict": "UNSAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 6.386280547999377
+          },
+          {
+            "time": "2026-10-06T05:18:48.051597+00:00",
+            "kind": "execution_end",
+            "verdict": "UNSAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-bounded_loop",
+          "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "ultimate",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 2,
+              "definitive_count": 2,
+              "safe_count": 1,
+              "unsafe_count": 1,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 6.65818605999948,
+              "median_runtime_sec": 6.65818605999948,
+              "recent_runtime_sec": 6.386280547999377
+            },
+            "expected_runtime_sec": 6.65818605999948,
+            "success_rate": 0.8333333333333334,
+            "score": 0.12515921390959123,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "ce3f353139054b78a7334050bc96a686",
+          "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "f11fe5931c88422f878774a80eec584e"
+          ],
+          "wall_time_sec": 9.264348019999488,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-bounded_loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "8f8145e0d9be0c7398a95553b1587133bbf65e0bb2e70d5beb76472e0d2ef8f0",
+            "8a1cb15b47e620ffa3f4356a9b48c318114f5002b898f340620d57f834a4a882",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "a57d2402490a0bd50c3c747ed70e5127f9ccb41b88cfd6307458b09fff133a74",
+            "2775734bc9c454de6fbf5bbf61f55b859818548968bdb8543d3cc7fa906f44fd",
+            "761d5e6af93af6daf8dfb713c6a19fdf7fbc70f0550295ed25b325f7b77e7ad4",
+            "5668c020306a2838cfc0fc6bb0772cbe22257efdde0392b044fb56ca7b937adb",
+            "cbee272e02e03b6cb984d91b68219ee515d9a6761edc261061e0bff4492bdf9f",
+            "e88cbb039e0174b726de4be04041b05349df38c287c5fa79267cf59352793ba7",
+            "81ab3f62ce6178a2cca61ee4cd156c32e682059466fa715f7283d8ac3d800e61",
+            "8d8e2d1235b6b1129e9f878e54dba5e60a1e283938aa94140578f41bf74f3c21",
+            "5216e950c73e2c7a6c8ac33d56c692503c9e8100d867f077b518f82b307c0884",
+            "a937868de111c5a90f7cb3b1b81f366b5de5d2f9a953059b4d87c67b5b0567e2",
+            "211bff315c74feaa5ccf32b9e12e2792e3bacd9bf4f9c2646daa96aa76923467",
+            "d6ab38f42e2f9bf4a1ce076c0805c0db4881969c532a6490857b13e88be5bc88",
+            "fda4081e3ec89cc36ec17401642428ea0f4b6beaccf69dc7d1c15adb2a4ae802",
+            "0f822dc2fdfbc046ed3b026d9feaa58121bb277a024548a9e98006ce825d7eef",
+            "76f1dccdca242d368671ff11d18b545c681ffaf552bb456a3ce387985b471239",
+            "b4e62f798219a27578215c1b40e63b66d0d49f88b0ce4de46b5a3cac459fbedb",
+            "a68bb543121ed65d16759c58ed99fd4963c8724d13ad281ea629da99bde8c92d"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-bounded_loop",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "f11fe5931c88422f878774a80eec584e",
+            "execution_id": "ce3f353139054b78a7334050bc96a686",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/ce3f353139054b78a7334050bc96a686/f11fe5931c88422f878774a80eec584e"
+            ],
+            "start_time": "2026-10-06T05:18:48.174245+00:00",
+            "end_time": "2026-10-06T05:18:57.213474+00:00",
+            "wall_time_sec": 9.039239955000085,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/ce3f353139054b78a7334050bc96a686/f11fe5931c88422f878774a80eec584e",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/ce3f353139054b78a7334050bc96a686/f11fe5931c88422f878774a80eec584e/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/ce3f353139054b78a7334050bc96a686/f11fe5931c88422f878774a80eec584e/stderr.txt",
+            "message": "Ultimate assertion reachability proof",
+            "artifact_ids": [
+              "761d5e6af93af6daf8dfb713c6a19fdf7fbc70f0550295ed25b325f7b77e7ad4",
+              "5668c020306a2838cfc0fc6bb0772cbe22257efdde0392b044fb56ca7b937adb",
+              "cbee272e02e03b6cb984d91b68219ee515d9a6761edc261061e0bff4492bdf9f",
+              "e88cbb039e0174b726de4be04041b05349df38c287c5fa79267cf59352793ba7",
+              "81ab3f62ce6178a2cca61ee4cd156c32e682059466fa715f7283d8ac3d800e61",
+              "8d8e2d1235b6b1129e9f878e54dba5e60a1e283938aa94140578f41bf74f3c21",
+              "5216e950c73e2c7a6c8ac33d56c692503c9e8100d867f077b518f82b307c0884",
+              "a937868de111c5a90f7cb3b1b81f366b5de5d2f9a953059b4d87c67b5b0567e2",
+              "211bff315c74feaa5ccf32b9e12e2792e3bacd9bf4f9c2646daa96aa76923467",
+              "d6ab38f42e2f9bf4a1ce076c0805c0db4881969c532a6490857b13e88be5bc88",
+              "fda4081e3ec89cc36ec17401642428ea0f4b6beaccf69dc7d1c15adb2a4ae802",
+              "0f822dc2fdfbc046ed3b026d9feaa58121bb277a024548a9e98006ce825d7eef",
+              "76f1dccdca242d368671ff11d18b545c681ffaf552bb456a3ce387985b471239",
+              "b4e62f798219a27578215c1b40e63b66d0d49f88b0ce4de46b5a3cac459fbedb",
+              "a68bb543121ed65d16759c58ed99fd4963c8724d13ad281ea629da99bde8c92d"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:18:48.173980+00:00",
+            "kind": "execution_start",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81"
+          },
+          {
+            "time": "2026-10-06T05:18:48.174065+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99985489200026
+          },
+          {
+            "time": "2026-10-06T05:18:57.438108+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "f11fe5931c88422f878774a80eec584e",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 9.039239955000085
+          },
+          {
+            "time": "2026-10-06T05:18:57.438283+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-branch",
+          "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "ultimate",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 3,
+              "definitive_count": 3,
+              "safe_count": 2,
+              "unsafe_count": 1,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 7.451870691666348,
+              "median_runtime_sec": 6.930091571999583,
+              "recent_runtime_sec": 9.039239955000085
+            },
+            "expected_runtime_sec": 6.930091571999583,
+            "success_rate": 0.875,
+            "score": 0.12626095786892044,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "facd7d8ea5b54bde93d0441b5fc40e15",
+          "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "924b606cff7c4ba1970adf1e53e5a279"
+          ],
+          "wall_time_sec": 6.817187133000516,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-branch",
+          "status": "COMPLETED",
+          "artifacts": [
+            "30e3759ec56d64f2478d1759302357fd30fa804dbd38dd62e5dcac44e1a876f4",
+            "35657476ec4e12fccdac1c7c87d05cae1c0ce65916db0e8edcf52fd5751f50e1",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "7b59ba142e8f5961a61198fd882220b99e684c2ae4be69de050a80c8bd6c5ff7",
+            "5c2eb9b640fa3ef2ea8b49a555a30dc45b09bdca7abdcb2a548c9014ce17fa9b",
+            "8578dc2987cdb00ec551c23ced9e10d6605e96fdafaa811758d457e83740246d",
+            "5f1d2b30b383224dbcf51afd323c2eac60608bb2bda07fe3e32cb6461af93a4b",
+            "384426d467b0893d37542369bf521c557c833875849bf89d12293f65f7a089b1",
+            "a7b0329dee87dce3b01263e44ab1799762032f33c5c28be44ea6445691471327",
+            "73328433c7b2a18f52af33ccccaf77324f63e6dbcd52bf31194a5e1cd3bad062",
+            "9dc49ec2814a213d059ba360c87546e8e8bb6140e24b5a5109ddd09875295de6",
+            "3bf1ca94860a05bfd1c15412e958f79f12b9765407f520809b19d7915786b072",
+            "b1f2269367e700f787c043be6a5ac0d8e257b3ba7346bda9bf3685b050a8b0b0",
+            "ce21ed316f0a30d10338e013a641ac11addd6e87a10424776709a8052e35adc3",
+            "e4c35752cd8797fba5366680c8d29ab11e6adde3544225fe061da2eb62113b59",
+            "3ff00e5955e1f5a5044f262cdb596feecf2ed69e2c40a92758c7128da93b5449",
+            "303a2d1cbdb0611a547b5f394fa0432817af6593d6e85c8dbb62906d5697ac40",
+            "3a720263c2d2ce2f9788acb48285dda755ceaf6e7e3ceae2897020cc5038acb3",
+            "d29bdfcc95c1ac34cb4966359db0d300ffd8b6b118fc8a505228c3907f30a99b",
+            "d6fedeb1c680fce459196feb1a24f229cf3f51411003a28e96f66ed164d0e563"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-branch",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "924b606cff7c4ba1970adf1e53e5a279",
+            "execution_id": "facd7d8ea5b54bde93d0441b5fc40e15",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/facd7d8ea5b54bde93d0441b5fc40e15/924b606cff7c4ba1970adf1e53e5a279"
+            ],
+            "start_time": "2026-10-06T05:18:57.565637+00:00",
+            "end_time": "2026-10-06T05:19:04.154863+00:00",
+            "wall_time_sec": 6.589237920999949,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/facd7d8ea5b54bde93d0441b5fc40e15/924b606cff7c4ba1970adf1e53e5a279",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/facd7d8ea5b54bde93d0441b5fc40e15/924b606cff7c4ba1970adf1e53e5a279/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/facd7d8ea5b54bde93d0441b5fc40e15/924b606cff7c4ba1970adf1e53e5a279/stderr.txt",
+            "message": "Ultimate assertion reachability proof",
+            "artifact_ids": [
+              "8578dc2987cdb00ec551c23ced9e10d6605e96fdafaa811758d457e83740246d",
+              "5f1d2b30b383224dbcf51afd323c2eac60608bb2bda07fe3e32cb6461af93a4b",
+              "384426d467b0893d37542369bf521c557c833875849bf89d12293f65f7a089b1",
+              "a7b0329dee87dce3b01263e44ab1799762032f33c5c28be44ea6445691471327",
+              "73328433c7b2a18f52af33ccccaf77324f63e6dbcd52bf31194a5e1cd3bad062",
+              "9dc49ec2814a213d059ba360c87546e8e8bb6140e24b5a5109ddd09875295de6",
+              "3bf1ca94860a05bfd1c15412e958f79f12b9765407f520809b19d7915786b072",
+              "b1f2269367e700f787c043be6a5ac0d8e257b3ba7346bda9bf3685b050a8b0b0",
+              "ce21ed316f0a30d10338e013a641ac11addd6e87a10424776709a8052e35adc3",
+              "e4c35752cd8797fba5366680c8d29ab11e6adde3544225fe061da2eb62113b59",
+              "3ff00e5955e1f5a5044f262cdb596feecf2ed69e2c40a92758c7128da93b5449",
+              "303a2d1cbdb0611a547b5f394fa0432817af6593d6e85c8dbb62906d5697ac40",
+              "3a720263c2d2ce2f9788acb48285dda755ceaf6e7e3ceae2897020cc5038acb3",
+              "d29bdfcc95c1ac34cb4966359db0d300ffd8b6b118fc8a505228c3907f30a99b",
+              "d6fedeb1c680fce459196feb1a24f229cf3f51411003a28e96f66ed164d0e563"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:18:57.565451+00:00",
+            "kind": "execution_start",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7"
+          },
+          {
+            "time": "2026-10-06T05:18:57.565512+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99989421299961
+          },
+          {
+            "time": "2026-10-06T05:19:04.382428+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "924b606cff7c4ba1970adf1e53e5a279",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 6.589237920999949
+          },
+          {
+            "time": "2026-10-06T05:19:04.382610+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-array",
+          "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "ultimate",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 4,
+              "definitive_count": 4,
+              "safe_count": 3,
+              "unsafe_count": 1,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 7.236212498999748,
+              "median_runtime_sec": 6.759664746499766,
+              "recent_runtime_sec": 6.589237920999949
+            },
+            "expected_runtime_sec": 6.759664746499766,
+            "success_rate": 0.9,
+            "score": 0.13314269771530174,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "c25e52327d7c4326850200e3f540483e",
+          "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+          "verdict": "UNSAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "d83dea9aa7ff45d5a5ae0bb99ff937be"
+          ],
+          "wall_time_sec": 6.4631005050005115,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-array",
+          "status": "COMPLETED",
+          "artifacts": [
+            "2cc048738a8a3992aeda59a468cf111da3e2627039133e646e91b099711a5e51",
+            "4df7de37fa6e532457a6f03c80c7e63457b9ce8fb2ba97a068b2b290bf8d800e",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "722fe75b319ee502ffa7b92cd8a41e6729db3bdcd9f7552d90158eeb9133f48a",
+            "d5796138bb3d2b5924d16739caf4b64e9a8578e2f5e146f43b0f74bd98f67953",
+            "df2209487125e510517c807f8f7ed0161bb8bd061f691f9efc593b243954633c",
+            "df56a0fea3e4880f9d61365f0130ebe10ee27087dc5af42c37ce2413867f7f26",
+            "b43752047dfff3ece7968fd7f6b43805e708c78a4882356edb074f29cc60725f",
+            "dafa21cc550f13721263005e34004c9bbb1a4561d71d8c97830196a47f424b62",
+            "cacd947d6915311c79f9d94fff68363a0cb24616fa5d406010ac8f86d1b1c9ad",
+            "37e8ef1330b499f81b11b103bcf8e6422df4d167486c8ffe97ec0573cdd13cc5",
+            "1f9df7e5732abb885166ec396f1cfe5d927f6704685f360c655a7c683ccbd623",
+            "0238660fc57e45d4bd9920b90b98775b569dc3b55e9d2d668077bcc1590e1dba",
+            "1249ae53fd6476166ced6aa30cf56c8b858d452284e3b61ef691f522c343e92d",
+            "926f7aa396c46cbffb5c6a24abcb9ddaba4a61442517fbc9ab5b58fa55b3094c",
+            "63ff14e6d9fa5dff728955d170a8faf054091098ec4c5e5e0ba79de2d6a64946",
+            "b9d82b6387e0c31feb806b3cf1c008bd95ee3294633e36692727964a07857131",
+            "13a7caa26e30c356b879a512c81f1d15247035e9004edb90d269be9874701b7c",
+            "01c2bd1a11593d1bd5de45197a22c43f4c56cf5925859b97627cfd9314c97674",
+            "6630ff3d2f0f44640f2ff7795a22e941c239c89705d8d24f2342004391f55477",
+            "e6c39a65558e37a086af8daf4faa74b24d148e767eea3de3e01f809512e3dcfa"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-array",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "d83dea9aa7ff45d5a5ae0bb99ff937be",
+            "execution_id": "c25e52327d7c4326850200e3f540483e",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/c25e52327d7c4326850200e3f540483e/d83dea9aa7ff45d5a5ae0bb99ff937be"
+            ],
+            "start_time": "2026-10-06T05:19:04.506980+00:00",
+            "end_time": "2026-10-06T05:19:10.724239+00:00",
+            "wall_time_sec": 6.21726865600067,
+            "verdict": "UNSAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/c25e52327d7c4326850200e3f540483e/d83dea9aa7ff45d5a5ae0bb99ff937be",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/c25e52327d7c4326850200e3f540483e/d83dea9aa7ff45d5a5ae0bb99ff937be/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/c25e52327d7c4326850200e3f540483e/d83dea9aa7ff45d5a5ae0bb99ff937be/stderr.txt",
+            "message": "Ultimate assertion counterexample (not independently witness-checked)",
+            "artifact_ids": [
+              "df2209487125e510517c807f8f7ed0161bb8bd061f691f9efc593b243954633c",
+              "df56a0fea3e4880f9d61365f0130ebe10ee27087dc5af42c37ce2413867f7f26",
+              "b43752047dfff3ece7968fd7f6b43805e708c78a4882356edb074f29cc60725f",
+              "dafa21cc550f13721263005e34004c9bbb1a4561d71d8c97830196a47f424b62",
+              "cacd947d6915311c79f9d94fff68363a0cb24616fa5d406010ac8f86d1b1c9ad",
+              "37e8ef1330b499f81b11b103bcf8e6422df4d167486c8ffe97ec0573cdd13cc5",
+              "1f9df7e5732abb885166ec396f1cfe5d927f6704685f360c655a7c683ccbd623",
+              "0238660fc57e45d4bd9920b90b98775b569dc3b55e9d2d668077bcc1590e1dba",
+              "1249ae53fd6476166ced6aa30cf56c8b858d452284e3b61ef691f522c343e92d",
+              "926f7aa396c46cbffb5c6a24abcb9ddaba4a61442517fbc9ab5b58fa55b3094c",
+              "63ff14e6d9fa5dff728955d170a8faf054091098ec4c5e5e0ba79de2d6a64946",
+              "b9d82b6387e0c31feb806b3cf1c008bd95ee3294633e36692727964a07857131",
+              "13a7caa26e30c356b879a512c81f1d15247035e9004edb90d269be9874701b7c",
+              "01c2bd1a11593d1bd5de45197a22c43f4c56cf5925859b97627cfd9314c97674",
+              "6630ff3d2f0f44640f2ff7795a22e941c239c89705d8d24f2342004391f55477",
+              "e6c39a65558e37a086af8daf4faa74b24d148e767eea3de3e01f809512e3dcfa"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:04.506798+00:00",
+            "kind": "execution_start",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d"
+          },
+          {
+            "time": "2026-10-06T05:19:04.506847+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99991107000005
+          },
+          {
+            "time": "2026-10-06T05:19:10.969723+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "d83dea9aa7ff45d5a5ae0bb99ff937be",
+            "verdict": "UNSAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 6.21726865600067
+          },
+          {
+            "time": "2026-10-06T05:19:10.969872+00:00",
+            "kind": "execution_end",
+            "verdict": "UNSAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-arithmetic",
+          "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "ultimate",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 5,
+              "definitive_count": 5,
+              "safe_count": 3,
+              "unsafe_count": 2,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 7.032423730399932,
+              "median_runtime_sec": 6.589237920999949,
+              "recent_runtime_sec": 6.21726865600067
+            },
+            "expected_runtime_sec": 6.589237920999949,
+            "success_rate": 0.9166666666666666,
+            "score": 0.13911573351225387,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "b34dd41f5e364fca9b68e80a92027375",
+          "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "17b459bbd0d34467bf574870fc7fb99d"
+          ],
+          "wall_time_sec": 6.800114594000661,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-arithmetic",
+          "status": "COMPLETED",
+          "artifacts": [
+            "159b23307401d22badd47073ae9ca5751cd60d14327a864373fbbfe0b6760cf6",
+            "81121b9b956a360b362f85c1dc91f8c6d983460b6c31b820cb960f28be386b80",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "261785a9743d006bcc7e6fba7f0462998c2a35a814de88bd02939c12c4c891e3",
+            "c22498b6ddb56e9fea61619032b6716fccb3547e9ff897c588d5ebdceff8d92b",
+            "7b465e228ae581c424d7f1f877d6b846a2943dafd7e64c178367e4ab4d7fc3ef",
+            "bb033f8b1867ab6dcac40cca186487a5d1cf0210d6117c4a385ce78bf191eaa1",
+            "d57c273dd24cd30b12b2c3be31e3972bfdee30f2b067651190bc0c9b90aa6148",
+            "33f42723aef9908055e4d34716f5b4913847ceeaa39d3655bde5b8ce70629c44",
+            "3b9199ae058b71d321e2e963403efd515e63fba6a7a7426c3be4b08a49f49b85",
+            "8e8fe4d38f10b53fc8d9597b2288e6f01e5fe95b987cb34377cc581e88328cf0",
+            "4ee3721d4069ab31fcc010b29423a73a404197c47cce1b9489c17ae68bad910e",
+            "52816c1376dfdd05d5a1bd1aec17b6b841d41462cb4a9c663c617c63ff53be38",
+            "38a4a30602e714e6ddb10155c84e2e2085284c1d682d731eadc77058a44177b0",
+            "caea26fe7db3393e600cd9861d16f762e9e2601533b510d72b4c3b3a689d5c39",
+            "31ae8fbc754bcf7089382a044c4232e552d1a17321b92efa83223b0bf14737f9",
+            "18f4924b1c479b9bfa1ed6211ce17b64b27bf0f7c2589c377de86ad81ef77f1b",
+            "173aa56f9a39887b8d425d06a766e7ff3ef97c151c30a4ec494b3b7b0cd9f2a3",
+            "6fc8c2da5a47dda7d226bf09e8cd3e96346aca7eef8d604eb436317b4af3c47a",
+            "5072d7d20971ebbfc2b0da8c24502f4cd8932727f6ddf78616ddd16592071f0f"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-arithmetic",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "17b459bbd0d34467bf574870fc7fb99d",
+            "execution_id": "b34dd41f5e364fca9b68e80a92027375",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/b34dd41f5e364fca9b68e80a92027375/17b459bbd0d34467bf574870fc7fb99d"
+            ],
+            "start_time": "2026-10-06T05:19:11.105253+00:00",
+            "end_time": "2026-10-06T05:19:17.667859+00:00",
+            "wall_time_sec": 6.564209288000711,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/b34dd41f5e364fca9b68e80a92027375/17b459bbd0d34467bf574870fc7fb99d",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/b34dd41f5e364fca9b68e80a92027375/17b459bbd0d34467bf574870fc7fb99d/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/ultimate/executions/b34dd41f5e364fca9b68e80a92027375/17b459bbd0d34467bf574870fc7fb99d/stderr.txt",
+            "message": "Ultimate assertion reachability proof",
+            "artifact_ids": [
+              "7b465e228ae581c424d7f1f877d6b846a2943dafd7e64c178367e4ab4d7fc3ef",
+              "bb033f8b1867ab6dcac40cca186487a5d1cf0210d6117c4a385ce78bf191eaa1",
+              "d57c273dd24cd30b12b2c3be31e3972bfdee30f2b067651190bc0c9b90aa6148",
+              "33f42723aef9908055e4d34716f5b4913847ceeaa39d3655bde5b8ce70629c44",
+              "3b9199ae058b71d321e2e963403efd515e63fba6a7a7426c3be4b08a49f49b85",
+              "8e8fe4d38f10b53fc8d9597b2288e6f01e5fe95b987cb34377cc581e88328cf0",
+              "4ee3721d4069ab31fcc010b29423a73a404197c47cce1b9489c17ae68bad910e",
+              "52816c1376dfdd05d5a1bd1aec17b6b841d41462cb4a9c663c617c63ff53be38",
+              "38a4a30602e714e6ddb10155c84e2e2085284c1d682d731eadc77058a44177b0",
+              "caea26fe7db3393e600cd9861d16f762e9e2601533b510d72b4c3b3a689d5c39",
+              "31ae8fbc754bcf7089382a044c4232e552d1a17321b92efa83223b0bf14737f9",
+              "18f4924b1c479b9bfa1ed6211ce17b64b27bf0f7c2589c377de86ad81ef77f1b",
+              "173aa56f9a39887b8d425d06a766e7ff3ef97c151c30a4ec494b3b7b0cd9f2a3",
+              "6fc8c2da5a47dda7d226bf09e8cd3e96346aca7eef8d604eb436317b4af3c47a",
+              "5072d7d20971ebbfc2b0da8c24502f4cd8932727f6ddf78616ddd16592071f0f"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:11.105078+00:00",
+            "kind": "execution_start",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee"
+          },
+          {
+            "time": "2026-10-06T05:19:11.105129+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99990894799976
+          },
+          {
+            "time": "2026-10-06T05:19:17.903412+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "17b459bbd0d34467bf574870fc7fb99d",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 6.564209288000711
+          },
+          {
+            "time": "2026-10-06T05:19:17.903572+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-safe_assert",
+          "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 2.0,
+            "success_rate": 0.5,
+            "score": 0.25,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "64abb6437ce74293b7976edc9d09d07b",
+          "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "9e7b6e1bc89f485883fffd9cb2324199"
+          ],
+          "wall_time_sec": 1.289757147000273,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-safe_assert",
+          "status": "COMPLETED",
+          "artifacts": [
+            "765b6ae423619c9fe1e93c9bdb42193e13a34eafb89df4399f1acd29baa836d6",
+            "5f5e263d30c1b391f5148ef993d4a4ce38fbee29f84affaf23fe7c2c828acd70",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "ac65b173bb2502715c238061c564fefb641df7504b0ddc119dda73b3cc6d2434",
+            "a9726637bee689d580e99eca1f74e550a464342b5ee4d3ba9f7f2a9466fd5e86",
+            "b104ebeb51080c8f4b8389cdfaac6ec392bd80650d970b0e371f827991c40e5d",
+            "dcc8445740d121d56521453b396acbc7499d295b49c694604cf194af1702c544",
+            "9f053e063f91a7d8eacea5c757d415b30533aad8cc54fe23c88cb439fdf09b43",
+            "a32714a6555b57c09404a06b133d4f8067d551beb3be6cb50e7d026e863c22d2",
+            "a4073ca624a1f6773d1f9891e541c456eea94802f5371a9aca7013b163ea5ae9",
+            "f0857930913455138ad8bb4457cf3e4001c485753687cba6ee461adc91856da7",
+            "b6f3318b900b7193a108d81721618d89782f6505c792f4a987028ddab2cd657e",
+            "42bb82d4868d38a82124989542d8985228ad7e8e161f81f0873247027f1ffc34",
+            "f99113cc2f6cb84269256d61319dbfbc4f491191078de00585fc3e59eb88ecbb",
+            "82f17972ccd8bbdacbb749b4afc7aa518dbefbd1b9d8c40d766bd136fe111567",
+            "f9de41edd3fb180262fcfb819ecdc9a00b08918561957710aee22c446f55a39e"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-safe_assert",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "9e7b6e1bc89f485883fffd9cb2324199",
+            "execution_id": "64abb6437ce74293b7976edc9d09d07b",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/64abb6437ce74293b7976edc9d09d07b/9e7b6e1bc89f485883fffd9cb2324199"
+            ],
+            "start_time": "2026-10-06T05:19:18.077124+00:00",
+            "end_time": "2026-10-06T05:19:19.198084+00:00",
+            "wall_time_sec": 1.1209674290003022,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/64abb6437ce74293b7976edc9d09d07b/9e7b6e1bc89f485883fffd9cb2324199",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/64abb6437ce74293b7976edc9d09d07b/9e7b6e1bc89f485883fffd9cb2324199/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/64abb6437ce74293b7976edc9d09d07b/9e7b6e1bc89f485883fffd9cb2324199/stderr.txt",
+            "message": "Eva completely validates all reported C properties",
+            "artifact_ids": [
+              "b104ebeb51080c8f4b8389cdfaac6ec392bd80650d970b0e371f827991c40e5d",
+              "dcc8445740d121d56521453b396acbc7499d295b49c694604cf194af1702c544",
+              "9f053e063f91a7d8eacea5c757d415b30533aad8cc54fe23c88cb439fdf09b43",
+              "a32714a6555b57c09404a06b133d4f8067d551beb3be6cb50e7d026e863c22d2",
+              "a4073ca624a1f6773d1f9891e541c456eea94802f5371a9aca7013b163ea5ae9",
+              "f0857930913455138ad8bb4457cf3e4001c485753687cba6ee461adc91856da7",
+              "b6f3318b900b7193a108d81721618d89782f6505c792f4a987028ddab2cd657e",
+              "42bb82d4868d38a82124989542d8985228ad7e8e161f81f0873247027f1ffc34",
+              "f99113cc2f6cb84269256d61319dbfbc4f491191078de00585fc3e59eb88ecbb",
+              "82f17972ccd8bbdacbb749b4afc7aa518dbefbd1b9d8c40d766bd136fe111567",
+              "f9de41edd3fb180262fcfb819ecdc9a00b08918561957710aee22c446f55a39e"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:18.076898+00:00",
+            "kind": "execution_start",
+            "semantic_key": "78b9c9383059f15cdc5cb030f97266d67cf18565f86c4f7bac1fc977d98d7967"
+          },
+          {
+            "time": "2026-10-06T05:19:18.076964+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.99988665900037
+          },
+          {
+            "time": "2026-10-06T05:19:19.366456+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "9e7b6e1bc89f485883fffd9cb2324199",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.1209674290003022
+          },
+          {
+            "time": "2026-10-06T05:19:19.366624+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-unsafe_assert",
+          "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "framac",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 1,
+              "definitive_count": 1,
+              "safe_count": 1,
+              "unsafe_count": 0,
+              "unknown_count": 0,
+              "timeout_count": 0,
+              "mean_runtime_sec": 1.1209674290003022,
+              "median_runtime_sec": 1.1209674290003022,
+              "recent_runtime_sec": 1.1209674290003022
+            },
+            "expected_runtime_sec": 1.1209674290003022,
+            "success_rate": 0.75,
+            "score": 0.6690649349810839,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "9de4f47c7cc94155a415c63f60d590e4",
+          "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+          "verdict": "UNKNOWN",
+          "confirmations": 0,
+          "requirement_satisfied": false,
+          "termination_reason": "EXHAUSTED",
+          "attempt_ids": [
+            "a73db63aef1942968e2201da343fbd52"
+          ],
+          "wall_time_sec": 1.2756518280002638,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-unsafe_assert",
+          "status": "COMPLETED",
+          "artifacts": [
+            "ff5cc6cedbacd4ac61a453732b7e88c36ca43f1846dba6fd2f2a6ae540bcf68a",
+            "28a2032f7b6e05e51f49426c5b57dea0603ef4a1e91bcb62a3eb883691069466",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "5326d2dae5c89ce94d8c1997a24666e474d0396f3659e9a6c3dbed587bbd558d",
+            "fa6eababc2f0f5167faf8d04ab41770c5329ed10e59cdbf71a4bb5aed91c1fb8",
+            "281ba80451c950d24dc7b413aead5bff7ba7cebad4eae4520811c881ff19ffc2",
+            "1a0886da587b3775a1900dd47affa5d3eb0c9cb3441510abc6a4dee74c94fc7d",
+            "1d54452ec39aaa8e06fc7967f2907ca5b1a505a863f675a5af1803f8fcfd0af1",
+            "248c1e68674599bee2df48400c65090065b848d9244d6e65ecce159475dee8e3",
+            "f93ccbf4e2b937f71e2dc2f362f58895e39e0e56093492644e3eacf2a4c531c4",
+            "9d111f5dd9871fd1cac77f3aa7bbc0f33e412ae7c2ceb095c1e6611296a8cef3",
+            "a4b46fcb77b3fc5ccefbf2bbe739e1414e8f7f89077e79b72a819dcc5afe7ecf",
+            "dd2f705430268209614f97ddbe2868bb49ce3658c9657239263edf1a8f3b958f",
+            "62384b220696a2f1ed1b7513d452b6be502b8d6b6e7a141012d40f5a85484237",
+            "f4223f97053e5b3d2f687cb5b47a343f88e6bf9789be23f993bcb5d8830b1c97",
+            "2a03bea75d1a76140d828263879db01d8949ebc02d153848ccc9fe91ba9a6b7a"
+          ],
+          "diagnostics": [
+            {
+              "code": "inconclusive_verifier",
+              "goal_id": "bench-unsafe_assert",
+              "tool": "framac",
+              "attempt_id": "a73db63aef1942968e2201da343fbd52",
+              "detail": "Eva alarms or incomplete property coverage; no concrete counterexample"
+            },
+            {
+              "code": "insufficient_confirmations",
+              "goal_id": "bench-unsafe_assert",
+              "tool": null,
+              "attempt_id": null,
+              "detail": ""
+            }
+          ],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-unsafe_assert",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": [
+            "inconclusive_verifier",
+            "insufficient_confirmations"
+          ]
+        },
+        "attempts": [
+          {
+            "id": "a73db63aef1942968e2201da343fbd52",
+            "execution_id": "9de4f47c7cc94155a415c63f60d590e4",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/9de4f47c7cc94155a415c63f60d590e4/a73db63aef1942968e2201da343fbd52"
+            ],
+            "start_time": "2026-10-06T05:19:19.497229+00:00",
+            "end_time": "2026-10-06T05:19:20.601147+00:00",
+            "wall_time_sec": 1.1039235500002178,
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/9de4f47c7cc94155a415c63f60d590e4/a73db63aef1942968e2201da343fbd52",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/9de4f47c7cc94155a415c63f60d590e4/a73db63aef1942968e2201da343fbd52/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/9de4f47c7cc94155a415c63f60d590e4/a73db63aef1942968e2201da343fbd52/stderr.txt",
+            "message": "Eva alarms or incomplete property coverage; no concrete counterexample",
+            "artifact_ids": [
+              "281ba80451c950d24dc7b413aead5bff7ba7cebad4eae4520811c881ff19ffc2",
+              "1a0886da587b3775a1900dd47affa5d3eb0c9cb3441510abc6a4dee74c94fc7d",
+              "1d54452ec39aaa8e06fc7967f2907ca5b1a505a863f675a5af1803f8fcfd0af1",
+              "248c1e68674599bee2df48400c65090065b848d9244d6e65ecce159475dee8e3",
+              "f93ccbf4e2b937f71e2dc2f362f58895e39e0e56093492644e3eacf2a4c531c4",
+              "9d111f5dd9871fd1cac77f3aa7bbc0f33e412ae7c2ceb095c1e6611296a8cef3",
+              "a4b46fcb77b3fc5ccefbf2bbe739e1414e8f7f89077e79b72a819dcc5afe7ecf",
+              "dd2f705430268209614f97ddbe2868bb49ce3658c9657239263edf1a8f3b958f",
+              "62384b220696a2f1ed1b7513d452b6be502b8d6b6e7a141012d40f5a85484237",
+              "f4223f97053e5b3d2f687cb5b47a343f88e6bf9789be23f993bcb5d8830b1c97",
+              "2a03bea75d1a76140d828263879db01d8949ebc02d153848ccc9fe91ba9a6b7a"
+            ],
+            "diagnostic_code": "inconclusive_verifier"
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:19.496988+00:00",
+            "kind": "execution_start",
+            "semantic_key": "a3fd6c826b562cb14588f77712fb59f7b9ff596184ec37debc6d3524f5d274f0"
+          },
+          {
+            "time": "2026-10-06T05:19:19.497052+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.99987419700028
+          },
+          {
+            "time": "2026-10-06T05:19:20.772463+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "a73db63aef1942968e2201da343fbd52",
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.1039235500002178
+          },
+          {
+            "time": "2026-10-06T05:19:20.772604+00:00",
+            "kind": "execution_end",
+            "verdict": "UNKNOWN",
+            "confirmations": 0
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-bounded_loop",
+          "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "framac",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 2,
+              "definitive_count": 1,
+              "safe_count": 1,
+              "unsafe_count": 0,
+              "unknown_count": 1,
+              "timeout_count": 0,
+              "mean_runtime_sec": 1.11244548950026,
+              "median_runtime_sec": 1.11244548950026,
+              "recent_runtime_sec": 1.1039235500002178
+            },
+            "expected_runtime_sec": 1.11244548950026,
+            "success_rate": 0.5,
+            "score": 0.4494602249900921,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "218d8364bbdc4752881ad5f249f8c3a3",
+          "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "e6961c183599457eb6698d91b37bbba1"
+          ],
+          "wall_time_sec": 1.2559720469998865,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-bounded_loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "8f8145e0d9be0c7398a95553b1587133bbf65e0bb2e70d5beb76472e0d2ef8f0",
+            "8a1cb15b47e620ffa3f4356a9b48c318114f5002b898f340620d57f834a4a882",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "83b64c69367d540eb0926f04c5f0779419d4baa21c7f58dbb64132fadec4677c",
+            "ce4441904808ecb099fe2febc685ec3ec54e52251026840c4311c4975d486819",
+            "6739422c14eaee9fef7d0f96036da8d6ca74ca374646e21a4122b570fa1debcf",
+            "0dd37191ab11f699da269de66ead68e00de9d108bceb75e6d271010c26902531",
+            "fd22d53454ac5f4030cd3c0e85aba1977d43b5519ae6861460b37ef742fe5c69",
+            "5fe2701b53f9514e4bb2ef140602823c3edd74d01ec98bbcdb9ea55ae088247a",
+            "15c7067265ac4e20d61a80363859f9bffaaf6915ed447ad45d028ea4456423f5",
+            "2ab83640d16ee34c4306ba14c3f55592380e78fde6363c34ab8c3aa0d34f2d0d",
+            "7dc411f6498a1a42aadf3d0febdffefedb00a6b5a87c81a05ba35f8584e01f15",
+            "45deb91f603e59112e9dc1cc344cdbd2035bfba68f3d9571c110556a1e1a853c",
+            "0adab75c5aaca4448d32b624117a43adf41ddeb14d1ceaf9bcdf851fa06a8190",
+            "8cad07e10e5a7d56e40913f93728b0333f535181dbf3f9714d94022653925d21",
+            "54f1f6def50203f30a195062d915b7d046bfb59b607f74f5df7954ff5f8528cc"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-bounded_loop",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "e6961c183599457eb6698d91b37bbba1",
+            "execution_id": "218d8364bbdc4752881ad5f249f8c3a3",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/218d8364bbdc4752881ad5f249f8c3a3/e6961c183599457eb6698d91b37bbba1"
+            ],
+            "start_time": "2026-10-06T05:19:20.888020+00:00",
+            "end_time": "2026-10-06T05:19:21.971471+00:00",
+            "wall_time_sec": 1.0834583500000008,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/218d8364bbdc4752881ad5f249f8c3a3/e6961c183599457eb6698d91b37bbba1",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/218d8364bbdc4752881ad5f249f8c3a3/e6961c183599457eb6698d91b37bbba1/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/218d8364bbdc4752881ad5f249f8c3a3/e6961c183599457eb6698d91b37bbba1/stderr.txt",
+            "message": "Eva completely validates all reported C properties",
+            "artifact_ids": [
+              "6739422c14eaee9fef7d0f96036da8d6ca74ca374646e21a4122b570fa1debcf",
+              "0dd37191ab11f699da269de66ead68e00de9d108bceb75e6d271010c26902531",
+              "fd22d53454ac5f4030cd3c0e85aba1977d43b5519ae6861460b37ef742fe5c69",
+              "5fe2701b53f9514e4bb2ef140602823c3edd74d01ec98bbcdb9ea55ae088247a",
+              "15c7067265ac4e20d61a80363859f9bffaaf6915ed447ad45d028ea4456423f5",
+              "2ab83640d16ee34c4306ba14c3f55592380e78fde6363c34ab8c3aa0d34f2d0d",
+              "7dc411f6498a1a42aadf3d0febdffefedb00a6b5a87c81a05ba35f8584e01f15",
+              "45deb91f603e59112e9dc1cc344cdbd2035bfba68f3d9571c110556a1e1a853c",
+              "0adab75c5aaca4448d32b624117a43adf41ddeb14d1ceaf9bcdf851fa06a8190",
+              "8cad07e10e5a7d56e40913f93728b0333f535181dbf3f9714d94022653925d21",
+              "54f1f6def50203f30a195062d915b7d046bfb59b607f74f5df7954ff5f8528cc"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:20.887746+00:00",
+            "kind": "execution_start",
+            "semantic_key": "3da2d39e746f1cc31ec5f54c3236c7cc5cca61658ddbd1df7e4365a7cf4b5e81"
+          },
+          {
+            "time": "2026-10-06T05:19:20.887847+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.999837032999494
+          },
+          {
+            "time": "2026-10-06T05:19:22.143548+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "e6961c183599457eb6698d91b37bbba1",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.0834583500000008
+          },
+          {
+            "time": "2026-10-06T05:19:22.143670+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-branch",
+          "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "framac",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 3,
+              "definitive_count": 2,
+              "safe_count": 2,
+              "unsafe_count": 0,
+              "unknown_count": 1,
+              "timeout_count": 0,
+              "mean_runtime_sec": 1.1027831096668403,
+              "median_runtime_sec": 1.1039235500002178,
+              "recent_runtime_sec": 1.0834583500000008
+            },
+            "expected_runtime_sec": 1.1039235500002178,
+            "success_rate": 0.625,
+            "score": 0.5661623941258221,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "c345e178b3a54117af9263ce6395539f",
+          "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "65c821b178bd4e1895f4be0908d0d20e"
+          ],
+          "wall_time_sec": 1.2838286920004975,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-branch",
+          "status": "COMPLETED",
+          "artifacts": [
+            "30e3759ec56d64f2478d1759302357fd30fa804dbd38dd62e5dcac44e1a876f4",
+            "35657476ec4e12fccdac1c7c87d05cae1c0ce65916db0e8edcf52fd5751f50e1",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "10ac59bb5c4175acf09736a2017d4593aa5b0e1de8c959dfad3bebbebaaa3e04",
+            "b66bad41cebd04e6dde2dac9e7def16ffc63baa9753d5785212556ed9ec9d072",
+            "7cd8ba8b9a407c4220b797c507f077b34e315b9f73c935aa1bc27e2a2e40e80f",
+            "df688565d8ba3dd81d0aa8f41e426e606e12b5c92abd17004f39d36c4c375e4e",
+            "553b80df2364af6b51152e6cb5c1117acbd77962aa5e088964154fca7dd7a0bd",
+            "1f89ee914c55f14f0d4aa7c972a292bf4b474b99b4463348e92c77b8ac0a2b93",
+            "ef3a55be2505bac3370a99e847b222cc59b50a40801b3a0fe28f835627e11211",
+            "7543c6dd3e8ccb86c9aac9bccc1e73efafc2196bbd2d281abacca24bbe0133b0",
+            "37aec212f9e0f332f9a4891a2c0e80d1b014599551cdd25016ed4e40a0aa25df",
+            "d120a08354d35499ec574e955624f4c2f3e78a66d69a8994b4da04e68bb57ee5",
+            "140a1cc50d826cb75a7d65f40b61918e56e17b30f181ed7b7c05fd562b8cf3e0",
+            "e849019946cf8fd679529dc7f23450e6826148b9d961dd1391e7cf8e64bd45f5",
+            "b125953b43c7eb1b7807d3435ab550f2667958b2c665ef29ed27861e99dde931"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-branch",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "65c821b178bd4e1895f4be0908d0d20e",
+            "execution_id": "c345e178b3a54117af9263ce6395539f",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/c345e178b3a54117af9263ce6395539f/65c821b178bd4e1895f4be0908d0d20e"
+            ],
+            "start_time": "2026-10-06T05:19:22.265092+00:00",
+            "end_time": "2026-10-06T05:19:23.368885+00:00",
+            "wall_time_sec": 1.1038039679997382,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/c345e178b3a54117af9263ce6395539f/65c821b178bd4e1895f4be0908d0d20e",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/c345e178b3a54117af9263ce6395539f/65c821b178bd4e1895f4be0908d0d20e/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/c345e178b3a54117af9263ce6395539f/65c821b178bd4e1895f4be0908d0d20e/stderr.txt",
+            "message": "Eva completely validates all reported C properties",
+            "artifact_ids": [
+              "7cd8ba8b9a407c4220b797c507f077b34e315b9f73c935aa1bc27e2a2e40e80f",
+              "df688565d8ba3dd81d0aa8f41e426e606e12b5c92abd17004f39d36c4c375e4e",
+              "553b80df2364af6b51152e6cb5c1117acbd77962aa5e088964154fca7dd7a0bd",
+              "1f89ee914c55f14f0d4aa7c972a292bf4b474b99b4463348e92c77b8ac0a2b93",
+              "ef3a55be2505bac3370a99e847b222cc59b50a40801b3a0fe28f835627e11211",
+              "7543c6dd3e8ccb86c9aac9bccc1e73efafc2196bbd2d281abacca24bbe0133b0",
+              "37aec212f9e0f332f9a4891a2c0e80d1b014599551cdd25016ed4e40a0aa25df",
+              "d120a08354d35499ec574e955624f4c2f3e78a66d69a8994b4da04e68bb57ee5",
+              "140a1cc50d826cb75a7d65f40b61918e56e17b30f181ed7b7c05fd562b8cf3e0",
+              "e849019946cf8fd679529dc7f23450e6826148b9d961dd1391e7cf8e64bd45f5",
+              "b125953b43c7eb1b7807d3435ab550f2667958b2c665ef29ed27861e99dde931"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:22.264906+00:00",
+            "kind": "execution_start",
+            "semantic_key": "e11247a5c64699cc6481901198f4e9dde3ee8ae5b25e24abd39d1a0d1cf488c7"
+          },
+          {
+            "time": "2026-10-06T05:19:22.264956+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.999911205999524
+          },
+          {
+            "time": "2026-10-06T05:19:23.548571+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "65c821b178bd4e1895f4be0908d0d20e",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.1038039679997382
+          },
+          {
+            "time": "2026-10-06T05:19:23.548709+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-array",
+          "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "framac",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 4,
+              "definitive_count": 3,
+              "safe_count": 3,
+              "unsafe_count": 0,
+              "unknown_count": 1,
+              "timeout_count": 0,
+              "mean_runtime_sec": 1.1030383242500648,
+              "median_runtime_sec": 1.103863758999978,
+              "recent_runtime_sec": 1.1038039679997382
+            },
+            "expected_runtime_sec": 1.103863758999978,
+            "success_rate": 0.7,
+            "score": 0.6341362276755513,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "4cc17dddf56141b7b9c570d79b74f015",
+          "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+          "verdict": "UNKNOWN",
+          "confirmations": 0,
+          "requirement_satisfied": false,
+          "termination_reason": "EXHAUSTED",
+          "attempt_ids": [
+            "0634c41525484b14975bfa75398a3e4a"
+          ],
+          "wall_time_sec": 1.2728368890002457,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-array",
+          "status": "COMPLETED",
+          "artifacts": [
+            "2cc048738a8a3992aeda59a468cf111da3e2627039133e646e91b099711a5e51",
+            "4df7de37fa6e532457a6f03c80c7e63457b9ce8fb2ba97a068b2b290bf8d800e",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "89f386a74327eca2ba2f7aab15fb0c2df5b7545686b0f42dd54606f1c835353c",
+            "124b9c5d2365bc2d8bc8b5edef248ce81842e6032b3b4ca28c5f1e3a38b2c200",
+            "87d777e7438338f5a4517156aba1518b9f55a4625cfdc933553b0615fe8403b0",
+            "16d735f4f279279af51d955e2ff36696fab182da0b4830c007c19f0a534ba56c",
+            "867d329c19bcbe50627688d664917960e82cafc791f3972acb57e5f034fe5585",
+            "9be213fe60cd6148586133aa65e45242ae861e3ce1b2c7fc4c8154ac320532fb",
+            "adb5a31ef8b374da7cc205d7f7270e0e819eb5d968a8611b5875694497bd42d3",
+            "df7fea7f899f53715cba471f5b92fcb371db846bfb43aa8d45bed36b9d18585a",
+            "006087ff746e8d192ab64f47dd6a607645284a80a5f6fa4574ea0e7af2416673",
+            "387da823fd016a58200732f36df054d39524b54924db3039c2d8a48362bb87d9",
+            "872b5d34f2284b71a696bd1081fdc313a7cb9d5e511a74fe71bbb81b250a9e7a",
+            "28e15c3c8db03e715311c4d9d64f3f5223505315fa400dd9826832179334daaa",
+            "a60eff0cd6735d080515bddb775a9305a6c71dfd3568096da5a5a92b818daa54"
+          ],
+          "diagnostics": [
+            {
+              "code": "inconclusive_verifier",
+              "goal_id": "bench-array",
+              "tool": "framac",
+              "attempt_id": "0634c41525484b14975bfa75398a3e4a",
+              "detail": "Eva alarms or incomplete property coverage; no concrete counterexample"
+            },
+            {
+              "code": "insufficient_confirmations",
+              "goal_id": "bench-array",
+              "tool": null,
+              "attempt_id": null,
+              "detail": ""
+            }
+          ],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-array",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": [
+            "inconclusive_verifier",
+            "insufficient_confirmations"
+          ]
+        },
+        "attempts": [
+          {
+            "id": "0634c41525484b14975bfa75398a3e4a",
+            "execution_id": "4cc17dddf56141b7b9c570d79b74f015",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/4cc17dddf56141b7b9c570d79b74f015/0634c41525484b14975bfa75398a3e4a"
+            ],
+            "start_time": "2026-10-06T05:19:23.677514+00:00",
+            "end_time": "2026-10-06T05:19:24.781636+00:00",
+            "wall_time_sec": 1.1041272060001575,
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/4cc17dddf56141b7b9c570d79b74f015/0634c41525484b14975bfa75398a3e4a",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/4cc17dddf56141b7b9c570d79b74f015/0634c41525484b14975bfa75398a3e4a/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/4cc17dddf56141b7b9c570d79b74f015/0634c41525484b14975bfa75398a3e4a/stderr.txt",
+            "message": "Eva alarms or incomplete property coverage; no concrete counterexample",
+            "artifact_ids": [
+              "87d777e7438338f5a4517156aba1518b9f55a4625cfdc933553b0615fe8403b0",
+              "16d735f4f279279af51d955e2ff36696fab182da0b4830c007c19f0a534ba56c",
+              "867d329c19bcbe50627688d664917960e82cafc791f3972acb57e5f034fe5585",
+              "9be213fe60cd6148586133aa65e45242ae861e3ce1b2c7fc4c8154ac320532fb",
+              "adb5a31ef8b374da7cc205d7f7270e0e819eb5d968a8611b5875694497bd42d3",
+              "df7fea7f899f53715cba471f5b92fcb371db846bfb43aa8d45bed36b9d18585a",
+              "006087ff746e8d192ab64f47dd6a607645284a80a5f6fa4574ea0e7af2416673",
+              "387da823fd016a58200732f36df054d39524b54924db3039c2d8a48362bb87d9",
+              "872b5d34f2284b71a696bd1081fdc313a7cb9d5e511a74fe71bbb81b250a9e7a",
+              "28e15c3c8db03e715311c4d9d64f3f5223505315fa400dd9826832179334daaa",
+              "a60eff0cd6735d080515bddb775a9305a6c71dfd3568096da5a5a92b818daa54"
+            ],
+            "diagnostic_code": "inconclusive_verifier"
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:23.677092+00:00",
+            "kind": "execution_start",
+            "semantic_key": "075cc544bd192dbd1f1905bcf11198a173060bb93cb592783a6756b48e2e2b7d"
+          },
+          {
+            "time": "2026-10-06T05:19:23.677192+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.99985193199973
+          },
+          {
+            "time": "2026-10-06T05:19:24.949754+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "0634c41525484b14975bfa75398a3e4a",
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.1041272060001575
+          },
+          {
+            "time": "2026-10-06T05:19:24.949906+00:00",
+            "kind": "execution_end",
+            "verdict": "UNKNOWN",
+            "confirmations": 0
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "bench-arithmetic",
+          "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": {
+              "tool": "framac",
+              "property_kind": "assertion_safety",
+              "size_bucket": "tiny",
+              "run_count": 5,
+              "definitive_count": 3,
+              "safe_count": 3,
+              "unsafe_count": 0,
+              "unknown_count": 2,
+              "timeout_count": 0,
+              "mean_runtime_sec": 1.1032561006000834,
+              "median_runtime_sec": 1.1039235500002178,
+              "recent_runtime_sec": 1.1041272060001575
+            },
+            "expected_runtime_sec": 1.1039235500002178,
+            "success_rate": 0.5833333333333334,
+            "score": 0.528418234517434,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "b366b014cdba42a58c1ef2b6e234d07e",
+          "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "e096a625ddae44bd8b21e057d2c090a1"
+          ],
+          "wall_time_sec": 1.332994050000707,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "bench-arithmetic",
+          "status": "COMPLETED",
+          "artifacts": [
+            "159b23307401d22badd47073ae9ca5751cd60d14327a864373fbbfe0b6760cf6",
+            "81121b9b956a360b362f85c1dc91f8c6d983460b6c31b820cb960f28be386b80",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "1c54b745174ceade1787f098b5e55d6bc3af8c1615971be5fb70bafa47fe85f6",
+            "89aecb143a86c0d801287dc2c499012200e106bffc8e90ccb97487af3af90406",
+            "a4bacc53f356364ba3d9a045980cab7d20f6fb25e2e19d6704cecd946385f13c",
+            "733541a2e9de3afc84ed83b6f33fd1358eccd13db712bb61c81f1f5790e56ae7",
+            "c0d5474ca9c3aff3cbd4cddd0b996f1077606f28a7626790033ee0363398f39c",
+            "4dc9d5fec599c59487d69f5c2eb687a12a924490b78c214b0646f38b3b6315ed",
+            "ec36eb84470a8e0bf45e0bba910aa862280ead9fa1af08244b90bf4412ebf240",
+            "f8fcaa696db149304339ea4bc1dc0600e88efe7606e8b58558ad12fbc8802350",
+            "6dafd164b73b7a046b8ca4769402f70680603ef250c60ac430c97e4d34a0bfc9",
+            "193f4d53a9557957a056bddc072220e42521e0d7f7d8d1adcdb4d6650348363a",
+            "48fda3d189def987c4f2742ea409332ad96dd7f69f71772e03840c2e9da09734",
+            "ed71ddc5ef2341179b863194e0d3629814580833e78dafef77f9f4b7dac1818a",
+            "305bfa92efff41cd7d1fd17d98eeabf4cab601a79a368b741a83205660348775"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "bench-arithmetic",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "e096a625ddae44bd8b21e057d2c090a1",
+            "execution_id": "b366b014cdba42a58c1ef2b6e234d07e",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/b366b014cdba42a58c1ef2b6e234d07e/e096a625ddae44bd8b21e057d2c090a1"
+            ],
+            "start_time": "2026-10-06T05:19:25.069396+00:00",
+            "end_time": "2026-10-06T05:19:26.216649+00:00",
+            "wall_time_sec": 1.1472595049999654,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/b366b014cdba42a58c1ef2b6e234d07e/e096a625ddae44bd8b21e057d2c090a1",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/b366b014cdba42a58c1ef2b6e234d07e/e096a625ddae44bd8b21e057d2c090a1/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/framac/executions/b366b014cdba42a58c1ef2b6e234d07e/e096a625ddae44bd8b21e057d2c090a1/stderr.txt",
+            "message": "Eva completely validates all reported C properties",
+            "artifact_ids": [
+              "a4bacc53f356364ba3d9a045980cab7d20f6fb25e2e19d6704cecd946385f13c",
+              "733541a2e9de3afc84ed83b6f33fd1358eccd13db712bb61c81f1f5790e56ae7",
+              "c0d5474ca9c3aff3cbd4cddd0b996f1077606f28a7626790033ee0363398f39c",
+              "4dc9d5fec599c59487d69f5c2eb687a12a924490b78c214b0646f38b3b6315ed",
+              "ec36eb84470a8e0bf45e0bba910aa862280ead9fa1af08244b90bf4412ebf240",
+              "f8fcaa696db149304339ea4bc1dc0600e88efe7606e8b58558ad12fbc8802350",
+              "6dafd164b73b7a046b8ca4769402f70680603ef250c60ac430c97e4d34a0bfc9",
+              "193f4d53a9557957a056bddc072220e42521e0d7f7d8d1adcdb4d6650348363a",
+              "48fda3d189def987c4f2742ea409332ad96dd7f69f71772e03840c2e9da09734",
+              "ed71ddc5ef2341179b863194e0d3629814580833e78dafef77f9f4b7dac1818a",
+              "305bfa92efff41cd7d1fd17d98eeabf4cab601a79a368b741a83205660348775"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:25.069187+00:00",
+            "kind": "execution_start",
+            "semantic_key": "be9576c5b7222b26955821a9e73c8784fcdcb241e1dbf20538025dec6b7b13ee"
+          },
+          {
+            "time": "2026-10-06T05:19:25.069245+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.999897921999946
+          },
+          {
+            "time": "2026-10-06T05:19:26.401940+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "e096a625ddae44bd8b21e057d2c090a1",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.1472595049999654
+          },
+          {
+            "time": "2026-10-06T05:19:26.402151+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "cbmc",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "long-loop",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "cbmc"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "cbmc"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "cbmc",
+            "family": "cbmc",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 0.5,
+            "success_rate": 0.5,
+            "score": 1.0,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "413cdeec663547f4a324332cd0aa56b2",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "verdict": "UNKNOWN",
+          "confirmations": 0,
+          "requirement_satisfied": false,
+          "termination_reason": "EXHAUSTED",
+          "attempt_ids": [
+            "f9b101e53b3b4cfc85ed20a1938e81cc"
+          ],
+          "wall_time_sec": 0.7935990859996309,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "long-loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "28a8e239db432fda8d42648207e928713f8e145980094fa69f65e946f7ababfc",
+            "f536358a06326a6e4fe06fee00461098a5c83a2012576a1270276f0d24f52e47",
+            "4e2c11b281a4d0f95477323440cbe4c4c4cdac37618c498af940c63e5e5531bb",
+            "d55cfb85c549b982f6528b4c62c9a326a0c9113342077ce506e3410606355b50",
+            "3caa3500fa42de4d0567ffc3fb7d2c035e9e854fb5cc2173147e8568483804a3",
+            "0743bb45963f0a505ce6d7ba0f2da3df3f4b735c3ec671a6b2f5e511c65c20cf",
+            "7710f04a9d02fce12f81c94bacf79daae2189995f9282f12c97ed620ed668d97",
+            "3f1f494af07eab1c92c4d8b931927d7cf05beb5acd34908abcdcfafb5f631aee",
+            "061be0e6ed81fab3955702f43d0f56a962957e6343a44180292af068d897e8d7",
+            "ceff9196dfd576e01875aec936d76434ee77a0ce6095c5efc117f60321f38928",
+            "686dbbeeb126d7dd7972962fc1e714dc5d933bc9edc4c7c18b31c0af23565586",
+            "e67e52ff4022edba6ae51456a0251f0ab4660630c8c10dc12b45dd8b6f8aefe5"
+          ],
+          "diagnostics": [
+            {
+              "code": "insufficient_unwinding",
+              "goal_id": "long-loop",
+              "tool": "cbmc",
+              "attempt_id": "f9b101e53b3b4cfc85ed20a1938e81cc",
+              "detail": "Non-assertion failure or incomplete unwinding"
+            },
+            {
+              "code": "insufficient_confirmations",
+              "goal_id": "long-loop",
+              "tool": null,
+              "attempt_id": null,
+              "detail": ""
+            }
+          ],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "long-loop",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "cbmc"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "cbmc"
+              ]
+            ]
+          },
+          "failure_reasons": [
+            "insufficient_confirmations",
+            "insufficient_unwinding"
+          ]
+        },
+        "attempts": [
+          {
+            "id": "f9b101e53b3b4cfc85ed20a1938e81cc",
+            "execution_id": "413cdeec663547f4a324332cd0aa56b2",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "tool": "cbmc",
+            "family": "cbmc",
+            "version": "6.11.0 (cbmc-6.11.0)",
+            "config_id": "e157bf4066bc45af78fd6ac65ec81c87f2b688b6df027bb31a70e1b656adc7d8",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-cbmc/executions/413cdeec663547f4a324332cd0aa56b2/f9b101e53b3b4cfc85ed20a1938e81cc"
+            ],
+            "start_time": "2026-10-06T05:19:26.575805+00:00",
+            "end_time": "2026-10-06T05:19:27.251540+00:00",
+            "wall_time_sec": 0.6757423279996146,
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 10,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-cbmc/executions/413cdeec663547f4a324332cd0aa56b2/f9b101e53b3b4cfc85ed20a1938e81cc",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-cbmc/executions/413cdeec663547f4a324332cd0aa56b2/f9b101e53b3b4cfc85ed20a1938e81cc/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-cbmc/executions/413cdeec663547f4a324332cd0aa56b2/f9b101e53b3b4cfc85ed20a1938e81cc/stderr.txt",
+            "message": "Non-assertion failure or incomplete unwinding",
+            "artifact_ids": [
+              "0743bb45963f0a505ce6d7ba0f2da3df3f4b735c3ec671a6b2f5e511c65c20cf",
+              "7710f04a9d02fce12f81c94bacf79daae2189995f9282f12c97ed620ed668d97",
+              "3f1f494af07eab1c92c4d8b931927d7cf05beb5acd34908abcdcfafb5f631aee",
+              "061be0e6ed81fab3955702f43d0f56a962957e6343a44180292af068d897e8d7",
+              "ceff9196dfd576e01875aec936d76434ee77a0ce6095c5efc117f60321f38928",
+              "686dbbeeb126d7dd7972962fc1e714dc5d933bc9edc4c7c18b31c0af23565586",
+              "e67e52ff4022edba6ae51456a0251f0ab4660630c8c10dc12b45dd8b6f8aefe5"
+            ],
+            "diagnostic_code": "insufficient_unwinding"
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:26.575593+00:00",
+            "kind": "execution_start",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a"
+          },
+          {
+            "time": "2026-10-06T05:19:26.575646+00:00",
+            "kind": "tool_start",
+            "tool": "cbmc",
+            "remaining_wall_sec": 59.99988642500011
+          },
+          {
+            "time": "2026-10-06T05:19:27.368997+00:00",
+            "kind": "tool_end",
+            "tool": "cbmc",
+            "attempt_id": "f9b101e53b3b4cfc85ed20a1938e81cc",
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "wall_time_sec": 0.6757423279996146
+          },
+          {
+            "time": "2026-10-06T05:19:27.369155+00:00",
+            "kind": "execution_end",
+            "verdict": "UNKNOWN",
+            "confirmations": 0
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "esbmc",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "long-loop",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "esbmc"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "esbmc"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "esbmc",
+            "family": "esbmc",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 0.7,
+            "success_rate": 0.5,
+            "score": 0.7142857142857143,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "f03db32900744f10808f4e38ccabe3b1",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "verdict": "UNKNOWN",
+          "confirmations": 0,
+          "requirement_satisfied": false,
+          "termination_reason": "EXHAUSTED",
+          "attempt_ids": [
+            "af586d3d40a346669d41aa2da198756e"
+          ],
+          "wall_time_sec": 1.8336472350001713,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "long-loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "28a8e239db432fda8d42648207e928713f8e145980094fa69f65e946f7ababfc",
+            "f536358a06326a6e4fe06fee00461098a5c83a2012576a1270276f0d24f52e47",
+            "b6f34c46e46c80432d61b8be7b5c3ea9857d9ac2dffb3a215bddf648ec9db3e8",
+            "19f7c6292200803400b55e4f047aa7aba264462ad33b79dd96ef9a9f5a577d38",
+            "6298007f54dc7df7711f2c6f33a03dd805f1e49aff3ce7cca1330f38099c0b88",
+            "91caedc9fadf47876158426b4f64ab7c02b56a22cb20b20cc01332f531600521",
+            "00e2e0d3be5517c13f91ac0d2718de6939332ec0f4584e60596ce76c9a6ca3a0",
+            "253cbbd93dd5ed14f56dea990d94edab455c3b5cc873d0e2398bdf7e1e559aad",
+            "f45d19398ba13cad3886e529e3f3b86662089d1b91260d29d79c274ac3e8e259",
+            "ad3fe4d756e80f9407a140c9e6cede38991bfc2b3bbe094fd81a939c5328f03e",
+            "b5a8a653bd7b3c4822dab9e9e52129d60ca0f526d3314be8c1b0af030f365bb2",
+            "d3e93907bc897acfc93f524c5f75e439636f18f6fd2187c941dd8e8540533538"
+          ],
+          "diagnostics": [
+            {
+              "code": "insufficient_unwinding",
+              "goal_id": "long-loop",
+              "tool": "esbmc",
+              "attempt_id": "af586d3d40a346669d41aa2da198756e",
+              "detail": "Insufficient loop unwinding"
+            },
+            {
+              "code": "insufficient_confirmations",
+              "goal_id": "long-loop",
+              "tool": null,
+              "attempt_id": null,
+              "detail": ""
+            }
+          ],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "long-loop",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "esbmc"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "esbmc"
+              ]
+            ]
+          },
+          "failure_reasons": [
+            "insufficient_confirmations",
+            "insufficient_unwinding"
+          ]
+        },
+        "attempts": [
+          {
+            "id": "af586d3d40a346669d41aa2da198756e",
+            "execution_id": "f03db32900744f10808f4e38ccabe3b1",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "tool": "esbmc",
+            "family": "esbmc",
+            "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+            "config_id": "e868873907ea350474d2ed96108f92457101e9991f2555849e8c10e7276c5ef0",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-esbmc/executions/f03db32900744f10808f4e38ccabe3b1/af586d3d40a346669d41aa2da198756e"
+            ],
+            "start_time": "2026-10-06T05:19:27.563746+00:00",
+            "end_time": "2026-10-06T05:19:29.281090+00:00",
+            "wall_time_sec": 1.7173507449997487,
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 1,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-esbmc/executions/f03db32900744f10808f4e38ccabe3b1/af586d3d40a346669d41aa2da198756e",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-esbmc/executions/f03db32900744f10808f4e38ccabe3b1/af586d3d40a346669d41aa2da198756e/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-esbmc/executions/f03db32900744f10808f4e38ccabe3b1/af586d3d40a346669d41aa2da198756e/stderr.txt",
+            "message": "Insufficient loop unwinding",
+            "artifact_ids": [
+              "91caedc9fadf47876158426b4f64ab7c02b56a22cb20b20cc01332f531600521",
+              "00e2e0d3be5517c13f91ac0d2718de6939332ec0f4584e60596ce76c9a6ca3a0",
+              "253cbbd93dd5ed14f56dea990d94edab455c3b5cc873d0e2398bdf7e1e559aad",
+              "f45d19398ba13cad3886e529e3f3b86662089d1b91260d29d79c274ac3e8e259",
+              "ad3fe4d756e80f9407a140c9e6cede38991bfc2b3bbe094fd81a939c5328f03e",
+              "b5a8a653bd7b3c4822dab9e9e52129d60ca0f526d3314be8c1b0af030f365bb2",
+              "d3e93907bc897acfc93f524c5f75e439636f18f6fd2187c941dd8e8540533538"
+            ],
+            "diagnostic_code": "insufficient_unwinding"
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:27.563542+00:00",
+            "kind": "execution_start",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a"
+          },
+          {
+            "time": "2026-10-06T05:19:27.563596+00:00",
+            "kind": "tool_start",
+            "tool": "esbmc",
+            "remaining_wall_sec": 59.999887453000156
+          },
+          {
+            "time": "2026-10-06T05:19:29.397016+00:00",
+            "kind": "tool_end",
+            "tool": "esbmc",
+            "attempt_id": "af586d3d40a346669d41aa2da198756e",
+            "verdict": "UNKNOWN",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.7173507449997487
+          },
+          {
+            "time": "2026-10-06T05:19:29.397153+00:00",
+            "kind": "execution_end",
+            "verdict": "UNKNOWN",
+            "confirmations": 0
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "ultimate",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "long-loop",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "ultimate"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "ultimate"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "ultimate",
+            "family": "ultimate",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 8.0,
+            "success_rate": 0.5,
+            "score": 0.0625,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "172bcc116fea4a77af8ddf2b138a5a88",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "1bd1c3366cec4a55a0f8eb714994cac7"
+          ],
+          "wall_time_sec": 34.08496667200052,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "long-loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "28a8e239db432fda8d42648207e928713f8e145980094fa69f65e946f7ababfc",
+            "f536358a06326a6e4fe06fee00461098a5c83a2012576a1270276f0d24f52e47",
+            "ed2937104398d39d4fff081bcb325a9702e22ab3fa454ea2c91c64655a316278",
+            "678677913b73b3780b5780bd78dd78a5a9d6ab43fc89ed3a77432671970b31c4",
+            "0a605671613ea3c06b8d75514d5dfd22aebd4be4617379e0ebef61c2b581b180",
+            "366a1a58935670c2e96fa5b5a1b49db7cdc849831a14db80935911cbbe1bf73d",
+            "de6766f2f9dbe968609a77bf15ba4e3edb74eaedcafb1b3a0f18e2afd025f03a",
+            "2a8a5e4f8270aff0c72084268fba589fb27bf58c4cd6d06856c1be792eabc45b",
+            "b1cb53a392800ca0ee253d25b3ac364751ffd3dc42848b60822c2a8042e093f7",
+            "ba33ffd05ed5e3ebd0c933c87b3aae879b7bfb04a1221750cbc00d01824cf867",
+            "304d5ab5dd97059dae437a4593db675c7663095efe9a462b3dc28a026ef72afc",
+            "44295f9a23b3800a03549d32425b470eb78831204d11b5bb120e0267ff31961e",
+            "a433e8ced73a00fd5ed8a6121bc8b9cdf96d95584ff92d49429bc9cf668f50ac",
+            "a7726ff7100389005e4da0f7d39c26c5769c1e2f99c4efeff0515195f3cf143a",
+            "a7af04e1c0265a717c10f1dec4c7d63b94db7bdc8aefc030fd7770ba8a5dd835",
+            "24478765ff209bfc87f6b00466197447e597556f371d7e2669d5d5090dfe3d4e",
+            "0df5aa4c3fd900a05f1787e0abc67c971086883875f7a09ddc28bc90456ef44c",
+            "e151c2844297e4ec92110cd2ccaf70519d9a0aa15412c3c823dc84f0bbd60f25",
+            "0112db21944aafa7d31935ad67d8c6eb4bdf543d1205f9815447c9c0d7115fa6",
+            "7d63dd559948bdb74cce21e5487141345c75ba7383d207fe505f5b19ebcb8bd7"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "long-loop",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "ultimate"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "ultimate"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "1bd1c3366cec4a55a0f8eb714994cac7",
+            "execution_id": "172bcc116fea4a77af8ddf2b138a5a88",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "tool": "ultimate",
+            "family": "ultimate",
+            "version": "35a84365",
+            "config_id": "12982cecbafae836def3e36300527aba08e31078c20979c099f2625248e358e4",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-ultimate/executions/172bcc116fea4a77af8ddf2b138a5a88/1bd1c3366cec4a55a0f8eb714994cac7"
+            ],
+            "start_time": "2026-10-06T05:19:29.590133+00:00",
+            "end_time": "2026-10-06T05:20:03.450672+00:00",
+            "wall_time_sec": 33.861969569000394,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-ultimate/executions/172bcc116fea4a77af8ddf2b138a5a88/1bd1c3366cec4a55a0f8eb714994cac7",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-ultimate/executions/172bcc116fea4a77af8ddf2b138a5a88/1bd1c3366cec4a55a0f8eb714994cac7/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-ultimate/executions/172bcc116fea4a77af8ddf2b138a5a88/1bd1c3366cec4a55a0f8eb714994cac7/stderr.txt",
+            "message": "Ultimate assertion reachability proof",
+            "artifact_ids": [
+              "366a1a58935670c2e96fa5b5a1b49db7cdc849831a14db80935911cbbe1bf73d",
+              "de6766f2f9dbe968609a77bf15ba4e3edb74eaedcafb1b3a0f18e2afd025f03a",
+              "2a8a5e4f8270aff0c72084268fba589fb27bf58c4cd6d06856c1be792eabc45b",
+              "b1cb53a392800ca0ee253d25b3ac364751ffd3dc42848b60822c2a8042e093f7",
+              "ba33ffd05ed5e3ebd0c933c87b3aae879b7bfb04a1221750cbc00d01824cf867",
+              "304d5ab5dd97059dae437a4593db675c7663095efe9a462b3dc28a026ef72afc",
+              "44295f9a23b3800a03549d32425b470eb78831204d11b5bb120e0267ff31961e",
+              "a433e8ced73a00fd5ed8a6121bc8b9cdf96d95584ff92d49429bc9cf668f50ac",
+              "a7726ff7100389005e4da0f7d39c26c5769c1e2f99c4efeff0515195f3cf143a",
+              "a7af04e1c0265a717c10f1dec4c7d63b94db7bdc8aefc030fd7770ba8a5dd835",
+              "24478765ff209bfc87f6b00466197447e597556f371d7e2669d5d5090dfe3d4e",
+              "0df5aa4c3fd900a05f1787e0abc67c971086883875f7a09ddc28bc90456ef44c",
+              "e151c2844297e4ec92110cd2ccaf70519d9a0aa15412c3c823dc84f0bbd60f25",
+              "0112db21944aafa7d31935ad67d8c6eb4bdf543d1205f9815447c9c0d7115fa6",
+              "7d63dd559948bdb74cce21e5487141345c75ba7383d207fe505f5b19ebcb8bd7"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:19:29.589840+00:00",
+            "kind": "execution_start",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a"
+          },
+          {
+            "time": "2026-10-06T05:19:29.589935+00:00",
+            "kind": "tool_start",
+            "tool": "ultimate",
+            "remaining_wall_sec": 59.99984290299926
+          },
+          {
+            "time": "2026-10-06T05:20:03.673199+00:00",
+            "kind": "tool_end",
+            "tool": "ultimate",
+            "attempt_id": "1bd1c3366cec4a55a0f8eb714994cac7",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 33.861969569000394
+          },
+          {
+            "time": "2026-10-06T05:20:03.673336+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    },
+    {
+      "optimization": {
+        "physical_plan": {
+          "tool": "framac",
+          "time_slice_sec": 60.0,
+          "operator": "Run"
+        },
+        "explanation": {
+          "optimizer": "cost-aware-v1",
+          "goal_id": "long-loop",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "cache": "DISABLED",
+          "selected_tools": [
+            "framac"
+          ],
+          "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+          "min_confirmations": 1,
+          "independent_candidates": 1,
+          "trust_feasible": true,
+          "budget": {
+            "wall_time_sec": 60,
+            "memory_mb": 2048,
+            "max_parallel": 1
+          },
+          "hints": {
+            "prefer_fast_counterexample": false,
+            "expected_characteristics": [],
+            "required_capabilities": []
+          },
+          "hints_applied": false,
+          "tiny_budget": false,
+          "stages": [
+            [
+              "framac"
+            ]
+          ]
+        },
+        "candidate_scores": [
+          {
+            "tool": "framac",
+            "family": "framac",
+            "compatible": true,
+            "reasons": [],
+            "history": null,
+            "expected_runtime_sec": 2.0,
+            "success_rate": 0.5,
+            "score": 0.25,
+            "selected": true
+          }
+        ]
+      },
+      "report": {
+        "result": {
+          "execution_id": "069ecaeb1c5c43fe8ea6017da439b4d1",
+          "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+          "verdict": "SAFE",
+          "confirmations": 1,
+          "requirement_satisfied": true,
+          "termination_reason": "REQUIREMENTS_MET",
+          "attempt_ids": [
+            "4e851bed17474af4a808e97ce7e99885"
+          ],
+          "wall_time_sec": 1.2538195679999262,
+          "cache_hit": false,
+          "source_execution_id": null,
+          "goal_id": "long-loop",
+          "status": "COMPLETED",
+          "artifacts": [
+            "28a8e239db432fda8d42648207e928713f8e145980094fa69f65e946f7ababfc",
+            "f536358a06326a6e4fe06fee00461098a5c83a2012576a1270276f0d24f52e47",
+            "a20cd9f6bcb50a30ab6dd214e95c69110b8764c0f13668206a76606b69973ab8",
+            "688c87ec2592e957c3b5736c4c3fba53db873fed31e501df55935f0e988a0102",
+            "1a668ad269555c72a75b5b301bb54ef01e5b278f1d20b407e08d140e3f05b6f5",
+            "525603d96e7272f2f5f0c0522b72968d753a81d009b964252096855344a7c0ec",
+            "3242329a38fc02e46f44238cf6e4fa6d1f9a3ef21c0f86e2d1b110e4ade6f675",
+            "14f958d9aae733f1e915642c76138a140a2eef118667d003433af4007e31e02c",
+            "0e110336be0c5bd5b176c349e0d186bf2d42b096ab3bdb448778f047d176a00f",
+            "24dbfff72333706ade4a98fb08507f594ad2885342eb251d506a21a086bdaaad",
+            "fbdc69e80480fcfa34fa7e652aedf21fb5e260738661328131c0daa300bf821e",
+            "e6cf46ba0ab166e52ac1060788439d71d454694f0941787acd2258e88e4fcd15",
+            "666779db6f7fbc419432f66f970f59ea1e45df4c5f18f5cd64066249dff2d7d9",
+            "379c533d5a7a816eae5a4b9572b7dfa399840d9c2c576d25b23df27bf779433d",
+            "984f62f3279b52e7e4b650bcb4bc50ba557af7bcb1fdc3e337dff69fe8eccb17",
+            "fbb1af80b2b1c5633f750e417de8ad8c1708ee641e7844788fdeafc8cfd9fc5f"
+          ],
+          "diagnostics": [],
+          "optimizer_summary": {
+            "optimizer": "cost-aware-v1",
+            "goal_id": "long-loop",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "cache": "DISABLED",
+            "selected_tools": [
+              "framac"
+            ],
+            "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+            "min_confirmations": 1,
+            "independent_candidates": 1,
+            "trust_feasible": true,
+            "budget": {
+              "wall_time_sec": 60,
+              "memory_mb": 2048,
+              "max_parallel": 1
+            },
+            "hints": {
+              "prefer_fast_counterexample": false,
+              "expected_characteristics": [],
+              "required_capabilities": []
+            },
+            "hints_applied": false,
+            "tiny_budget": false,
+            "stages": [
+              [
+                "framac"
+              ]
+            ]
+          },
+          "failure_reasons": []
+        },
+        "attempts": [
+          {
+            "id": "4e851bed17474af4a808e97ce7e99885",
+            "execution_id": "069ecaeb1c5c43fe8ea6017da439b4d1",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a",
+            "tool": "framac",
+            "family": "framac",
+            "version": "33.0 (Arsenic)",
+            "config_id": "adb3c81a3fcd7e296c33bc83cc5dba82ea524e6a249415778d85b0ad00004fcd",
+            "command": [
+              "/usr/local/bin/python",
+              "-m",
+              "veriruntime.tools.container_driver",
+              "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-framac/executions/069ecaeb1c5c43fe8ea6017da439b4d1/4e851bed17474af4a808e97ce7e99885"
+            ],
+            "start_time": "2026-10-06T05:20:03.850778+00:00",
+            "end_time": "2026-10-06T05:20:04.935081+00:00",
+            "wall_time_sec": 1.0843098189998273,
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "termination_reason": "NORMAL",
+            "exit_code": 0,
+            "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-framac/executions/069ecaeb1c5c43fe8ea6017da439b4d1/4e851bed17474af4a808e97ce7e99885",
+            "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-framac/executions/069ecaeb1c5c43fe8ea6017da439b4d1/4e851bed17474af4a808e97ce7e99885/stdout.txt",
+            "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/long-framac/executions/069ecaeb1c5c43fe8ea6017da439b4d1/4e851bed17474af4a808e97ce7e99885/stderr.txt",
+            "message": "Eva completely validates all reported C properties",
+            "artifact_ids": [
+              "525603d96e7272f2f5f0c0522b72968d753a81d009b964252096855344a7c0ec",
+              "3242329a38fc02e46f44238cf6e4fa6d1f9a3ef21c0f86e2d1b110e4ade6f675",
+              "14f958d9aae733f1e915642c76138a140a2eef118667d003433af4007e31e02c",
+              "0e110336be0c5bd5b176c349e0d186bf2d42b096ab3bdb448778f047d176a00f",
+              "24dbfff72333706ade4a98fb08507f594ad2885342eb251d506a21a086bdaaad",
+              "fbdc69e80480fcfa34fa7e652aedf21fb5e260738661328131c0daa300bf821e",
+              "e6cf46ba0ab166e52ac1060788439d71d454694f0941787acd2258e88e4fcd15",
+              "666779db6f7fbc419432f66f970f59ea1e45df4c5f18f5cd64066249dff2d7d9",
+              "379c533d5a7a816eae5a4b9572b7dfa399840d9c2c576d25b23df27bf779433d",
+              "984f62f3279b52e7e4b650bcb4bc50ba557af7bcb1fdc3e337dff69fe8eccb17",
+              "fbb1af80b2b1c5633f750e417de8ad8c1708ee641e7844788fdeafc8cfd9fc5f"
+            ],
+            "diagnostic_code": ""
+          }
+        ],
+        "events": [
+          {
+            "time": "2026-10-06T05:20:03.850615+00:00",
+            "kind": "execution_start",
+            "semantic_key": "edf3c6b58ab742e53ca0abab9b818f99abaa8ae2d7e21447b3588a434803aa9a"
+          },
+          {
+            "time": "2026-10-06T05:20:03.850660+00:00",
+            "kind": "tool_start",
+            "tool": "framac",
+            "remaining_wall_sec": 59.999918661000265
+          },
+          {
+            "time": "2026-10-06T05:20:05.104282+00:00",
+            "kind": "tool_end",
+            "tool": "framac",
+            "attempt_id": "4e851bed17474af4a808e97ce7e99885",
+            "verdict": "SAFE",
+            "status": "COMPLETED",
+            "wall_time_sec": 1.0843098189998273
+          },
+          {
+            "time": "2026-10-06T05:20:05.104412+00:00",
+            "kind": "execution_end",
+            "verdict": "SAFE",
+            "confirmations": 1
+          }
+        ]
+      }
+    }
+  ],
+  "rocq": [
+    {
+      "case": "Correct",
+      "result": {
+        "status": "VERIFIED",
+        "reason": "kernel_checked",
+        "proof_symbol": "VRGoal.Correct.discharge",
+        "statement_symbol": "VRGoal.Expected.obligation",
+        "semantic_key": "a9177c2f4b000341c15eae621bdcbb92f60207d068e4b434e7cca84bddbacd60",
+        "code_verdict": null,
+        "assumptions_policy": "closed",
+        "kernel_rechecked": true,
+        "execution_id": "001c3b5b6fad4996ac42c3790caafec9",
+        "attempt": {
+          "id": "0dabeb382e34412c846695860ab3dd63",
+          "execution_id": "001c3b5b6fad4996ac42c3790caafec9",
+          "semantic_key": "a9177c2f4b000341c15eae621bdcbb92f60207d068e4b434e7cca84bddbacd60",
+          "tool": "rocq",
+          "family": "rocq",
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63"
+          ],
+          "start_time": "2026-10-06T05:20:05.631810+00:00",
+          "end_time": "2026-10-06T05:20:06.695577+00:00",
+          "wall_time_sec": 1.0637632020007004,
+          "status": "COMPLETED",
+          "termination_reason": "NORMAL",
+          "exit_code": 0,
+          "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63",
+          "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/stdout.txt",
+          "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/stderr.txt",
+          "message": "Supplied proof kernel-checked against supplied statement; no C verdict",
+          "artifact_ids": [],
+          "diagnostic_code": "",
+          "artifact_verdict": "VALID"
+        },
+        "tool_profile": {
+          "name": "rocq",
+          "family": "rocq",
+          "available": true,
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "path": "sha256:89b9bf3a5546c4a67ec7919dca9cc442e887df65a26fe694e76c410c1dcca471",
+          "languages": [
+            "Rocq"
+          ],
+          "properties": [
+            "proof_check"
+          ],
+          "c_standards": [],
+          "data_models": [],
+          "estimated_memory_mb": 256,
+          "prior_runtime_sec": 1.0,
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "diagnostic": ""
+        },
+        "artifacts": [
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/container-request.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/container-state.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/native-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-result.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-steps.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/compile-0.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/assumptions.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/binding.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/kernel.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/compile-1.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/dependencies.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Correct.vo",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Expected.vo",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Binding.vo"
+        ],
+        "artifact_records": [
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/container-request.json",
+            "size_bytes": 1580,
+            "sha256": "5d2e3d77ee00e500b25391d6f42c48fafc35fb966fc707477dd39b0a11934409"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/container-state.json",
+            "size_bytes": 3327,
+            "sha256": "7fb1a2961d432aa40b1fd28abfdff9e041b5423e139742109a243e8b603833ee"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/native-command.json",
+            "size_bytes": 1356,
+            "sha256": "1e592c7de95b99ff1902a8533bc0ae3986494cedbfa8c543c7fbedfa8d832e47"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-result.json",
+            "size_bytes": 326,
+            "sha256": "3339653c9433d05b99162a0d7295cfbb4043e408b514ca41fc138a1fb700bdea"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-command.json",
+            "size_bytes": 1104,
+            "sha256": "3913991515d1afc35808a7ff693241fa7b547ba88c4fda57426a00e573319178"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-steps.json",
+            "size_bytes": 1292,
+            "sha256": "041a12e2558000f09a2bd3302cf0e29552f4d0cc1fb96139cf773badc2c6c379"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/compile-0.log",
+            "size_bytes": 1,
+            "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/assumptions.log",
+            "size_bytes": 199,
+            "sha256": "505fa3b6d00559cceb013722e843a5d3e4158a8f1ff5557b351a92298b396bd5"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/binding.log",
+            "size_bytes": 183,
+            "sha256": "e50626e601d9f1770489224de6289ae8405973b29f5ca7461efa982d855c407e"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/kernel.log",
+            "size_bytes": 33402,
+            "sha256": "a35f3099296127eb6e7535bbd72e9275efd049507b72af7636ead1dfb4503914"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/compile-1.log",
+            "size_bytes": 1,
+            "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/dependencies.log",
+            "size_bytes": 22,
+            "sha256": "ec980ef880f0979a74d8b3a9b9d3d854c4da90b0a9355bf4ab4b9b598324ddab"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Correct.vo",
+            "size_bytes": 1020,
+            "sha256": "e7b3090c02c1bf4ee4e33f37885fc290901319c778d21b571f0c3677514b2067"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Expected.vo",
+            "size_bytes": 932,
+            "sha256": "e755e1050944608748a59b76abbc15bcd6c94a669a989e2bd2ec025d642569bc"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/001c3b5b6fad4996ac42c3790caafec9/0dabeb382e34412c846695860ab3dd63/proof-build/Binding.vo",
+            "size_bytes": 1154,
+            "sha256": "d737e5a77c64226be6aa9333e251134e78267732f8532e288b9602fb45cec18b"
+          }
+        ]
+      }
+    },
+    {
+      "case": "Incorrect",
+      "result": {
+        "status": "REJECTED",
+        "reason": "proof_type_mismatch",
+        "proof_symbol": "VRGoal.Incorrect.discharge",
+        "statement_symbol": "VRGoal.Expected.obligation",
+        "semantic_key": "c0cb8fff44e5f269085c6f9f576120880b5510eeb2955a89ca6754e214d34585",
+        "code_verdict": null,
+        "assumptions_policy": "closed",
+        "detail": "File \"./Binding.v\", line 3, characters 47-73:\nError:\nThe term \"discharge\" has type \"True\" while it is expected to have type\n \"required_statement\".\n\n",
+        "execution_id": "2c38b483d3c445ea9f0f70815e01b338",
+        "attempt": {
+          "id": "dcd35c6811bb4ecb8fdf22c7f5c9549a",
+          "execution_id": "2c38b483d3c445ea9f0f70815e01b338",
+          "semantic_key": "c0cb8fff44e5f269085c6f9f576120880b5510eeb2955a89ca6754e214d34585",
+          "tool": "rocq",
+          "family": "rocq",
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a"
+          ],
+          "start_time": "2026-10-06T05:20:07.107956+00:00",
+          "end_time": "2026-10-06T05:20:08.032979+00:00",
+          "wall_time_sec": 0.9250198920008188,
+          "status": "ERROR",
+          "termination_reason": "PROCESS_ERROR",
+          "exit_code": 1,
+          "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a",
+          "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/stdout.txt",
+          "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/stderr.txt",
+          "message": "Proof not accepted; inspect proof-result.json",
+          "artifact_ids": [],
+          "diagnostic_code": "proof_not_accepted",
+          "artifact_verdict": "UNVERIFIED"
+        },
+        "tool_profile": {
+          "name": "rocq",
+          "family": "rocq",
+          "available": true,
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "path": "sha256:89b9bf3a5546c4a67ec7919dca9cc442e887df65a26fe694e76c410c1dcca471",
+          "languages": [
+            "Rocq"
+          ],
+          "properties": [
+            "proof_check"
+          ],
+          "c_standards": [],
+          "data_models": [],
+          "estimated_memory_mb": 256,
+          "prior_runtime_sec": 1.0,
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "diagnostic": ""
+        },
+        "artifacts": [
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/container-request.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/container-state.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/native-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-result.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-steps.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/compile-0.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/binding.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/compile-1.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/dependencies.log",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/Incorrect.vo",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/Expected.vo"
+        ],
+        "artifact_records": [
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/container-request.json",
+            "size_bytes": 1469,
+            "sha256": "d35d0b431a680f1b61a68e21e5edc8b18547c24944ceafdf0771d78c6cc72ecc"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/container-state.json",
+            "size_bytes": 3327,
+            "sha256": "b60ca61e5bc40fce1c599a9e7d470a25ab952fe3b406696afe50dd51f121e3b8"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/native-command.json",
+            "size_bytes": 1356,
+            "sha256": "3a59508a95bd2c412642e32b464f1b0ab3aedad57331dcbc2783f496bcc031f3"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-result.json",
+            "size_bytes": 482,
+            "sha256": "20daa7d6442d60d16f95b99f57cc319ff716954813dfac4984255a35dc5999fb"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-command.json",
+            "size_bytes": 993,
+            "sha256": "021304323ab255c82899b6a4cfec4e3e145706be81c5d2402733af6880c2c140"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-steps.json",
+            "size_bytes": 855,
+            "sha256": "91a422a2b4fee0413cf8c392f465e595a633d20ae4e6218b0ea5ce5c974bf2dc"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/compile-0.log",
+            "size_bytes": 1,
+            "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/binding.log",
+            "size_bytes": 149,
+            "sha256": "05da828f74e485a11540cc5db9e53adaa0754e72574adc30af4e3739b38296f9"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/compile-1.log",
+            "size_bytes": 1,
+            "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/dependencies.log",
+            "size_bytes": 24,
+            "sha256": "ebe0e967b692b7457fd693ebcd6646cbe4cb7fdb87e43c6a969ab628a73ee526"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/Incorrect.vo",
+            "size_bytes": 978,
+            "sha256": "bbeacf3695b405d0eb9b42d6bef492130f3224502b4e71fccf53e3589659eaaf"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/2c38b483d3c445ea9f0f70815e01b338/dcd35c6811bb4ecb8fdf22c7f5c9549a/proof-build/Expected.vo",
+            "size_bytes": 932,
+            "sha256": "e755e1050944608748a59b76abbc15bcd6c94a669a989e2bd2ec025d642569bc"
+          }
+        ]
+      }
+    },
+    {
+      "case": "Admitted",
+      "result": {
+        "status": "REJECTED",
+        "reason": "untrusted_axioms_or_extensions",
+        "proof_symbol": "VRGoal.Admitted.discharge",
+        "statement_symbol": "VRGoal.Expected.obligation",
+        "semantic_key": "de5f39a6ed9f22b8070ceb3a01e3b45d67cf25531a9043134bd226e927ad6f28",
+        "code_verdict": null,
+        "assumptions_policy": "closed",
+        "detail": "Admitted.v",
+        "execution_id": "204c6a29ffaf4774bd69306ff25459a8",
+        "attempt": {
+          "id": "ff12fececd1f47ed9306c84c520e8d40",
+          "execution_id": "204c6a29ffaf4774bd69306ff25459a8",
+          "semantic_key": "de5f39a6ed9f22b8070ceb3a01e3b45d67cf25531a9043134bd226e927ad6f28",
+          "tool": "rocq",
+          "family": "rocq",
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "command": [
+            "/usr/local/bin/python",
+            "-m",
+            "veriruntime.tools.container_driver",
+            "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40"
+          ],
+          "start_time": "2026-10-06T05:20:08.459291+00:00",
+          "end_time": "2026-10-06T05:20:09.214299+00:00",
+          "wall_time_sec": 0.7550028850000672,
+          "status": "ERROR",
+          "termination_reason": "PROCESS_ERROR",
+          "exit_code": 1,
+          "workspace": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40",
+          "stdout_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/stdout.txt",
+          "stderr_path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/stderr.txt",
+          "message": "Proof not accepted; inspect proof-result.json",
+          "artifact_ids": [],
+          "diagnostic_code": "proof_not_accepted",
+          "artifact_verdict": "UNVERIFIED"
+        },
+        "tool_profile": {
+          "name": "rocq",
+          "family": "rocq",
+          "available": true,
+          "version": "The Rocq Prover, version 9.1.1\ncompiled with OCaml 5.3.0",
+          "path": "sha256:89b9bf3a5546c4a67ec7919dca9cc442e887df65a26fe694e76c410c1dcca471",
+          "languages": [
+            "Rocq"
+          ],
+          "properties": [
+            "proof_check"
+          ],
+          "c_standards": [],
+          "data_models": [],
+          "estimated_memory_mb": 256,
+          "prior_runtime_sec": 1.0,
+          "config_id": "d158a78e8934fd8cc3e8f74f09c339d48576182282e55a2628c80de600768639",
+          "diagnostic": ""
+        },
+        "artifacts": [
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/container-request.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/container-state.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/native-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-result.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-command.json",
+          "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-steps.json"
+        ],
+        "artifact_records": [
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/container-request.json",
+            "size_bytes": 1507,
+            "sha256": "485592ffe211e5e3a2dc75658b10c2f189cec1cb7976c1efdfee0812a147b5cf"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/container-state.json",
+            "size_bytes": 3327,
+            "sha256": "baa687daad28bf5277b862bfaa877e71e5fbfe7abbae2906d7dbc9bc190a9131"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/native-command.json",
+            "size_bytes": 1356,
+            "sha256": "9b1b8c4ee69f369a2a3563575990865a5151520c59c29d4328a9722256b98d71"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-result.json",
+            "size_bytes": 341,
+            "sha256": "db4b465d7111453256b4de51bfba2ecfda2c0446fbc6cf573128acb22687b388"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-command.json",
+            "size_bytes": 1031,
+            "sha256": "2ab5b4bacaed3289f62a63b96345001d57886d1dfe7e2a0f3677d51af6120fa3"
+          },
+          {
+            "path": "/data/verifier-lab/4beb869d03e243b287e841bc3dca047b/proof-executions/204c6a29ffaf4774bd69306ff25459a8/ff12fececd1f47ed9306c84c520e8d40/proof-steps.json",
+            "size_bytes": 2,
+            "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ]
+      }
+    }
+  ],
+  "wp": [
+    {
+      "solver": "z3",
+      "goals": [
+        {
+          "goal": "typed_square_ensures",
+          "property": "square_ensures",
+          "file": "/work/square.c",
+          "line": 3,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0.00101,
+              "success": 0
+            },
+            {
+              "prover": "Z3:4.13.3",
+              "time": 0.0123,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assert_rte_signed_overflow",
+          "property": "square_assert_rte_signed_overflow",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 0
+            },
+            {
+              "prover": "Z3:4.13.3",
+              "time": 0.00845,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assert_rte_signed_overflow_2",
+          "property": "square_assert_rte_signed_overflow_2",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 0
+            },
+            {
+              "prover": "Z3:4.13.3",
+              "time": 0.0034,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assigns",
+          "property": "square_assigns",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        }
+      ],
+      "stdout": "[kernel] Parsing square.c (with preprocessing)\n[wp] Running WP plugin...\n[wp] Warning: Skipped RTE guards: unaligned pointers (\\aligned not supported)\n[wp] Warning: Skipped RTE guards: invalid function pointer calls (\\valid_function not supported)\n[rte:annot] annotating function square\n[wp] 4 goals scheduled\n[wp] Proved goals:    6 / 6\n  Terminating:     1\n  Unreachable:     1\n  Qed:             1 (0.25ms)\n  Z3 4.13.3:       3 (3ms-12ms)\n",
+      "stderr": "",
+      "image": "sha256:3b4e5f93448f273e6032040069999531c2bb87644240911b797f2f3aebf8b629",
+      "evidence_kind": "solver_report",
+      "kernel_checked": false
+    },
+    {
+      "solver": "cvc5",
+      "goals": [
+        {
+          "goal": "typed_square_ensures",
+          "property": "square_ensures",
+          "file": "/work/square.c",
+          "line": 3,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0.000867,
+              "success": 0
+            },
+            {
+              "prover": "CVC5:1.1.2",
+              "time": 0.0112,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assert_rte_signed_overflow",
+          "property": "square_assert_rte_signed_overflow",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 0
+            },
+            {
+              "prover": "CVC5:1.1.2",
+              "time": 0.0124,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assert_rte_signed_overflow_2",
+          "property": "square_assert_rte_signed_overflow_2",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 0
+            },
+            {
+              "prover": "CVC5:1.1.2",
+              "time": 0.0162,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        },
+        {
+          "goal": "typed_square_assigns",
+          "property": "square_assigns",
+          "file": "/work/square.c",
+          "line": 5,
+          "function": "square",
+          "smoke": false,
+          "passed": true,
+          "verdict": "valid",
+          "provers": [
+            {
+              "prover": "qed",
+              "time": 0,
+              "success": 1
+            }
+          ],
+          "proved": 1
+        }
+      ],
+      "stdout": "[kernel] Parsing square.c (with preprocessing)\n[wp] Running WP plugin...\n[wp] Warning: Skipped RTE guards: unaligned pointers (\\aligned not supported)\n[wp] Warning: Skipped RTE guards: invalid function pointer calls (\\valid_function not supported)\n[rte:annot] annotating function square\n[wp] 4 goals scheduled\n[wp] Proved goals:    6 / 6\n  Terminating:     1\n  Unreachable:     1\n  Qed:             1 (0.22ms)\n  CVC5 1.1.2:      3 (11ms-16ms)\n",
+      "stderr": "",
+      "image": "sha256:3b4e5f93448f273e6032040069999531c2bb87644240911b797f2f3aebf8b629",
+      "evidence_kind": "solver_report",
+      "kernel_checked": false
+    }
+  ],
+  "remaining_workers": 0,
+  "scope": "C-family experiments and standalone supplied-statement proof checks; no completed Frama-C/Rocq C proof bridge"
+}

@@ -1,0 +1,8 @@
+{
+  "version":"0.1",
+  "task":{"id":"long-loop","language":"C","entry":"main","sources":["long_loop.c"]},
+  "property":{"kind":"assertion_safety"},
+  "semantics":{"c_standard":"c11","data_model":"LP64"},
+  "requirements":{"min_confirmations":1},
+  "budget":{"wall_time_sec":60,"memory_mb":2048,"max_parallel":1}
+}

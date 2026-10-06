@@ -45,6 +45,10 @@ def main(argv=None) -> int:
             sub.add_argument('--explain', action='store_true')
         else:
             sub.add_argument('--analyze', action='store_true')
+    sub = commands.add_parser('check-proof', help='Check an upstream-supplied Rocq proof artifact; no C program verdict')
+    sub.add_argument('task')
+    sub.add_argument('--data-dir', default='/data/proofs')
+    sub.add_argument('--json', action='store_true')
     for command in ('plan', 'experiment'):
         sub = commands.add_parser(command, help='Upstream Codex semantic planning on existing C assertion inputs')
         sub.add_argument('task', help='Single-task or workflow input manifest')
@@ -69,6 +73,16 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     ui = CLIRenderer()
     try:
+        if args.command == 'check-proof':
+            from veriruntime.proofs.dsl import load_proof
+            from veriruntime.proofs.service import check_proof
+            result = asyncio.run(_cancellable(lambda token: check_proof(load_proof(args.task), args.data_dir, token)))
+            if args.json:
+                ui.json(result)
+            else:
+                ui.emit(f'Proof {result["status"]}: {result["reason"]}; C verdict: none')
+                ui.emit(f'Evidence: {args.data_dir}/{result["execution_id"]}/result.json')
+            return 0 if result['status'] == 'VERIFIED' else 2
         if args.command in ('tools', 'doctor'):
             from veriruntime.tools import default_registry
             profiles = default_registry().discover()

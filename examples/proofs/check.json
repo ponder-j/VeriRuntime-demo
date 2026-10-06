@@ -1,0 +1,10 @@
+{
+  "version": "0.2",
+  "goal": {
+    "id": "identity-proof", "kind": "proof_check", "namespace": "VRGoal",
+    "statement": {"file": "Expected.v", "symbol": "VRGoal.Expected.obligation"},
+    "proof": {"language": "Rocq", "files": ["Correct.v"], "symbol": "VRGoal.Correct.discharge"}
+  },
+  "requirements": {"evidence": "kernel_checked", "axioms": []},
+  "budget": {"wall_time_sec": 30, "memory_mb": 512, "max_parallel": 1}
+}

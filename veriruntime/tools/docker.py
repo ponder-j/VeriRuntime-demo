@@ -46,9 +46,10 @@ class DockerAdapter(ToolAdapter):
         return self._profile
 
     def supports(self, task):
-        import re
-        return super().supports(task) and (self.name != 'cpachecker' or
-            not any(re.search(r'\b(float|double|__vr_assert_)\b', f.content) for f in task.program.files))
+        return super().supports(task)
+
+    def accepts_program(self, task):
+        return self.native.accepts_program(task)
 
     def attempt_environment(self, workspace):
         # The root-owned bridge must not pre-create the non-root worker's HOME

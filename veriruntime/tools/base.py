@@ -38,6 +38,8 @@ class ToolAdapter:
     config: dict = {}
     estimated_memory_mb = 512
     prior_runtime_sec = 1.0
+    version_flags = ('--version',)
+    help_flags = ('--help',)
 
     def __init__(self, root: Path | str = "."):
         self.root = Path(root).resolve()
@@ -93,13 +95,13 @@ class ToolAdapter:
                 continue
             try:
                 prefix = self.launch_prefix(path)
-                version_run = subprocess.run([*prefix, "--version"], capture_output=True,
+                version_run = subprocess.run([*prefix, *self.version_flags], capture_output=True,
                                              text=True, timeout=15, env=self.environment())
                 version = self.version_text(version_run.stdout + version_run.stderr)
                 if version_run.returncode != 0 or not version:
                     diagnostics.append(f"{path}: version probe failed: {version[:400]}")
                     continue
-                help_run = subprocess.run([*prefix, "--help"], capture_output=True,
+                help_run = subprocess.run([*prefix, *self.help_flags], capture_output=True,
                                           text=True, timeout=15, env=self.environment())
                 help_text = help_run.stdout + help_run.stderr
                 missing = [f for f in self.required_flags if f not in help_text]
@@ -132,7 +134,10 @@ class ToolAdapter:
         p = self.profile()
         return (p.available and task.language in p.languages and
                 task.property.kind in p.properties and task.semantics.c_standard in p.c_standards
-                and task.semantics.data_model in p.data_models)
+                and task.semantics.data_model in p.data_models and self.accepts_program(task))
+
+    def accepts_program(self, task) -> bool:
+        return True
 
     def build_command(self, task: VerificationTask, workspace: Path) -> tuple[str, ...]:
         raise NotImplementedError

@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object", "additionalProperties":false,
+  "required":["version","goal","requirements","budget"],
+  "properties":{
+    "version":{"const":"0.2"},
+    "goal":{"type":"object","additionalProperties":false,"required":["id","kind","statement","proof","namespace"],"properties":{
+      "id":{"type":"string","minLength":1}, "kind":{"const":"proof_check"},
+      "namespace":{"$ref":"#/$defs/identifier"},
+      "statement":{"type":"object","additionalProperties":false,"required":["file","symbol"],"properties":{"file":{"$ref":"#/$defs/source"},"symbol":{"$ref":"#/$defs/qualid"}}},
+      "proof":{"type":"object","additionalProperties":false,"required":["language","files","symbol"],"properties":{"language":{"const":"Rocq"},"files":{"type":"array","minItems":1,"maxItems":16,"uniqueItems":true,"items":{"$ref":"#/$defs/source"}},"symbol":{"$ref":"#/$defs/qualid"}}}
+    }},
+    "requirements":{"type":"object","additionalProperties":false,"required":["evidence","axioms"],"properties":{"evidence":{"const":"kernel_checked"},"axioms":{"type":"array","maxItems":0}}},
+    "budget":{"type":"object","additionalProperties":false,"required":["wall_time_sec","memory_mb","max_parallel"],"properties":{"wall_time_sec":{"type":"number","exclusiveMinimum":0,"maximum":86400},"memory_mb":{"type":"integer","minimum":256,"maximum":65536},"max_parallel":{"const":1}}}
+  },
+  "$defs":{
+    "identifier":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_]*$"},
+    "qualid":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+$"},
+    "source":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_]*\\.v$"}
+  }
+}

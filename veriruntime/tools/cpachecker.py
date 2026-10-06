@@ -27,8 +27,10 @@ class CPAcheckerAdapter(ToolAdapter):
     def supports(self, task):
         # This configuration has no floating-point theory. Reject rather than
         # approximate the proposition or silently change the supplied semantics.
-        return (super().supports(task) and shutil.which("clang") is not None and
-                not any(re.search(r'\b(float|double|__vr_assert_)\b', f.content) for f in task.program.files))
+        return super().supports(task) and shutil.which("clang") is not None
+
+    def accepts_program(self, task):
+        return not any(re.search(r'\b(float|double|__vr_assert_)\b', f.content) for f in task.program.files)
 
     def build_command(self, task, workspace: Path):
         sources = materialize(task.program, workspace)

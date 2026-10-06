@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Frama-C + Rocq · 强证明调度设计",
+    "quality_profile": "showcase",
+    "viewBox": [
+      720,
+      344
+    ],
+    "legend": {
+      "mode": "hidden"
+    }
+  },
+  "lanes": [
+    {
+      "id": "obligations",
+      "label": "固定契约与义务计划"
+    },
+    {
+      "id": "proofs",
+      "label": "上层证明与下层核验"
+    }
+  ],
+  "mainPath": [
+    "request",
+    "bundle",
+    "schedule",
+    "missing"
+  ],
+  "nodes": [
+    {
+      "id": "request",
+      "lane": "obligations",
+      "col": 0,
+      "type": "external",
+      "label": "上层契约 DSL",
+      "sublabel": "C / ACSL / 语义 / 预算",
+      "width": 94,
+      "height": 60
+    },
+    {
+      "id": "bundle",
+      "lane": "obligations",
+      "col": 1,
+      "type": "database",
+      "label": "冻结 VC 清单",
+      "sublabel": "源码 / 模型 / 义务摘要",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "schedule",
+      "lane": "obligations",
+      "col": 3,
+      "type": "backend",
+      "label": "逐义务自动调度",
+      "sublabel": "SMT 报告保留证据等级",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "missing",
+      "lane": "obligations",
+      "col": 5,
+      "type": "messagebus",
+      "label": "等待上层补证",
+      "sublabel": "NEEDS_INPUT · 释放容器",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "author",
+      "lane": "proofs",
+      "col": 0,
+      "type": "external",
+      "label": "人 / LLM 编写",
+      "sublabel": "提交绑定 VC 的 .v",
+      "width": 94,
+      "height": 60
+    },
+    {
+      "id": "checker",
+      "lane": "proofs",
+      "col": 1,
+      "type": "security",
+      "label": "Rocq 检查证明",
+      "sublabel": "类型 / 假设 / 内核复查",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "coverage",
+      "lane": "proofs",
+      "col": 3,
+      "type": "security",
+      "label": "核验覆盖与来源",
+      "sublabel": "全部 VC 与依赖均已验证",
+      "width": 100,
+      "height": 60
+    },
+    {
+      "id": "feedback",
+      "lane": "proofs",
+      "col": 5,
+      "type": "frontend",
+      "label": "返回契约结论",
+      "sublabel": "结论明确保留前置条件",
+      "width": 100,
+      "height": 60
+    }
+  ],
+  "edges": [
+    {
+      "from": "request",
+      "to": "bundle"
+    },
+    {
+      "from": "bundle",
+      "to": "schedule"
+    },
+    {
+      "from": "schedule",
+      "to": "missing",
+      "route": "straight"
+    },
+    {
+      "from": "missing",
+      "to": "author",
+      "role": "return",
+      "bias": 0.8
+    },
+    {
+      "from": "author",
+      "to": "checker",
+      "route": "straight"
+    },
+    {
+      "from": "checker",
+      "to": "coverage"
+    },
+    {
+      "from": "coverage",
+      "to": "feedback",
+      "route": "straight"
+    },
+    {
+      "from": "coverage",
+      "to": "missing",
+      "role": "error",
+      "variant": "security",
+      "label": "缺失 / 过期"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "证明代码由上层提供",
+      "items": [
+        "运行时只生成义务与类型绑定，检查已有证明",
+        "不能用少量有效证明替代整个目标的覆盖闭包"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "已实现与设计范围",
+      "items": [
+        "已实测新 C 家族、WP 求解器与独立 Rocq 检查",
+        "C 到 VC 再到 Rocq 的完整覆盖链接仍待实现"
+      ]
+    }
+  ]
+}

@@ -17,6 +17,7 @@ arrived during M3 and was integrated in M3–M7 without modifying M0–M2 histor
 | M7 | Third real verifier, cross-checks, six-case benchmark, final soundness review and docs | Final test counts and evidence in delivery report |
 | M8 | Optional upstream Codex planner, validated Workflow export and bounded feedback experiments | Real default-sol DAG, two-family miss/hit and honest UNKNOWN feedback; final checks in llm-experiments.md |
 | M9 | Docker Linux reproduction, per-attempt verifier isolation, environment-bound cache and real dispatch explorer | 113 Linux tests; three-family SAFE/UNSAFE and miss/hit; 18-run benchmark; cgroup OOM, mount isolation and reservation-cancellation cleanup; details in linux-docker.md |
+| M10 | Optional Ultimate / Eva adapters, isolated WP solver experiments, upstream-authored Rocq proof DSL and strong-proof scheduling design | 119 Linux tests; 16 C-family lab runs, 3 Rocq checks and 2 WP solver runs; results, scope and diagram receipts in strong-verification.md |
 
 Every milestone was reviewed for module boundaries, DSL tool leakage, logical versus
 physical planning, semantic cache validity, fixture isolation, status definitions
