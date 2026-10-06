@@ -268,6 +268,8 @@ class ExecutionAttempt:
     message: str = ""
     artifact_ids: tuple[str, ...] = ()
     diagnostic_code: str = ""
+    execution_backend: str = ""
+    backend_metrics: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

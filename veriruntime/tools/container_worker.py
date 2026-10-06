@@ -1,8 +1,8 @@
 """Worker entrypoint: the existing native adapter runs inside its own image."""
 import json
 from pathlib import Path
-import subprocess
 import sys
+from veriruntime.execution import ExecutionSpec, LocalExecutionBackend
 
 from veriruntime.model import (Budget, ProgramFile, ProgramSnapshot, Requirements,
     Semantics, SemanticHints, VerificationProperty, VerificationTask, to_data)
@@ -48,7 +48,11 @@ def main():
     env = adapter.attempt_environment(workspace)
     (workspace / 'native-command.json').write_text(json.dumps({
         'argv': command, 'profile': to_data(profile), 'environment': env}, indent=2))
-    return subprocess.run(command, cwd=workspace, env=env, stdin=subprocess.DEVNULL).returncode
+    outcome = LocalExecutionBackend().run_sync(ExecutionSpec(tuple(command), str(workspace), env,
+        metadata={'tool': tool, 'transport': 'isolated Linux worker'}),
+        capture_output=False, inherit_group=True)
+    (workspace / 'native-outcome.json').write_text(json.dumps(to_data(outcome), indent=2))
+    return outcome.exit_code
 
 
 if __name__ == '__main__':

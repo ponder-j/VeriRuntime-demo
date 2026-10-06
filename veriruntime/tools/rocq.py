@@ -42,5 +42,7 @@ class RocqAdapter(ToolAdapter):
 
     def collect_artifacts(self, workspace):
         return tuple(('PROOF_ARTIFACT', p) for p in workspace.glob('proof-*.json')) + tuple(
+            ('EXECUTION_BACKEND', workspace / name) for name in ('execution-spec.json', 'backend-outcome.json')
+            if (workspace / name).exists()) + tuple(
             ('PROOF_LOG', p) for p in (workspace / 'proof-build').glob('*.log')) + tuple(
             ('KERNEL_OBJECT', p) for p in (workspace / 'proof-build').glob('*.vo'))

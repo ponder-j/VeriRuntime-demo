@@ -33,7 +33,7 @@ class WorkflowExecution:
 
 
 class VerificationService:
-    def __init__(self, data_dir=".veriruntime", registry=None, optimizer=None, cache_enabled=True):
+    def __init__(self, data_dir=".veriruntime", registry=None, optimizer=None, cache_enabled=True, execution_backend=None):
         self.data_dir = Path(data_dir).resolve()
         self.registry = registry or default_registry()
         self.store = ExecutionStore(self.data_dir)
@@ -41,6 +41,7 @@ class VerificationService:
         self.cache_enabled = cache_enabled
         self.artifacts = ArtifactStore(self.data_dir, self.store)
         self.cache = SemanticCache(self.store, self.artifacts, self.registry)
+        self.execution_backend = execution_backend
 
     def optimize_goal(self, task):
         return self.optimizer.optimize(LogicalPlan(task), RuntimeContext(self.registry, self.store,
@@ -53,7 +54,9 @@ class VerificationService:
         workspace = Path(attempt.workspace)
         refs = [self.artifacts.put_file(path, kind, attempt.id).id for kind, path in (
             ("STDOUT", attempt.stdout_path), ("STDERR", attempt.stderr_path),
-            ("COMMAND", workspace / "command.json"), ("ATTEMPT", workspace / "attempt.json")) if Path(path).exists()]
+            ("COMMAND", workspace / "command.json"), ("ATTEMPT", workspace / "attempt.json"),
+            ("EXECUTION_SPEC", workspace / "execution-spec.json"),
+            ("BACKEND_OUTCOME", workspace / "backend-outcome.json")) if Path(path).exists()]
         for kind, path in self.registry.get(attempt.tool).collect_artifacts(workspace):
             refs.append(self.artifacts.put_file(path, kind, attempt.id).id)
         attempt = replace(attempt, artifact_ids=tuple(refs))
@@ -112,7 +115,8 @@ class VerificationService:
             report = RuntimeReport(result, (), ({"kind": "cache_hit", "time": utc_now(),
                 "source_execution_id": entry.source_execution_id, "semantic_key": task.semantic_key},))
         else:
-            runtime = Runtime(self.registry, self.data_dir, on_attempt=self._record_attempt)
+            runtime = Runtime(self.registry, self.data_dir, on_attempt=self._record_attempt,
+                              execution_backend=self.execution_backend)
             report = await runtime.execute_goal(LogicalPlan(task), optimization.physical_plan, cancellation,
                                                  execution_id=execution_id)
         return self._finish_goal(task, optimization, report)

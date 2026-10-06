@@ -21,7 +21,8 @@ flowchart TD
     Cache[Per-Goal Semantic Cache] --> Opt
     Opt --> Plans[Physical Plan ASTs]
     Plans --> Runtime[Workflow Scheduler and Goal Runtime]
-    Runtime --> Tools[CBMC / ESBMC / CPAchecker]
+    Runtime --> Backend[ExecutionBackend: LocalExecutionBackend]
+    Backend --> Tools[CBMC / ESBMC / CPAchecker]
     Tools --> Store[Results, Artifacts and Provenance]
     Store --> Cache
     Store --> Registry
@@ -265,6 +266,7 @@ silently simulated features.
 | `veriruntime/dsl/`, `schemas/` | JSON validation and logical IR loading |
 | `veriruntime/plan.py`, `optimizer.py` | Physical AST and replaceable cost heuristic |
 | `veriruntime/runtime/`, `service.py` | Goal execution, resource supervision and workflow dependencies |
+| `veriruntime/execution/` | Backend-neutral execution lifecycle and the current POSIX LocalExecutionBackend |
 | `veriruntime/tools/` | Registry and backend-specific compilation/output contracts |
 | `veriruntime/store.py`, `artifacts.py`, `cache.py` | SQLite provenance, content-addressed artifacts and exact goal cache |
 | `veriruntime/observability.py`, `cli.py` | Structured events and human/machine interfaces |
@@ -277,6 +279,17 @@ automatic portfolios, scheduling, exact semantic caching and explainable evidenc
 provenance. It makes no theoretical optimality or novelty claim. Natural research
 extensions are cost-based planning, adaptive scheduling, evidence-aware optimization,
 witness/invariant reuse, incremental verification and learned verifier selection.
+
+The execution backend is a separate infrastructure boundary. Runtime selects and
+schedules fixed verifier commands; `ExecutionBackend` owns start/wait/cancel,
+metrics and cleanup. The current `LocalExecutionBackend` uses POSIX process groups.
+CPU/memory requests are recorded; native RSS monitoring remains best effort.
+Existing Docker isolation stays optional. An infrastructure backend can be supplied
+to `VerificationService(..., execution_backend=backend)` without changing the DSL
+or optimizer. Kubernetes remains a future backend, with no implementation or
+deployment dependency added. See [Execution Backend Abstraction](docs/architecture.md#execution-backend-abstraction).
+The [M11 backend acceptance note](docs/execution-backends.md) records resource
+guarantees, injection API and regression/real-verifier validation.
 
 Current limits: exact per-goal cache only; no witness reuse, checkpoints, incremental
 proofs or dynamic CPU allocation. Native execution samples RSS; Docker workers

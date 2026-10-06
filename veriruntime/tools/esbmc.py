@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
-import subprocess
 import sys
+from veriruntime.execution import ExecutionSpec, LocalExecutionBackend
 
 from veriruntime.model import ExecutionStatus, Verdict
 from .base import ParsedResult, ToolAdapter, materialize
@@ -21,7 +21,11 @@ class ESBMCAdapter(ToolAdapter):
                 "--64" if task.semantics.data_model == "LP64" else "--32", "--unwind",
                 str(self.config["unwind"]), "--z3", "--multi-property", "--overflow-check", "--ub-shift-check"]
         if sys.platform == "darwin":
-            sdk = subprocess.check_output(["xcrun", "--show-sdk-path"], text=True, timeout=10).strip()
+            probe = LocalExecutionBackend().run_sync(ExecutionSpec(('xcrun', '--show-sdk-path'),
+                str(workspace), self.environment(), wall_time_limit=10))
+            if probe.exit_code != 0 or probe.status != ExecutionStatus.COMPLETED:
+                raise ValueError('macOS SDK detection failed: ' + probe.stderr)
+            sdk = probe.stdout.strip()
             args += ["--sysroot", sdk, "-I", str(Path(sdk) / "usr/include")]
         return tuple(args)
 

@@ -11,6 +11,7 @@ import uuid
 from veriruntime.model import (Diagnostic, ExecutionStatus, TerminationReason, VerificationResult, Verdict, to_data)
 from veriruntime.plan import CacheLookupPlan, ParallelPlan, RunPlan, SequencePlan
 from .process import Cancellation, MemoryMonitor, execute, utc_now
+from veriruntime.execution import LocalExecutionBackend
 
 
 def reconcile(attempts, minimum: int) -> tuple[Verdict, int, bool]:
@@ -34,10 +35,11 @@ class RuntimeReport:
 
 
 class Runtime:
-    def __init__(self, registry, data_dir: str | Path = ".veriruntime", on_attempt=None):
+    def __init__(self, registry, data_dir: str | Path = ".veriruntime", on_attempt=None, execution_backend=None):
         self.registry = registry
         self.data_dir = Path(data_dir).resolve()
         self.on_attempt = on_attempt
+        self.execution_backend = execution_backend or LocalExecutionBackend()
 
     async def run(self, logical, plan, cancellation: Cancellation | None = None,
                   execution_id: str | None = None) -> RuntimeReport:
@@ -79,7 +81,7 @@ class Runtime:
                     event("tool_start", tool=node.tool, remaining_wall_sec=deadline - time.monotonic())
                     slice_deadline = min(deadline, time.monotonic() + node.time_slice_sec) if node.time_slice_sec else deadline
                     attempt = await execute(adapter, task, root / uuid.uuid4().hex, execution_id,
-                                            slice_deadline, stop, memory, cancellation)
+                                            slice_deadline, stop, memory, cancellation, self.execution_backend)
                     if self.on_attempt:
                         attempt = self.on_attempt(attempt, task) or attempt
                     attempts.append(attempt)

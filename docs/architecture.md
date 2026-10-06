@@ -43,8 +43,10 @@ flowchart TD
     Cache[Semantic Cache] --> Optimizer
     Optimizer --> Physical[Physical Plan AST]
     Physical --> Runtime[Runtime Scheduler]
-    Runtime --> Adapters[Tool Adapters]
-    Adapters --> Verifiers[Real Software Verifiers]
+    Runtime --> Adapters[Tool Adapters: command and result interpretation]
+    Adapters --> Backend[ExecutionBackend: selected command lifecycle]
+    Runtime --> Backend
+    Backend --> Verifiers[Real Software Verifiers]
     Verifiers --> Store[Execution and Artifact Store]
     Store --> History
     Store --> Cache
@@ -76,6 +78,7 @@ versions and their verdicts; it does not check proof certificates independently.
 | Scheduler | Global deadline, concurrency, fallback, cancellation, reconciliation | Runtime |
 | Tool adapter | Detection, capability declaration, argv construction, output parsing, artifact collection | ToolAdapter, ToolProfile |
 | Tool registry | Discovery, lookup and compatible candidates | ToolRegistry |
+| Infrastructure execution | Start/wait/cancel, process or future job ownership, metrics and cleanup | ExecutionBackend, ExecutionSpec, ExecutionHandle, ExecutionOutcome |
 | Execution store | Tasks, plans, attempts, results, history and events | SQLite |
 | Artifact store | Immutable content-addressed raw output and evidence | Artifact, filesystem |
 | Semantic cache | Exact completed definitive results meeting trust requirements | semantic key, evidence references |
@@ -83,6 +86,58 @@ versions and their verdicts; it does not check proof certificates independently.
 The logical IR contains no physical operators. Adapters contain no global
 scheduling decisions. The runtime contains no backend-name branches. An
 optimizer can be replaced without changing an adapter or the DSL.
+
+## Execution Backend Abstraction
+
+Three scheduling responsibilities remain separate. An upstream LLM decides
+**what should be proved**; VeriRuntime decides **how a fixed goal should be
+executed**; an infrastructure backend decides **where/how the selected command
+physically runs**. A backend does not select CBMC versus CPAchecker, build a
+portfolio, validate cache evidence or change a proposition.
+
+`veriruntime/execution/` defines the backend-neutral `ExecutionSpec`, opaque
+`ExecutionHandle`, `ExecutionMetrics` and `ExecutionOutcome`. The asynchronous
+contract is `start`, `wait`, `cancel`, `collect_metrics`, `cleanup`. A spec carries
+adapter-generated argv, workspace, environment, remaining wall time, CPU/memory
+requests and provenance metadata. Outcomes carry raw outputs, exit code, timing,
+termination, metrics and backend diagnostics; they contain no verifier verdict.
+Adapters alone interpret output, and Runtime alone reconciles evidence.
+
+The current implementation is **LocalExecutionBackend**, using POSIX process
+groups. All product subprocess/PID/signal operations, including version probes,
+compiler drivers and the optional upstream planner's CLI, are concentrated in
+`execution/local.py`. Nested driver commands inherit the owning execution's
+process group rather than escaping supervision. Synchronous probe/helper calls
+use the same implementation boundary; they do not decide scheduling policy.
+
+Runtime and VerificationService accept `execution_backend=` injection. The
+existing native registry is the default and needs no Docker dependency. The M9
+Docker registry remains an optional adapter transport: the local backend runs its
+bridge, while the existing transport applies worker cgroups and mount isolation.
+`VRUN_BACKEND=native|docker` selects that existing tool transport, not a new DSL
+directive or an infrastructure-backend name. This preserves the already qualified
+Linux reproduction rather than rolling it back.
+
+Local enforces wall timeout and owned-process-group TERM/KILL cleanup. CPU and
+per-execution memory requests are **metadata only**. Runtime applies aggregate
+sampled RSS policy using backend metrics; samples can miss spikes. With the Docker
+bridge these local samples cover the bridge tree, not the verifier container;
+worker cgroup state is separate evidence. `backend-outcome.json` reports these
+guarantees explicitly. Attempt records include backend identity and metrics, while
+`execution-spec.json` stores requests and an allowlisted environment receipt.
+
+A future **KubernetesExecutionBackend** would map an already selected spec to a
+Job/Pod, stage the workspace, return artifacts to it, enforce requested resources,
+and own startup/cancel/cleanup races. Startup must return ownership without waiting
+indefinitely for a scheduled workload. It must execute the qualified tool identity
+in spec metadata, or report failure; silently changing toolchains/system headers
+would invalidate evidence and caching. Remote staging, environment qualification
+and lifecycle implementation remain future work. Verification DSL, Logical IR,
+optimizer interfaces, physical-plan semantics, registry and basic adapter contract
+remain unchanged. Kubernetes-specific settings belong to backend configuration,
+never RunPlan or the verification DSL. **Kubernetes is intentionally out of scope
+for M0–M7**, and no Kubernetes implementation, manifests or deployment dependencies
+are introduced in this follow-up.
 
 ## Verdict and execution status
 
@@ -159,7 +214,7 @@ stateDiagram-v2
 ```
 
 Sequence falls back until requirements are met or budget is exhausted. Parallel
-starts real subprocesses, subject to one global concurrency bound even in nested
+starts backend executions, subject to one global concurrency bound even in nested
 plans. Every batch of completed attempts is reconciled before early cancellation.
 For one confirmation, an unfinished peer may be cancelled; only observed completed
 evidence can be checked for conflict. Requiring two confirmations keeps peers

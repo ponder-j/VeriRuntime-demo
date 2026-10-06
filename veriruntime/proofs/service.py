@@ -33,7 +33,7 @@ def _artifact_record(path):
     return {'path': path, 'size_bytes': Path(path).stat().st_size, 'sha256': sha256}
 
 
-async def check_proof(task, data_dir='/data/proofs', cancellation=None):
+async def check_proof(task, data_dir='/data/proofs', cancellation=None, execution_backend=None):
     adapter = RocqAdapter()
     if os.environ.get('VRUN_BACKEND', 'native') == 'docker':
         from veriruntime.tools.docker import DockerAdapter
@@ -42,7 +42,8 @@ async def check_proof(task, data_dir='/data/proofs', cancellation=None):
     root.mkdir(parents=True)
     (root / 'logical-proof.json').write_text(json.dumps(to_data(task), indent=2))
     attempt = await execute(adapter, task, root / uuid.uuid4().hex, root.name,
-        time.monotonic() + task.budget.wall_time_sec, Cancellation(), MemoryMonitor(task.budget.memory_mb), cancellation)
+        time.monotonic() + task.budget.wall_time_sec, Cancellation(), MemoryMonitor(task.budget.memory_mb),
+        cancellation, execution_backend)
     workspace = Path(attempt.workspace)
     result = _read_result(workspace / 'proof-result.json', attempt)
     attempt_data = to_data(attempt)

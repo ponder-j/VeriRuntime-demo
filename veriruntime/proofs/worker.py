@@ -2,8 +2,9 @@
 import json
 from pathlib import Path
 import re
-import subprocess
+import os
 import sys
+from veriruntime.execution import ExecutionSpec, LocalExecutionBackend
 
 from .model import decode_proof
 
@@ -50,10 +51,11 @@ def main():
 
     def run(args, name):
         command = [compiler, *args]
-        completed = subprocess.run(command, cwd=build, capture_output=True, text=True,
-                                   stdin=subprocess.DEVNULL)
+        completed = LocalExecutionBackend().run_sync(ExecutionSpec(tuple(command), str(build),
+            dict(os.environ)), inherit_group=True)
         (build / (name + '.log')).write_text(completed.stdout + '\n' + completed.stderr)
-        commands.append({'argv': command, 'exit_code': completed.returncode, 'log': name + '.log'})
+        commands.append({'argv': command, 'exit_code': completed.exit_code, 'backend': completed.backend,
+                         'log': name + '.log'})
         return completed
 
     for source in task.program.files:
@@ -67,11 +69,11 @@ def main():
     sources = [task.statement_file, *task.proof_files]
     dependencies = run(['dep', '-sort', '-Q', str(build), namespace, *sources], 'dependencies')
     order = dependencies.stdout.split()
-    if dependencies.returncode or set(order) != set(sources) or len(order) != len(sources):
+    if dependencies.exit_code or set(order) != set(sources) or len(order) != len(sources):
         return reject('proof_dependency_error', dependencies.stdout + dependencies.stderr)
     for index, source in enumerate(order):
         compiled = run(['compile', '-q', '-Q', str(build), namespace, source], f'compile-{index}')
-        if compiled.returncode:
+        if compiled.exit_code:
             return reject('proof_compilation_error', compiled.stderr[-2000:])
     # This creates a typed binding, not a proof. The proof must already exist in
     # upstream code and inhabit this exact supplied statement.
@@ -81,13 +83,13 @@ def main():
         + 'Set Printing All Assumptions.\nPrint Assumptions bound_proof.\n')
     (build / 'Binding.v').write_text(binding)
     bound = run(['compile', '-q', '-Q', str(build), namespace, 'Binding.v'], 'binding')
-    if bound.returncode:
+    if bound.exit_code:
         return reject('proof_type_mismatch', bound.stderr[-2000:])
     audit = run(['repl', '-q', '-batch', '-Q', str(build), namespace, '-l', 'Binding.v'], 'assumptions')
-    if audit.returncode or audit.stdout.strip() != 'Closed under the global context':
+    if audit.exit_code or audit.stdout.strip() != 'Closed under the global context':
         return reject('untrusted_assumptions', audit.stdout + audit.stderr)
     checked = run(['check', '-o', '-Q', str(build), namespace, namespace + '.Binding'], 'kernel')
-    if checked.returncode:
+    if checked.exit_code:
         return reject('kernel_recheck_failed', checked.stderr[-2000:])
     result.update(status='VERIFIED', reason='kernel_checked', kernel_rechecked=True)
     (workspace / 'proof-result.json').write_text(json.dumps(result, indent=2))

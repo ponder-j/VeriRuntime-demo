@@ -14,8 +14,9 @@ import tomllib
 
 from jsonschema import Draft202012Validator, ValidationError
 
-from veriruntime.model import to_data
-from veriruntime.runtime.process import cleanup_group, utc_now
+from veriruntime.model import ExecutionStatus, TerminationReason, to_data
+from veriruntime.execution import ExecutionSpec, LocalExecutionBackend
+from veriruntime.runtime.process import utc_now
 
 
 def _user_config():
@@ -96,41 +97,47 @@ class CodexPlanner:
                    "--output-schema", str(schema_path), "--output-last-message", str(answer), "-")
         (directory / "command.json").write_text(json.dumps({"argv": command, "model": self.model}, indent=2))
         start_time, start = utc_now(), time.monotonic()
-        process = None
-        communication = None
+        backend = LocalExecutionBackend()
+        handle, waiting, outcome = None, None, None
         status = "START_FAILED"
         detail = ""
         try:
-            with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
-                if cancellation and cancellation.reason:
-                    status = "CANCELLED"
-                else:
-                    process = await asyncio.create_subprocess_exec(*command, stdin=asyncio.subprocess.PIPE,
-                        stdout=stdout, stderr=stderr, start_new_session=True)
-                    communication = asyncio.create_task(process.communicate(prompt.encode("utf-8")))
-                    while not communication.done():
-                        if cancellation and cancellation.reason:
-                            status = "CANCELLED"
-                            break
-                        if time.monotonic() - start >= self.timeout_sec:
-                            status = "TIMEOUT"
-                            break
-                        await asyncio.sleep(0.02)
-                    else:
-                        await communication
-                        status = "COMPLETED" if process.returncode == 0 else "ERROR"
+            if cancellation and cancellation.reason:
+                status = "CANCELLED"
+            else:
+                spec = ExecutionSpec(command, str(directory), dict(os.environ), self.timeout_sec,
+                    metadata={'role': 'upstream_semantic_planner', 'model': self.model},
+                    stdout_path=str(stdout_path), stderr_path=str(stderr_path), stdin_data=prompt.encode('utf-8'))
+                starting = asyncio.create_task(backend.start(spec))
+                try:
+                    handle = await asyncio.shield(starting)
+                except asyncio.CancelledError:
+                    handle = await starting
+                    raise
+                waiting = asyncio.create_task(backend.wait(handle))
+                while not waiting.done():
+                    if cancellation and cancellation.reason:
+                        await backend.cancel(handle, TerminationReason.USER_CANCEL)
+                        break
+                    await asyncio.sleep(0.02)
+                outcome = await waiting
+                status = outcome.status.value
+                if outcome.status == ExecutionStatus.COMPLETED and outcome.exit_code != 0:
+                    status = 'ERROR'
         except asyncio.CancelledError:
             status = "CANCELLED"
+            if handle is not None:
+                await backend.cancel(handle, TerminationReason.USER_CANCEL)
         except (OSError, BrokenPipeError) as exc:
-            status = "ERROR" if process else "START_FAILED"
+            status = "ERROR" if handle else "START_FAILED"
             detail = str(exc)
         finally:
-            if process is not None:
-                await cleanup_group(process)
-            if communication is not None:
-                if not communication.done():
-                    communication.cancel()
-                await asyncio.gather(communication, return_exceptions=True)
+            if handle is not None:
+                await backend.cleanup(handle)
+                outcome = await backend.wait(handle)
+                (directory / 'backend-outcome.json').write_text(json.dumps(to_data(outcome), indent=2))
+            stdout_path.touch(exist_ok=True)
+            stderr_path.touch(exist_ok=True)
         usage = {}
         unexpected_actions = []
         if stdout_path.exists():
@@ -156,7 +163,7 @@ class CodexPlanner:
                 stream.seek(max(0, stderr_path.stat().st_size - 2000))
                 detail = stream.read().decode("utf-8", errors="replace")
         record = CodexRun(status, self.model, command, start_time, time.monotonic() - start,
-                          process.returncode if process else None, str(stdout_path), str(stderr_path),
+                          outcome.exit_code if outcome else None, str(stdout_path), str(stderr_path),
                           str(answer), usage, detail)
         (directory / "codex-run.json").write_text(json.dumps(to_data(record), indent=2))
         if status != "COMPLETED":

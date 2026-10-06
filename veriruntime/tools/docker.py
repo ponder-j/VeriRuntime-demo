@@ -3,7 +3,6 @@ from dataclasses import replace
 import json
 import os
 from pathlib import Path
-import subprocess
 import sys
 import uuid
 
@@ -96,5 +95,6 @@ class DockerAdapter(ToolAdapter):
     def collect_artifacts(self, workspace):
         records = [(kind, workspace / name) for kind, name in (
             ('CONTAINER_REQUEST', 'container-request.json'), ('CONTAINER_STATE', 'container-state.json'),
-            ('NATIVE_COMMAND', 'native-command.json')) if (workspace / name).exists()]
+            ('NATIVE_COMMAND', 'native-command.json'), ('NATIVE_BACKEND_OUTCOME', 'native-outcome.json'))
+            if (workspace / name).exists()]
         return tuple(records) + self.native.collect_artifacts(workspace)

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import os
 import shutil
-import subprocess
+from veriruntime.execution import ExecutionSpec, LocalExecutionBackend
 
 from veriruntime.model import (ExecutionStatus, ProgramSnapshot, ToolProfile,
                                VerificationTask, Verdict, digest)
@@ -95,24 +95,25 @@ class ToolAdapter:
                 continue
             try:
                 prefix = self.launch_prefix(path)
-                version_run = subprocess.run([*prefix, *self.version_flags], capture_output=True,
-                                             text=True, timeout=15, env=self.environment())
+                probe = LocalExecutionBackend()
+                version_run = probe.run_sync(ExecutionSpec((*prefix, *self.version_flags),
+                    str(self.root), self.environment(), wall_time_limit=15))
                 version = self.version_text(version_run.stdout + version_run.stderr)
-                if version_run.returncode != 0 or not version:
+                if version_run.exit_code != 0 or version_run.status != ExecutionStatus.COMPLETED or not version:
                     diagnostics.append(f"{path}: version probe failed: {version[:400]}")
                     continue
-                help_run = subprocess.run([*prefix, *self.help_flags], capture_output=True,
-                                          text=True, timeout=15, env=self.environment())
+                help_run = probe.run_sync(ExecutionSpec((*prefix, *self.help_flags),
+                    str(self.root), self.environment(), wall_time_limit=15))
                 help_text = help_run.stdout + help_run.stderr
                 missing = [f for f in self.required_flags if f not in help_text]
-                if help_run.returncode != 0 or missing:
+                if help_run.exit_code != 0 or help_run.status != ExecutionStatus.COMPLETED or missing:
                     diagnostics.append(f"{path}: unsupported CLI flags {missing}")
                     continue
                 self._profile = ToolProfile(self.name, self.family, True, version,
                     str(path.resolve()), estimated_memory_mb=self.estimated_memory_mb,
                     prior_runtime_sec=self.prior_runtime_sec, config_id=digest(self.config))
                 return self._profile
-            except (OSError, subprocess.TimeoutExpired) as exc:
+            except OSError as exc:
                 diagnostics.append(f"{path}: {exc}")
         self._profile = ToolProfile(self.name, self.family, False, "", None,
             config_id=digest(self.config), diagnostic="; ".join(diagnostics) or "Executable not found")

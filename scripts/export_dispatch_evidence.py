@@ -17,7 +17,12 @@ for case in ('safe', 'unsafe'):
             native = workspace / 'native-command.json'
             state = workspace / 'container-state.json'
             inner = workspace / 'adapter-command.json'
+            spec = workspace / 'execution-spec.json'
+            outcome = workspace / 'backend-outcome.json'
             attempts.append({**attempt,
+                'execution_spec': json.loads(spec.read_text()) if spec.exists() else None,
+                'backend_outcome': {k: v for k, v in json.loads(outcome.read_text()).items()
+                    if k not in ('stdout', 'stderr')} if outcome.exists() else None,
                 'native_command': json.loads(native.read_text())['argv'] if native.exists() else [],
                 'container': json.loads(state.read_text()) if state.exists() else {},
                 'compilation': json.loads(inner.read_text()) if inner.exists() else None})
