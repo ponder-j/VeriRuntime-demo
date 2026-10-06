@@ -1,0 +1,13 @@
+/* Template extension: fixed canvas, light academic technical report. */
+:root { --font-sans:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif; --font-serif:var(--font-sans); --font-display:var(--font-sans); --font-mono:Consolas,'Microsoft YaHei',monospace; --letter-normal:0; --letter-tight:0; }
+body { font-family:var(--font-sans); }
+.tpl-presenter-mode-reveal .slide { padding:0; display:block; }
+.report-text { position:absolute; max-width:none!important; margin:0!important; padding:0!important; white-space:pre-wrap; overflow:visible; line-height:1.30!important; font-family:var(--font-sans)!important; letter-spacing:0!important; }
+.report-mono { font-family:var(--font-mono)!important; line-height:1.28!important; }
+.tpl-presenter-mode-reveal .kicker { text-transform:none; letter-spacing:0; }
+.report-box { position:absolute; border-radius:var(--radius-sm); }
+.report-svg { position:absolute; left:0; top:0; width:1920px; height:1080px; pointer-events:none; }
+.report-table { position:absolute; table-layout:fixed; border-collapse:collapse; color:var(--text-1); line-height:1.30; margin:0; background:var(--surface); }
+.report-table td,.report-table th { padding:12px 20px; text-align:left; vertical-align:middle; border:1px solid var(--border-strong); font-weight:400; }
+.report-table th { color:var(--accent-ink); background:var(--accent); font-weight:700; }
+@media print { @page { size:20in 11.25in; margin:0; } .slide { width:1920px!important; height:1080px!important; max-height:1080px!important; } .deck { width:1920px!important; } .report-footer { display:block!important; } }

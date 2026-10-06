@@ -1,0 +1,2478 @@
+{
+  "title": "VeriRuntime：从 DSL 到可追溯验证证据",
+  "canvas": {
+    "w": 1920,
+    "h": 1080
+  },
+  "palette": {
+    "bg": "#fdfcf8",
+    "soft": "#f7f5ed",
+    "surface": "#ffffff",
+    "text": "#0a0a0a",
+    "dim": "#555555",
+    "accent": "#1a3a7a",
+    "good": "#1a5a2a",
+    "warn": "#8a6a1a",
+    "bad": "#8a1a1a",
+    "border": "#c6c4bc",
+    "onaccent": "#ffffff"
+  },
+  "fonts": {
+    "body": "Microsoft YaHei",
+    "mono": "Consolas"
+  },
+  "base_commit": "513591c",
+  "capture_date": "2026-10-06",
+  "slides": [
+    {
+      "section": "研究汇报 · 2026 / 10 / 06",
+      "title": "VeriRuntime",
+      "subtitle": "固定目标的多验证器执行框架",
+      "items": [
+        {
+          "kind": "text",
+          "text": "从上层 DSL 到可追溯证据",
+          "x": 96,
+          "y": 352,
+          "w": 1640,
+          "h": 130,
+          "size": 80,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "设计与架构  /  一次真实执行  /  强证明的下一步",
+          "x": 100,
+          "y": 516,
+          "w": 1700,
+          "h": 70,
+          "size": 38,
+          "color": "dim",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "line",
+          "points": [
+            [
+              100,
+              674
+            ],
+            [
+              1816,
+              674
+            ]
+          ],
+          "color": "border",
+          "dashed": false,
+          "arrow": false
+        },
+        {
+          "kind": "text",
+          "text": "Docker Linux 本机复现",
+          "x": 100,
+          "y": 730,
+          "w": 750,
+          "h": 65,
+          "size": 40,
+          "color": "text",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "CBMC · ESBMC · CPAchecker\nUltimate · Frama-C · Rocq",
+          "x": 100,
+          "y": 816,
+          "w": 980,
+          "h": 105,
+          "size": 32,
+          "color": "dim",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "22 页\n约 20–25 分钟",
+          "x": 1440,
+          "y": 744,
+          "w": 380,
+          "h": 142,
+          "size": 40,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "right"
+        }
+      ],
+      "notes": "今天围绕一个明确的问题展开：上层已经给出源码、命题和要求之后，怎样把请求送到合适的验证器，并带着可追溯证据返回。项目最初是 macOS demo，目前已经在本机 Docker Linux 环境复现，并补上了可替换的执行后端接口。\n\n我会用同一个真实断言例子走完输入、调度、命令、原始输出、结果和缓存，再说明哪些部分目前仍是小型原型。最后讨论更强的 Frama-C 与 Rocq 路径，重点看人或 LLM 编写的证明应如何进入执行链。\n\n先明确框架当前的职责。",
+      "sources": [
+        "README.md",
+        "docs/architecture.md",
+        "docs/advanced.md",
+        "Git 基线 513591c"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "01 / 定位",
+      "title": "上层固定目标，下层选择执行方式",
+      "subtitle": "已有实现：验证执行、隔离、证据、复用；研究重点：效率与证据强度",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "角色",
+              "输入或职责",
+              "必须守住的边界"
+            ],
+            [
+              "人 / 上层 LLM",
+              "源码、属性、语义、要求、预算\n必要时编写 invariant / lemma / .v",
+              "只有上层能改变命题或假设"
+            ],
+            [
+              "VeriRuntime",
+              "选择家族与顺序；并行 / 回退\n核验缓存；解释与归并证据",
+              "优化执行方式，保持目标不变"
+            ],
+            [
+              "ExecutionBackend",
+              "启动、等待、取消、指标、清理\n执行已选择的 argv",
+              "返回原始执行事实，不判断 SAFE"
+            ]
+          ],
+          "x": 96,
+          "y": 300,
+          "w": 1728,
+          "h": 528,
+          "rowHeight": 132,
+          "widths": [
+            340,
+            740,
+            648
+          ],
+          "size": 32
+        },
+        {
+          "kind": "text",
+          "text": "当前验收主线：C 断言安全 + 至少两个不同家族确认",
+          "x": 100,
+          "y": 885,
+          "w": 1700,
+          "h": 58,
+          "size": 38,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "三个角色的分工，是后面所有设计的基础。上层决定要证明什么，也承担语义内容的编写，比如前置条件、循环不变式和证明代码。运行时接收这些内容之后，只优化怎么执行：选工具、安排顺序、并行和回退。\n\n执行后端更靠近基础设施，它接收已经选好的命令，负责进程生命周期和资源事实。后端没有 SAFE 这种结论，工具 adapter 才解释原始输出，运行时再按确认要求归并。当前可靠的验收入口，是固定 C 断言目标的多家族执行。\n\n接下来把这三个角色放到一张架构图里。",
+      "sources": [
+        "veriruntime/execution/backend.py",
+        "veriruntime/service.py",
+        "README.md"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "02 / 总体架构",
+      "title": "逻辑、调度与基础设施形成三层边界",
+      "subtitle": "上层目标进入调度；adapter 与 backend 分担命令解释、执行生命周期和原始证据",
+      "items": [
+        {
+          "kind": "diagram",
+          "id": "architecture",
+          "nodes": [
+            {
+              "id": "upper",
+              "text": "上层：人 / LLM\nC + DSL + 证明附件",
+              "x": 96,
+              "y": 300,
+              "w": 410,
+              "h": 200,
+              "fill": "soft",
+              "color": "text",
+              "size": 36
+            },
+            {
+              "id": "parse",
+              "text": "校验 / 源码快照\nLogicalGoal / Workflow",
+              "x": 606,
+              "y": 300,
+              "w": 520,
+              "h": 160,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "opt",
+              "text": "Optimizer\n工具资格、历史成本、缓存",
+              "x": 606,
+              "y": 550,
+              "w": 520,
+              "h": 160,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "engine",
+              "text": "RuntimeEngine\n物理 AST、预算、结果归并",
+              "x": 1250,
+              "y": 425,
+              "w": 560,
+              "h": 210,
+              "fill": "soft",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "backend",
+              "text": "ExecutionBackend\n当前 Local POSIX",
+              "x": 96,
+              "y": 775,
+              "w": 490,
+              "h": 130,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "adapter",
+              "text": "工具 adapter + Docker transport\n命令构造 / 证据解析",
+              "x": 690,
+              "y": 775,
+              "w": 605,
+              "h": 130,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "store",
+              "text": "SQLite + ArtifactStore\n历史 / 环境锁 / SHA-256",
+              "x": 1400,
+              "y": 775,
+              "w": 410,
+              "h": 130,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            }
+          ],
+          "edges": [
+            {
+              "from": "upper",
+              "to": "parse",
+              "points": [
+                [
+                  506,
+                  380
+                ],
+                [
+                  606,
+                  380
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "parse",
+              "to": "opt",
+              "points": [
+                [
+                  866,
+                  460
+                ],
+                [
+                  866,
+                  550
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "opt",
+              "to": "engine",
+              "points": [
+                [
+                  1126,
+                  630
+                ],
+                [
+                  1190,
+                  630
+                ],
+                [
+                  1190,
+                  530
+                ],
+                [
+                  1250,
+                  530
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "engine",
+              "to": "adapter",
+              "points": [
+                [
+                  1310,
+                  635
+                ],
+                [
+                  1310,
+                  738
+                ],
+                [
+                  992,
+                  738
+                ],
+                [
+                  992,
+                  775
+                ]
+              ]
+            },
+            {
+              "from": "adapter",
+              "to": "backend",
+              "points": [
+                [
+                  690,
+                  840
+                ],
+                [
+                  585,
+                  840
+                ]
+              ]
+            },
+            {
+              "from": "engine",
+              "to": "store",
+              "points": [
+                [
+                  1630,
+                  635
+                ],
+                [
+                  1630,
+                  775
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "adapter",
+              "to": "store",
+              "points": [
+                [
+                  1295,
+                  840
+                ],
+                [
+                  1400,
+                  840
+                ]
+              ],
+              "dashed": false
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "CLI → service → optimizer → engine → backend / adapter → evidence",
+          "x": 100,
+          "y": 942,
+          "w": 1690,
+          "h": 42,
+          "size": 28,
+          "color": "dim",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        }
+      ],
+      "notes": "上层的请求先进入校验和源码快照，再形成逻辑目标。优化器读取工具资格和历史，为这个固定目标生成物理计划。引擎遍历计划，控制截止时间和并发，再把选好的命令交给执行后端。\n\n图中 backend 与 adapter 是不同职责：backend 管生命周期，adapter 构造命令并解释日志。Docker 目前是 adapter 的传输包装，外层和容器内都使用 Local POSIX 后端；代码里还没有一个独立的 DockerExecutionBackend。右侧存储把计划、原始输出和最终结论联系起来。\n\n先看哪些对象必须保持稳定。",
+      "sources": [
+        "veriruntime/service.py",
+        "veriruntime/optimizer.py",
+        "veriruntime/runtime/engine.py",
+        "veriruntime/tools/docker.py",
+        "veriruntime/store.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "03 / 核心对象",
+      "title": "一个语义目标，可以有多个物理计划",
+      "subtitle": "LogicalGoal 表示 WHAT；Run / Parallel / Sequence / CacheLookup 表示 HOW",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "对象",
+              "包含什么",
+              "什么时候变化"
+            ],
+            [
+              "逻辑目标",
+              "源文件快照、入口、属性、C 语义\n不同家族的最少确认数",
+              "上层明确提交语义变更"
+            ],
+            [
+              "semantic_key",
+              "逻辑路径和内容 hash + 语义 + 要求",
+              "源码 / 命题 / 确认要求变化"
+            ],
+            [
+              "物理 AST",
+              "具体工具、并行组合、时间片、回退\n可包在 CacheLookup 中",
+              "工具环境 / 历史 / 预算变化"
+            ],
+            [
+              "执行记录",
+              "goal execution id / attempt id\n命令、日志、指标、结果、工件 hash",
+              "每次执行建立新记录"
+            ]
+          ],
+          "x": 96,
+          "y": 292,
+          "w": 1728,
+          "h": 580,
+          "rowHeight": 116,
+          "widths": [
+            330,
+            840,
+            558
+          ],
+          "size": 31
+        },
+        {
+          "kind": "text",
+          "text": "标签、预算、工具选择和 hints 不进入语义键；缓存还须独立校验环境与证据。",
+          "x": 100,
+          "y": 936,
+          "w": 1700,
+          "h": 50,
+          "size": 30,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "目标身份和执行身份需要分开。源码、入口、属性、数据模型以及确认要求构成目标的语义内容，它们发生变化，就不能沿用原来的结论。预算或标签变化，不等于命题变了，所以不进入 semantic_key。\n\n物理计划是另一个对象：同一目标在不同机器、不同工具资格或不同历史下，可以生成不同的并行组合和回退顺序。每次调用又有独立的执行记录。缓存命中时仍建立新记录，并通过来源执行 ID 指向原始证据，不能只留下一个没有出处的 SAFE。\n\n现在用实际 C 与 JSON 输入走一遍。",
+      "sources": [
+        "veriruntime/model.py",
+        "veriruntime/plan.py",
+        "veriruntime/cache.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "04 / 示例输入",
+      "title": "上层提供程序和要求，不指定验证器",
+      "subtitle": "例子：执行十次 x++ 后，验证 assert(x == 10)",
+      "items": [
+        {
+          "kind": "text",
+          "text": "examples/c/safe_assert.c",
+          "x": 96,
+          "y": 296,
+          "w": 740,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 348,
+          "w": 740,
+          "h": 496,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}",
+          "x": 120,
+          "y": 366,
+          "w": 692,
+          "h": 468,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "examples/tasks/safe_assert_crosscheck.json",
+          "x": 884,
+          "y": 296,
+          "w": 940,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 884,
+          "y": 348,
+          "w": 940,
+          "h": 596,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "{\n  \"version\": \"0.1\",\n  \"task\": {\n    \"id\": \"safe-assert-crosscheck\",\n    \"language\": \"C\", \"entry\": \"main\",\n    \"sources\": [\"../c/safe_assert.c\"]\n  },\n  \"property\": {\"kind\":\"assertion_safety\"},\n  \"semantics\": {\n    \"c_standard\":\"c11\", \"data_model\":\"LP64\"\n  },\n  \"requirements\": {\"min_confirmations\":2},\n  \"budget\": {\n    \"wall_time_sec\":30, \"memory_mb\":2048,\n    \"max_parallel\":2\n  }\n}",
+          "x": 908,
+          "y": 366,
+          "w": 892,
+          "h": 568,
+          "size": 26,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "输入只声明 WHAT：代码 + 属性 + 语义 + 证据要求 + 资源预算",
+          "x": 100,
+          "y": 942,
+          "w": 1700,
+          "h": 42,
+          "size": 30,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "左侧是完整的 C 程序，右侧保留了真实 JSON 的全部字段，只调整排版。source 路径相对任务文件解析。请求要求 C11、LP64 语义下的断言安全，至少两个不同家族确认，总预算三十秒、两 GiB、最多并行两个工具。\n\n注意 DSL 没有 CBMC 或 ESBMC，也没有并行或顺序算子。那些是下层根据可用工具与成本决定的。上层的 min_confirmations 是证据要求，运行时不能为了速度把它改成一；程序中的命题也不能被下层替换成一个更容易通过的断言。\n\n输入先被校验和封存，再进入优化器。",
+      "sources": [
+        "examples/c/safe_assert.c",
+        "examples/tasks/safe_assert_crosscheck.json",
+        "veriruntime/dsl/verification-task.schema.json"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "05 / 校验与快照",
+      "title": "JSON 变成不可漂移的 LogicalGoal",
+      "subtitle": "严格字段校验 → 解析 translation units / 本地头文件 → 保存内容快照",
+      "items": [
+        {
+          "kind": "text",
+          "text": "实际逻辑 IR 节选",
+          "x": 96,
+          "y": 306,
+          "w": 845,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 358,
+          "w": 845,
+          "h": 424,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "id: safe-assert-crosscheck\nentry: main\nprogram.sources: [\"c/safe_assert.c\"]\nprogram.files[0]:\n  logical_path: c/safe_assert.c\n  sha256: 48470bc7498b9918...\n  content: \"#include <assert.h>...\"\nproperty: assertion_safety\nsemantics: c11 / LP64\nrequirements.min_confirmations: 2",
+          "x": 120,
+          "y": 376,
+          "w": 797,
+          "h": 396,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "校验的主要边界",
+          "x": 1010,
+          "y": 316,
+          "w": 810,
+          "h": 65,
+          "size": 40,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "拒绝未知字段、工具名、策略与重复键\n递归封存字面量本地 include\n拒绝不支持的宏 / 绝对 / symlink 依赖\n系统头文件依赖已资格验证的环境",
+          "x": 1010,
+          "y": 418,
+          "w": 810,
+          "h": 300,
+          "size": 34,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "semantic_key",
+          "x": 100,
+          "y": 836,
+          "w": 350,
+          "h": 52,
+          "size": 30,
+          "color": "accent",
+          "bold": true,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+          "x": 100,
+          "y": 899,
+          "w": 1710,
+          "h": 44,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        }
+      ],
+      "notes": "这一步输出的不是文件名列表，而是内容快照。之后执行使用快照内的内容，避免源码在工具运行之间变化。真实例子把路径规范化为 c/safe_assert.c，并保存完整内容与 SHA-256。semantic_key 又把源码身份和目标语义、确认要求结合起来。\n\n解析器采用严格边界：未知字段、上层指定工具策略和重复 JSON 键会拒绝；本地头文件只有支持的字面量依赖才递归处理。系统头文件并不来自这个快照，它们由工具镜像和配置环境约束。这样，两家族才是在明确记录的目标与环境下执行。\n\n目标封存后，优化器决定具体运行方式。",
+      "sources": [
+        "veriruntime/dsl/__init__.py",
+        "veriruntime/model.py",
+        "report-evidence.json: first.logical"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "06 / 计划生成",
+      "title": "先筛兼容工具，再按历史成本排序",
+      "subtitle": "当前 cost-aware-v1 是启发式：平滑确定率 / 预期耗时",
+      "items": [
+        {
+          "kind": "text",
+          "text": "score = success_rate / expected_runtime",
+          "x": 100,
+          "y": 297,
+          "w": 1700,
+          "h": 65,
+          "size": 42,
+          "color": "accent",
+          "bold": true,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "有历史：success = (definitive + 0.5) / (runs + 1)；耗时取历史中位数",
+          "x": 100,
+          "y": 386,
+          "w": 1690,
+          "h": 52,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "table",
+          "values": [
+            [
+              "首次无历史",
+              "平滑确定率",
+              "耗时先验 / 秒",
+              "score",
+              "选择"
+            ],
+            [
+              "CBMC",
+              "0.5",
+              "0.5",
+              "1.000",
+              "第 1 阶段"
+            ],
+            [
+              "ESBMC",
+              "0.5",
+              "0.7",
+              "0.714",
+              "第 1 阶段"
+            ],
+            [
+              "CPAchecker",
+              "0.5",
+              "4.0",
+              "0.125",
+              "第 2 阶段 / 后备"
+            ]
+          ],
+          "x": 96,
+          "y": 476,
+          "w": 1728,
+          "h": 368,
+          "rowHeight": 92,
+          "widths": [
+            440,
+            300,
+            380,
+            240,
+            368
+          ],
+          "size": 33
+        },
+        {
+          "kind": "text",
+          "text": "可用性 / 语言 / 属性 / 语义 / 程序形态 / 内存估计 → 每家族最多一个候选",
+          "x": 100,
+          "y": 908,
+          "w": 1700,
+          "h": 52,
+          "size": 30,
+          "color": "dim",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "这个例子来自新数据目录，工具还没有运行历史，因此三者使用零点五的确定率和工具配置中的耗时先验。CBMC 得分一，ESBMC 约零点七一四，CPAchecker 零点一二五。它们先经过能力与语义过滤，再按得分排序，每个家族最多保留一个工具。\n\n有历史之后，确定率按运行次数平滑，耗时用中位数；目前按很粗的任务大小桶聚合。这是一个方便实验和解释的启发式，没有学习出最优策略。资源装箱也依据静态估计，因此得分高或入选，都不代表它一定会启动或证明成功。\n\n这些候选被组装成下面的物理 AST。",
+      "sources": [
+        "veriruntime/optimizer.py",
+        "report-evidence.json: first.optimization"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "07 / 实际物理 AST",
+      "title": "并行先确认，未满足才运行后备",
+      "subtitle": "Sequence[ Parallel[CBMC, ESBMC], CPAchecker ]",
+      "items": [
+        {
+          "kind": "diagram",
+          "id": "physical-plan",
+          "nodes": [
+            {
+              "id": "seq",
+              "text": "Sequence\n总预算 30 s",
+              "x": 710,
+              "y": 292,
+              "w": 500,
+              "h": 124,
+              "fill": "soft",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "parallel",
+              "text": "Parallel(max_parallel=2)\n第 1 阶段：15 s",
+              "x": 380,
+              "y": 516,
+              "w": 680,
+              "h": 130,
+              "fill": "soft",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "cpa",
+              "text": "Run(CPAchecker, 15 s)\n第 2 阶段：后备 / 未运行",
+              "x": 1230,
+              "y": 516,
+              "w": 550,
+              "h": 160,
+              "fill": "surface",
+              "color": "dim",
+              "size": 32
+            },
+            {
+              "id": "cbmc",
+              "text": "Run(CBMC, 15 s)\n已执行 → SAFE",
+              "x": 120,
+              "y": 782,
+              "w": 580,
+              "h": 130,
+              "fill": "surface",
+              "color": "good",
+              "size": 32
+            },
+            {
+              "id": "esbmc",
+              "text": "Run(ESBMC, 15 s)\n已执行 → SAFE",
+              "x": 810,
+              "y": 782,
+              "w": 580,
+              "h": 130,
+              "fill": "surface",
+              "color": "good",
+              "size": 32
+            }
+          ],
+          "edges": [
+            {
+              "from": "seq",
+              "to": "parallel",
+              "points": [
+                [
+                  850,
+                  416
+                ],
+                [
+                  850,
+                  470
+                ],
+                [
+                  720,
+                  470
+                ],
+                [
+                  720,
+                  516
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "seq",
+              "to": "cpa",
+              "points": [
+                [
+                  1070,
+                  416
+                ],
+                [
+                  1070,
+                  470
+                ],
+                [
+                  1505,
+                  470
+                ],
+                [
+                  1505,
+                  516
+                ]
+              ],
+              "dashed": true
+            },
+            {
+              "from": "parallel",
+              "to": "cbmc",
+              "points": [
+                [
+                  560,
+                  646
+                ],
+                [
+                  560,
+                  714
+                ],
+                [
+                  410,
+                  714
+                ],
+                [
+                  410,
+                  782
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "parallel",
+              "to": "esbmc",
+              "points": [
+                [
+                  880,
+                  646
+                ],
+                [
+                  880,
+                  714
+                ],
+                [
+                  1100,
+                  714
+                ],
+                [
+                  1100,
+                  782
+                ]
+              ],
+              "dashed": false
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "本例两家族 SAFE 已满足要求；运行时结束目标，跳过 CPAchecker。",
+          "x": 100,
+          "y": 944,
+          "w": 1700,
+          "h": 42,
+          "size": 30,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "三十秒按两个阶段等分，每阶段十五秒。第一阶段并行运行 CBMC 和 ESBMC；第二阶段保留给 CPAchecker。本例两家族都给出了 SAFE，达到请求要求，因此引擎结束目标，后备没有启动。入选工具列表包含三者，实际 attempts 只有两个。\n\n计划时间片只是上界。引擎有目标的全局截止时间，还会扣除准备工作已经消耗的时间，所以真实 ExecutionSpec 中 CBMC 的剩余 wall limit 约十四点八六五秒。后备份额也不是无条件追加到总预算之后，更不能绕过全局并发限制。\n\n接着看 AST 的 Run 如何变成执行命令。",
+      "sources": [
+        "report-evidence.json: first.physical",
+        "veriruntime/runtime/engine.py",
+        "veriruntime/optimizer.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "08 / 执行协议",
+      "title": "执行后端接收命令，返回执行事实",
+      "subtitle": "当前接口已实现；远程 backend 的 staging / 环境资格验证仍留白",
+      "items": [
+        {
+          "kind": "text",
+          "text": "ExecutionSpec（真实 CBMC 桥接请求节选）",
+          "x": 96,
+          "y": 302,
+          "w": 850,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 354,
+          "w": 850,
+          "h": 398,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "argv: [\"python3.11\", \"-m\",\n       \"veriruntime.tools.container_driver\",\n       \"<当前 attempt 目录>\"]\ncwd: <当前 attempt 目录>\nwall_time_limit: 14.864688 s\ncpu_request: 1.0\nmemory_request_mb: 1024\nenvironment: private HOME / TMP / XDG\nmetadata: execution / attempt / image identity",
+          "x": 120,
+          "y": 372,
+          "w": 802,
+          "h": 370,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "ExecutionOutcome（协议字段）",
+          "x": 1000,
+          "y": 302,
+          "w": 824,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 1000,
+          "y": 354,
+          "w": 824,
+          "h": 292,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "handle_id / backend\nexit_code / stdout / stderr\nstart_time / end_time / wall_time_sec\nstatus / termination_reason\nmetrics: RSS / CPU + scope\ndiagnostics: resource_guarantees",
+          "x": 1024,
+          "y": 372,
+          "w": 776,
+          "h": 264,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "start → wait / cancel → collect_metrics → cleanup",
+          "x": 100,
+          "y": 814,
+          "w": 1700,
+          "h": 62,
+          "size": 40,
+          "color": "accent",
+          "bold": true,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "adapter 解析 Outcome；引擎归并 verdict。取消与清理必须幂等。",
+          "x": 100,
+          "y": 905,
+          "w": 1700,
+          "h": 60,
+          "size": 32,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "Run 先调用 adapter 准备独立工作区，再由 backend 启动 ExecutionSpec。展示的字段来自真实 CBMC 桥接记录；长目录在页上用占位代称，完整 argv 保留在证据 JSON。原生工具命令另存 native-command。\n\nOutcome 只有退出码、日志、状态、时间和指标，没有验证结论。Local 后端负责 POSIX 进程组、超时、取消与清理；CPU 和内存 request 在它这里是元数据，Docker 的硬限制来自另一层。未来远程后端还须定义文件 staging、输出取回与环境身份，不能只实现启动函数。\n\nDocker 的实际隔离放在下一张图中。",
+      "sources": [
+        "veriruntime/execution/backend.py",
+        "veriruntime/execution/local.py",
+        "report-evidence.json: execution_specs"
+      ],
+      "caveat": "argv 的 Python 路径和 attempt 目录在此缩写；完整值见 report-evidence.json。"
+    },
+    {
+      "section": "09 / Docker Linux",
+      "title": "每次尝试一个容器，工作区之间不可见",
+      "subtitle": "轻量控制层 + 按需创建 / 删除的工具容器；没有常驻验证服务",
+      "items": [
+        {
+          "kind": "diagram",
+          "id": "docker-isolation",
+          "nodes": [
+            {
+              "id": "control",
+              "text": "控制容器 · 384 MiB / 1 CPU\nPython / SQLite / Docker Engine 客户端\n只读 checkout + 完整数据卷 + socket",
+              "x": 96,
+              "y": 290,
+              "w": 1728,
+              "h": 166,
+              "fill": "soft",
+              "color": "text",
+              "size": 34
+            },
+            {
+              "id": "worker-cb",
+              "text": "CBMC attempt 容器\nUID 10001 · 1 CPU · 1024 MiB\n仅挂当前 subpath → /work\n只读输入 + 私有 HOME / TMP / XDG",
+              "x": 96,
+              "y": 602,
+              "w": 800,
+              "h": 245,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "worker-es",
+              "text": "ESBMC attempt 容器\nUID 10001 · 1 CPU · 1024 MiB\n仅挂当前 subpath → /work\n只读输入 + 私有 HOME / TMP / XDG",
+              "x": 1024,
+              "y": 602,
+              "w": 800,
+              "h": 245,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            }
+          ],
+          "edges": [
+            {
+              "from": "control",
+              "to": "worker-cb",
+              "points": [
+                [
+                  496,
+                  456
+                ],
+                [
+                  496,
+                  602
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "control",
+              "to": "worker-es",
+              "points": [
+                [
+                  1424,
+                  456
+                ],
+                [
+                  1424,
+                  602
+                ]
+              ],
+              "dashed": false
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "共用限制：禁网 · 根目录只读 · cap_drop ALL · no-new-privileges · 128 PID · /tmp 64 MiB",
+          "x": 100,
+          "y": 894,
+          "w": 1720,
+          "h": 55,
+          "size": 30,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "工具读不到 peer / SQLite / checkout / socket；控制层持有 socket，属于可信本机 CLI。",
+          "x": 100,
+          "y": 962,
+          "w": 1720,
+          "h": 40,
+          "size": 26,
+          "color": "dim",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "控制容器只承担调度和存储，保留 Docker socket 以创建工具容器。每一次工具尝试只挂载属于自己的 volume subpath，到容器内的 work 目录；看不到另一工具的工作区，也看不到数据库或源 checkout。输入文件只读，缓存和临时目录各自独立。\n\n这次请求两 GiB、最多并行两个，因此每个 worker 固定一 GiB，另有一 CPU 的 cgroup 限制。隔离防止验证结果污染，但共享宿主内核，也仍有控制层和 daemon 的额外成本；桥接进程的 RSS 不能当成 worker 的峰值内存。\n\n容器启动后，原生 adapter 生成什么命令？",
+      "sources": [
+        "compose.yaml",
+        "veriruntime/tools/docker_api.py",
+        "veriruntime/tools/docker.py",
+        "report-evidence.json: container_requests"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "10 / 原生命令与日志",
+      "title": "两条实际命令，两份可解释的原始证据",
+      "subtitle": "命令由 adapter 派生；exit 0、属性状态与终端记录共同决定解释",
+      "items": [
+        {
+          "kind": "text",
+          "text": "CBMC 6.11.0 · native-command.json",
+          "x": 96,
+          "y": 298,
+          "w": 840,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 350,
+          "w": 840,
+          "h": 248,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "/opt/cbmc/cbmc\n  /work/input/c/safe_assert.c\n  --function main --c11 --64\n  --unwind 64 --unwinding-assertions\n  --json-ui",
+          "x": 120,
+          "y": 368,
+          "w": 792,
+          "h": 220,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "CBMC stdout JSON 节选",
+          "x": 96,
+          "y": 638,
+          "w": 840,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 690,
+          "w": 840,
+          "h": 220,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "\"property\": \"main.assertion.1\"\n\"description\": \"assertion x == 10\"\n\"status\": \"SUCCESS\"\n...\n\"cProverStatus\": \"success\"",
+          "x": 120,
+          "y": 708,
+          "w": 792,
+          "h": 192,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "ESBMC 8.5.0 · native-command.json",
+          "x": 984,
+          "y": 298,
+          "w": 840,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 984,
+          "y": 350,
+          "w": 840,
+          "h": 248,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "/opt/esbmc/release/bin/esbmc\n  /work/input/c/safe_assert.c\n  --function main --std c11 --64\n  --unwind 64 --z3 --multi-property\n  --overflow-check --ub-shift-check",
+          "x": 1008,
+          "y": 368,
+          "w": 792,
+          "h": 220,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "ESBMC stderr 节选",
+          "x": 984,
+          "y": 638,
+          "w": 840,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 984,
+          "y": 690,
+          "w": 840,
+          "h": 220,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "PASSED [main.assertion.1]\n       line 7  assertion x == 10\n** 0 of 3 properties failed, 3 passed\n\nVERIFICATION SUCCESSFUL",
+          "x": 1008,
+          "y": 708,
+          "w": 792,
+          "h": 192,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        }
+      ],
+      "notes": "两条命令的所有参数都来自真实 native-command，只把 argv 重新分行便于阅读。它们都使用展开上限六十四。CBMC 输出 JSON，解析器检查属性记录和最后的 cProverStatus；ESBMC 的详细结果实际出现在 stderr，所以不能只看 stdout 中的版本信息。\n\n这里用户断言以及两项溢出属性都通过，退出码也是零。adapter 据此给出 SAFE。若只有成功关键词、属性表不完整，或展开断言失败，就不能当作证明完成。展开不足在当前实现中保守返回 UNKNOWN，避免把尚未覆盖的循环当成安全。\n\n两份工具结果怎样归并为一次目标结论？",
+      "sources": [
+        "report-evidence.json: native_commands / raw_outputs",
+        "veriruntime/tools/cbmc.py",
+        "veriruntime/tools/esbmc.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "11 / 并行与归并",
+      "title": "满足两家族确认之后结束目标",
+      "subtitle": "本机记录：2026-10-06；下面是目标与 attempt 的 wall_time，非 CLI 端到端",
+      "items": [
+        {
+          "kind": "text",
+          "text": "CBMC",
+          "x": 100,
+          "y": 339,
+          "w": 250,
+          "h": 70,
+          "size": 40,
+          "color": "text",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 390,
+          "y": 340,
+          "w": 926,
+          "h": 76,
+          "fill": "accent",
+          "stroke": "accent"
+        },
+        {
+          "kind": "text",
+          "text": "SAFE · attempt 1.076 s",
+          "x": 410,
+          "y": 351,
+          "w": 840,
+          "h": 60,
+          "size": 32,
+          "color": "onaccent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "ESBMC",
+          "x": 100,
+          "y": 485,
+          "w": 270,
+          "h": 70,
+          "size": 40,
+          "color": "text",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 390,
+          "y": 486,
+          "w": 1221,
+          "h": 76,
+          "fill": "accent",
+          "stroke": "accent"
+        },
+        {
+          "kind": "text",
+          "text": "SAFE · attempt 1.419 s",
+          "x": 410,
+          "y": 497,
+          "w": 1120,
+          "h": 60,
+          "size": 32,
+          "color": "onaccent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "line",
+          "points": [
+            [
+              390,
+              652
+            ],
+            [
+              1744,
+              652
+            ]
+          ],
+          "color": "border",
+          "dashed": false,
+          "arrow": false
+        },
+        {
+          "kind": "text",
+          "text": "0 s",
+          "x": 390,
+          "y": 674,
+          "w": 200,
+          "h": 45,
+          "size": 28,
+          "color": "dim",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "1.577 s · goal",
+          "x": 1410,
+          "y": 674,
+          "w": 390,
+          "h": 45,
+          "size": 28,
+          "color": "dim",
+          "bold": false,
+          "mono": true,
+          "align": "right"
+        },
+        {
+          "kind": "text",
+          "text": "解析两份已完成结果 → 不同家族数 = 2 → REQUIREMENTS_MET",
+          "x": 100,
+          "y": 790,
+          "w": 1690,
+          "h": 64,
+          "size": 38,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "一票 SAFE 时仍需等待；同批出现相反结果，优先报告 CONFLICT。",
+          "x": 100,
+          "y": 905,
+          "w": 1700,
+          "h": 55,
+          "size": 32,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "两个工具几乎同时启动。CBMC 的 attempt 用时约一点零七六秒，ESBMC 约一点四一九秒；整个目标一点五七七秒，还包含准备、解析、工件保存和清理。图按 attempt 用时绘制，起点差异不足一毫秒。这些数字只描述这次本机记录，不能作为性能基准。\n\n引擎按家族归并，不按进程数量投票。收到第一份 SAFE 后，确认要求还未满足，必须等待第二个家族。同一批已经完成的结果先一起解释，再决定是否提前停止；如果看到了相反确定结论，就报告冲突，不能用先到的两票把冲突隐藏掉。\n\n归并结果会连同来源和工件一起返回。",
+      "sources": [
+        "report-evidence.json: first.result / attempts / events",
+        "veriruntime/runtime/engine.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "12 / 示例输出",
+      "title": "返回结论，也返回结论的来源",
+      "subtitle": "CLI verify --json → workflow 结果 → goal.report.result / attempts / artifacts",
+      "items": [
+        {
+          "kind": "text",
+          "text": "实际 result.json 节选",
+          "x": 96,
+          "y": 305,
+          "w": 970,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 357,
+          "w": 970,
+          "h": 468,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "{\n  \"execution_id\":\"76b5d09d25784a868368601ab8b0a36a\",\n  \"goal_id\":\"safe-assert-crosscheck\",\n  \"verdict\":\"SAFE\",\n  \"confirmations\":2,\n  \"requirement_satisfied\":true,\n  \"cache_hit\":false,\n  \"status\":\"COMPLETED\",\n  \"termination_reason\":\"REQUIREMENTS_MET\",\n  \"wall_time_sec\":1.5767692249974061\n}",
+          "x": 120,
+          "y": 375,
+          "w": 922,
+          "h": 440,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "25 个工件引用",
+          "x": 1130,
+          "y": 330,
+          "w": 690,
+          "h": 65,
+          "size": 46,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "逻辑目标 / 物理计划 / 候选得分\n命令 / spec / outcome / 容器身份\nstdout / stderr / 事件 / 结果\n每个工件记录 SHA-256 和来源",
+          "x": 1130,
+          "y": 442,
+          "w": 690,
+          "h": 295,
+          "size": 34,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "执行目录（前缀节选）",
+          "x": 100,
+          "y": 858,
+          "w": 1400,
+          "h": 52,
+          "size": 28,
+          "color": "dim",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "/data/quickstart-…/executions/76b5…/<attempt_id>/",
+          "x": 100,
+          "y": 920,
+          "w": 1710,
+          "h": 50,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        }
+      ],
+      "notes": "输出是一个 workflow 报告，本例只有一个 goal。这里展示实际 result 的关键字段：SAFE、两个家族、要求满足、没有命中缓存，以及结束原因为 REQUIREMENTS_MET。调用者应该读取这些字段，CLI 的退出码零只表示 verify 操作执行完成。\n\n结果还带二十五个工件引用，涵盖计划、命令、日志和来源身份。存储采用 SHA-256 内容寻址，再用数据库建立来源关联。两次工具尝试都有独立目录，保留原始 stdout 和 stderr，因此可以从目标结论逐层追到工具命令，而不是依赖摘要中的一句成功描述。\n\n再提交相同请求，走的是缓存路径。",
+      "sources": [
+        "report-evidence.json: first.result",
+        "veriruntime/artifacts.py",
+        "veriruntime/store.py",
+        "veriruntime/cli.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "13 / 重复请求",
+      "title": "命中缓存仍校验证据，仍产生新执行记录",
+      "subtitle": "逻辑目标相同 + 环境身份相同 + 工件完整 + 确认要求足够",
+      "items": [
+        {
+          "kind": "text",
+          "text": "CacheLookup + fallback",
+          "x": 96,
+          "y": 310,
+          "w": 810,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 362,
+          "w": 810,
+          "h": 318,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "CacheLookup(\n  semantic_key=\"c61c1d87...\",\n  min_confirmations=2,\n  fallback=Sequence(\n    Parallel(CBMC, ESBMC), CPAchecker\n  )\n)",
+          "x": 120,
+          "y": 380,
+          "w": 762,
+          "h": 290,
+          "size": 30,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "实际重复结果节选",
+          "x": 968,
+          "y": 310,
+          "w": 856,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 968,
+          "y": 362,
+          "w": 856,
+          "h": 318,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "\"verdict\": \"SAFE\"\n\"confirmations\": 2\n\"cache_hit\": true\n\"attempt_ids\": []\n\"wall_time_sec\": 0.01679892100219149\n\"source_execution_id\":\n  \"76b5d09d25784a868368601ab8b0a36a\"",
+          "x": 992,
+          "y": 380,
+          "w": 808,
+          "h": 290,
+          "size": 29,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "缓存身份包含工具版本 / 配置 / 精确镜像；复核 SHA-256 与原始来源。",
+          "x": 100,
+          "y": 754,
+          "w": 1690,
+          "h": 72,
+          "size": 35,
+          "color": "text",
+          "bold": false,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "冲突历史使缓存失效；旧工件留存。此例没有启动验证命令，仍可能有工具探测。",
+          "x": 100,
+          "y": 890,
+          "w": 1700,
+          "h": 80,
+          "size": 31,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "重复请求先重新形成计划，再核验可复用证据。不是只看一个语义键对应的 SAFE，还要检查确认数、工具版本与配置、镜像身份、工件 hash 和来源执行。缓存不可用时，保存的 fallback 仍能实际执行。\n\n这次目标用时约十六点八毫秒，attempt 列表为空，source_execution_id 指回第一次执行。没有启动验证命令，但工具环境可能仍需探测，所以不能把它描述成没有任何进程开销。若同一目标后来出现相反确定结论，缓存会失效；历史和旧证据保留，便于研究与排错。\n\n多个目标以及失败情况还有额外语义边界。",
+      "sources": [
+        "report-evidence.json: repeat",
+        "veriruntime/cache.py",
+        "veriruntime/optimizer.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "14 / 控制流程与可信结果",
+      "title": "工作流边表示执行门槛，不自动组合定理",
+      "subtitle": "当前 ready goals 顺序执行；每个 goal 内部可以并行工具",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "情况",
+              "当前输出或执行行为",
+              "含义"
+            ],
+            [
+              "前置 goal 达到指定 verdict + 确认数",
+              "后继 goal 才进入 ready",
+              "控制依赖，不传播逻辑假设"
+            ],
+            [
+              "超时 / 展开不足 / 不支持 / 不完整日志",
+              "UNKNOWN；必要时后继 BLOCKED",
+              "不能当作 SAFE 或具体反例"
+            ],
+            [
+              "看到相反确定结果",
+              "CONFLICT，优先于多数票",
+              "需要保留与调查两方证据"
+            ],
+            [
+              "只有一族结论，要求两族",
+              "requirement_satisfied=false",
+              "不能自动降低确认要求"
+            ]
+          ],
+          "x": 96,
+          "y": 296,
+          "w": 1728,
+          "h": 620,
+          "rowHeight": 124,
+          "widths": [
+            520,
+            570,
+            638
+          ],
+          "size": 31
+        },
+        {
+          "kind": "text",
+          "text": "LLM planner 当前只校验并选择已有形式化目标；无任意分解或自动证明生成。",
+          "x": 100,
+          "y": 923,
+          "w": 1700,
+          "h": 62,
+          "size": 31,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "工作流扩展提供多个形式化目标和执行边，前置节点达到指定结论与确认数，后继才运行。但是这条边只是一道控制门槛，没有证明后一个命题能由前一个命题推出，也不会把前置结论自动变成假设。\n\n未知、冲突和要求未满足必须分别保留。当前 planner 也受到同一原则约束：它只选择和校验已有形式化目标，不进行任意命题分解，不生成证明代码，也不能降低证据门槛。未来若要组合定理，需要新的显式逻辑依赖与工件绑定，而不是把 DAG 箭头理解成逻辑蕴含。\n\n目前的验证范围，可以从真实验收矩阵看得更清楚。",
+      "sources": [
+        "veriruntime/service.py",
+        "veriruntime/model.py",
+        "veriruntime/planner/codex.py",
+        "docs/advanced.md#llm-planner"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "15 / 已完成的资格验证",
+      "title": "工具扩展已运行，覆盖范围仍然很小",
+      "subtitle": "既有 M11：128 tests 通过（112 unit + 16 integration）；本次汇报复核原始记录",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "路径",
+              "真实结果",
+              "边界"
+            ],
+            [
+              "CBMC / ESBMC / CPAchecker",
+              "6 个 C 小例：4 SAFE / 2 UNSAFE\n双家族 12 次、三家族 18 次尝试",
+              "基础断言路径；不是大型 benchmark"
+            ],
+            [
+              "Ultimate / Eva",
+              "Ultimate：4 SAFE / 2 UNSAFE\nEva：4 SAFE / 2 UNKNOWN",
+              "扩展矩阵按 min_confirmations=1 运行"
+            ],
+            [
+              "100 次循环",
+              "CBMC / ESBMC：UNKNOWN\nUltimate ~33.94 s；Eva ~1.50 s：SAFE",
+              "固定展开 64；单案例耗时不可泛化"
+            ],
+            [
+              "WP + Z3 / CVC5",
+              "两次独立运行均报告 4/4 义务通过",
+              "共享 WP 编码；solver_report\n有 Skipped RTE guards 警告"
+            ],
+            [
+              "独立 Rocq proof_check",
+              "正确证明 VERIFIED\n错配命题 / Admitted 均 REJECTED",
+              "kernel_checked；不是 C SAFE"
+            ]
+          ],
+          "x": 96,
+          "y": 292,
+          "w": 1728,
+          "h": 636,
+          "rowHeight": 106,
+          "widths": [
+            400,
+            658,
+            670
+          ],
+          "size": 30
+        }
+      ],
+      "notes": "这里汇总既有资格验证，测试数来自 M11 的验收记录，本次制作汇报没有把它改写成新一轮测试。基础 C 语料只有六个小例，四个安全、两个不安全。可选工具也在同一小语料以及一个长循环上实际跑过。\n\n单家族扩展实验显式使用 min_confirmations 等于一，不能借此宣称满足双确认请求。长循环展示不同方法的覆盖差异，耗时只代表本机单案例。WP 两个求解器共享编码来源；Rocq 独立证明通过，只能说明提交命题被证明。这些实验验证了接入路径，也明确暴露了下一步需要研究的边界。\n\n先看当前哪些执行设计仍是小型原型。",
+      "sources": [
+        "docs/operations.md#validation",
+        "docs/verifier-lab.json",
+        "docs/advanced.md#lab"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "16 / 当前留白",
+      "title": "成本、预算与复用仍是可研究的原型",
+      "subtitle": "已有接口可用；下列限制需要实验数据与新语义来推进",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "当前做法",
+              "实际限制",
+              "可以检验的研究问题"
+            ],
+            [
+              "确定率 / 中位耗时启发式",
+              "粗粒度 tiny 桶；提前取消造成样本偏差",
+              "在固定证据门槛下，怎样降低超时率？"
+            ],
+            [
+              "等分时间片 / 静态内存份额",
+              "无法跨阶段借用资源；ready goals 串行",
+              "动态资源借用是否增加完成率？"
+            ],
+            [
+              "精确目标缓存",
+              "不复用部分证明、VC 或 witness",
+              "工件粒度复用怎样保持语义身份？"
+            ],
+            [
+              "能力矩阵 + 六个小案例",
+              "memory_safety 已解析但无可用 adapter\n无法支持广泛性能或健全性结论",
+              "扩大语料并验证解析器与结果边界"
+            ],
+            [
+              "Local backend + Docker 包装",
+              "远程 staging / 环境资格尚未定义",
+              "在不同 backend 上如何保持证据一致？"
+            ]
+          ],
+          "x": 96,
+          "y": 292,
+          "w": 1728,
+          "h": 648,
+          "rowHeight": 108,
+          "widths": [
+            410,
+            640,
+            678
+          ],
+          "size": 30
+        }
+      ],
+      "notes": "这些限制应当被当作研究入口。成本模型目前只按少量统计排序，提前停止会让慢工具和困难案例的观测不完整，因此直接学习中位数可能有偏差。时间和内存又是静态份额，后备单独运行时也无法借用先前工具的份额。\n\n缓存只复用精确目标结论，还没有 VC 或证明附件粒度。能力字段存在，也不代表 adapter 已支持该属性，例如当前 memory_safety 没有可用工具。后端抽象已经建立，但远程文件 staging、环境资格和证据一致性还需定义。这些都应通过可重复实验或显式契约推进。\n\n更强证据的第一块已有积木，是独立 Rocq 检查。",
+      "sources": [
+        "veriruntime/optimizer.py",
+        "veriruntime/cache.py",
+        "veriruntime/execution/backend.py",
+        "veriruntime/tools/registry.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "17 / 已实现的强证据积木",
+      "title": "Rocq 检查上层写好的命题与证明",
+      "subtitle": "可执行 version=0.2 / proof_check；上层负责 .v，运行时负责检查",
+      "items": [
+        {
+          "kind": "text",
+          "text": "Expected.v + Correct.v 节选",
+          "x": 96,
+          "y": 301,
+          "w": 850,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 353,
+          "w": 850,
+          "h": 488,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "(* Expected.v *)\nDefinition obligation : Prop :=\n  forall (P : Prop), P -> P.\n\n(* Correct.v *)\nFrom VRGoal Require Import Expected.\nLemma discharge : Expected.obligation.\nProof.\n  unfold Expected.obligation.\n  intros P evidence. exact evidence.\nQed.",
+          "x": 120,
+          "y": 371,
+          "w": 802,
+          "h": 460,
+          "size": 28,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "proof_check DSL 的核心字段",
+          "x": 1000,
+          "y": 301,
+          "w": 824,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 1000,
+          "y": 353,
+          "w": 824,
+          "h": 488,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "\"goal\": {\n  \"kind\": \"proof_check\", \"namespace\":\"VRGoal\",\n  \"statement\": {\"file\":\"Expected.v\",\n    \"symbol\":\"VRGoal.Expected.obligation\"},\n  \"proof\": {\"language\":\"Rocq\",\n    \"files\":[\"Correct.v\"],\n    \"symbol\":\"VRGoal.Correct.discharge\"}\n},\n\"requirements\": {\n  \"evidence\":\"kernel_checked\", \"axioms\":[]\n}",
+          "x": 1024,
+          "y": 371,
+          "w": 776,
+          "h": 460,
+          "size": 27,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "输出 VERIFIED / code_verdict=null；不增加 C 家族票，不进入 C 结果缓存。",
+          "x": 100,
+          "y": 912,
+          "w": 1720,
+          "h": 68,
+          "size": 32,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "这条接口已经能实际执行。上层同时提交命题文件和证明文件，例子是对任意命题 P，P 蕴含 P。Correct 中的 intros 和 exact 由人或 LLM 写好，运行时不会自己发明证明。DSL 指明需要绑定的导出符号和内核证据要求。\n\n目前这只是一项独立数学证明检查：它没有权威的 C 到 VC 导出来源，所以 VERIFIED 不等于某段 C 安全，输出明确保留 code_verdict 为 null，也不加入 C 家族的确认计数。这个小例的意义是把编译、绑定、假设审计和内核复查链条先做完整。\n\n下一页看这条检查链具体保证了什么。",
+      "sources": [
+        "examples/proofs/check.json",
+        "examples/proofs/Expected.v",
+        "examples/proofs/Correct.v",
+        "veriruntime/proofs/service.py"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "18 / 证明绑定",
+      "title": "编译通过之外，还要绑定类型与审计假设",
+      "subtitle": "当前闭合策略：拒绝用户 Axiom / Parameter / Admitted 与未核验扩展",
+      "items": [
+        {
+          "kind": "text",
+          "text": "依赖排序编译 → 精确类型绑定 → 假设闭包审计 → rocq check 复查",
+          "x": 100,
+          "y": 311,
+          "w": 1700,
+          "h": 80,
+          "size": 36,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "运行时生成 Binding.v；它只检查已有证明是否匹配",
+          "x": 96,
+          "y": 451,
+          "w": 1728,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 503,
+          "w": 1728,
+          "h": 228,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "Definition required_statement : Prop :=\n  VRGoal.Expected.obligation.\n\nDefinition bound_proof : required_statement :=\n  VRGoal.Correct.discharge.",
+          "x": 120,
+          "y": 521,
+          "w": 1680,
+          "h": 222,
+          "size": 34,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "table",
+          "values": [
+            [
+              "提交内容",
+              "真实检查结果",
+              "解释"
+            ],
+            [
+              "正确证明",
+              "VERIFIED",
+              "提交证明建立了提交命题"
+            ],
+            [
+              "错配命题 / Admitted",
+              "REJECTED",
+              "proof_type_mismatch / untrusted_axioms_or_extensions"
+            ]
+          ],
+          "x": 96,
+          "y": 780,
+          "w": 1728,
+          "h": 186,
+          "rowHeight": 62,
+          "widths": [
+            480,
+            340,
+            908
+          ],
+          "size": 27
+        }
+      ],
+      "notes": "只看编译是否成功不够：一个与目标无关的真命题也能编译。运行时因此生成 Binding，把提交证明赋给要求的命题类型，错配就会拒绝。这段定义不是一个新证明，只是在检查上层已经提交的证据能否对应目标。\n\n随后审计依赖假设，再用独立 rocq check 重新检查编译模块和依赖。当前原型采用严格闭合策略，正确例子通过，错配和 Admitted 两种负例都被拒绝。但是未来 WP 理论可能有明确模型参数和受信公理，不能直接照搬空公理策略，需要单独定义理论清单与可信边界。\n\n要接入 C 契约，还缺少义务的权威来源和覆盖闭包。",
+      "sources": [
+        "veriruntime/proofs/worker.py",
+        "veriruntime/proofs/dsl.py",
+        "docs/verifier-lab.json: rocq"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "19 / 未来设计 · 尚未实现",
+      "title": "C → VC → 上层证明 → 覆盖闭包",
+      "subtitle": "不能把 Frama-C 与 Rocq 简单串联后当作两票 C SAFE",
+      "items": [
+        {
+          "kind": "diagram",
+          "id": "strong-verification-proposed",
+          "nodes": [
+            {
+              "id": "cgoal",
+              "text": "上层：C + ACSL + 语义\n要求 kernel_checked / 全覆盖",
+              "x": 96,
+              "y": 298,
+              "w": 500,
+              "h": 146,
+              "fill": "soft",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "gen",
+              "text": "WP / Why3 导出\n权威 VC bundle + digest",
+              "x": 712,
+              "y": 298,
+              "w": 500,
+              "h": 146,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "discharge",
+              "text": "检查每个 VC 的证据\n绑定 / 假设 / 内核",
+              "x": 1328,
+              "y": 298,
+              "w": 496,
+              "h": 146,
+              "fill": "surface",
+              "color": "text",
+              "size": 32
+            },
+            {
+              "id": "needs",
+              "text": "NEEDS_INPUT\n未完成 VC + 命题模块\ndiagnostics / 环境锁",
+              "x": 712,
+              "y": 598,
+              "w": 500,
+              "h": 158,
+              "fill": "soft",
+              "color": "warn",
+              "size": 30
+            },
+            {
+              "id": "author",
+              "text": "人 / 上层 LLM\n编写 .v 与辅助引理\n提交绑定 bundle 的 proof_assets",
+              "x": 96,
+              "y": 598,
+              "w": 500,
+              "h": 195,
+              "fill": "soft",
+              "color": "text",
+              "size": 30
+            },
+            {
+              "id": "coverage",
+              "text": "Coverage linker\n全部请求义务及依赖闭合\n才返回 CONTRACT_VALID",
+              "x": 1328,
+              "y": 598,
+              "w": 496,
+              "h": 195,
+              "fill": "soft",
+              "color": "good",
+              "size": 30
+            }
+          ],
+          "edges": [
+            {
+              "from": "cgoal",
+              "to": "gen",
+              "points": [
+                [
+                  596,
+                  371
+                ],
+                [
+                  712,
+                  371
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "gen",
+              "to": "discharge",
+              "points": [
+                [
+                  1212,
+                  371
+                ],
+                [
+                  1328,
+                  371
+                ]
+              ],
+              "dashed": false
+            },
+            {
+              "from": "discharge",
+              "to": "needs",
+              "points": [
+                [
+                  1440,
+                  444
+                ],
+                [
+                  1440,
+                  514
+                ],
+                [
+                  962,
+                  514
+                ],
+                [
+                  962,
+                  598
+                ]
+              ],
+              "dashed": true
+            },
+            {
+              "from": "needs",
+              "to": "author",
+              "points": [
+                [
+                  712,
+                  677
+                ],
+                [
+                  596,
+                  677
+                ]
+              ],
+              "dashed": true
+            },
+            {
+              "from": "author",
+              "to": "discharge",
+              "points": [
+                [
+                  346,
+                  793
+                ],
+                [
+                  346,
+                  866
+                ],
+                [
+                  1860,
+                  866
+                ],
+                [
+                  1860,
+                  398
+                ],
+                [
+                  1824,
+                  398
+                ]
+              ],
+              "dashed": true
+            },
+            {
+              "from": "discharge",
+              "to": "coverage",
+              "points": [
+                [
+                  1670,
+                  444
+                ],
+                [
+                  1670,
+                  598
+                ]
+              ],
+              "dashed": false
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "text": "等待补证时释放容器；上层下一次显式提交。结论仍相对于契约前置条件。",
+          "x": 100,
+          "y": 926,
+          "w": 1700,
+          "h": 62,
+          "size": 32,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "完整集成需要补上三段关系：C 与权威 VC 的对应关系，证明与具体 VC 的对应关系，以及全部请求义务的覆盖关系。WP 或 Why3 导出完整 bundle，封存源码、契约、模型、理论和每个命题的 digest；运行时不能相信上层自己重抄的一份同名定理。\n\n证明不足时返回 NEEDS_INPUT，把未完成义务和模块交给上层，人或 LLM 编写证明后再显式提交。等待期间释放容器。最终只有全部义务及依赖闭合，才返回 CONTRACT_VALID，而且结论保留契约前置条件。这整条 C 到内核证据的闭包目前仍是设计，图中的补证调度还未实现。\n\n下一页给出建议的上层 DSL。",
+      "sources": [
+        "docs/advanced.md#framac-rocq-design",
+        "examples/experiments/strong-contract.proposed.json"
+      ],
+      "caveat": "虚线表示未来的补证 / 恢复路径；整条 C 契约闭包当前尚未实现。"
+    },
+    {
+      "section": "20 / 未来 DSL · 当前拒绝该版本",
+      "title": "表达证据强度与覆盖，附带命题绑定",
+      "subtitle": "version=0.2-proposal / c_contract 是设计稿，不能直接传给当前 verify",
+      "items": [
+        {
+          "kind": "text",
+          "text": "第一轮：声明 C 契约目标与所需证据",
+          "x": 96,
+          "y": 302,
+          "w": 850,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 354,
+          "w": 850,
+          "h": 543,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "{\n  \"version\":\"0.2-proposal\",\n  \"goal\": {\n    \"kind\":\"c_contract\", \"program\":{...},\n    \"contract\":{\"format\":\"ACSL\", ...},\n    \"semantics\":{\"integer_arithmetic\":\"bounded_c\",\n                 \"memory\":\"iso_c_objects\", ...}\n  },\n  \"requirements\": {\n    \"evidence\":\"kernel_checked\",\n    \"coverage\":[\"contract\",\"runtime_errors\"],\n    \"user_axioms\":[]\n  },\n  \"proof_assets\":[], \"budget\":{...}\n}",
+          "x": 120,
+          "y": 372,
+          "w": 802,
+          "h": 515,
+          "size": 26,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "第二轮：补交 .v；结构节选",
+          "x": 1000,
+          "y": 302,
+          "w": 824,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 1000,
+          "y": 354,
+          "w": 824,
+          "h": 428,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "\"proof_assets\": [{\n  \"format\":\"Rocq\", \"files\":[\"SquareProof.v\"],\n  \"bundle\":{\"artifact_id\":\"<sealed digest>\"},\n  \"bindings\":[{\n    \"obligation_id\":\"typed_square_ensures\",\n    \"statement_sha256\":\"<权威命题 digest>\",\n    \"proof_symbol\":\n      \"SquareProof.square_nonnegative\"\n  }]\n}]",
+          "x": 1024,
+          "y": 372,
+          "w": 776,
+          "h": 400,
+          "size": 26,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "text": "仍不指定工具或顺序；过期 bundle、\n命题错配、遗漏新增 VC 均须拒绝。",
+          "x": 1000,
+          "y": 818,
+          "w": 824,
+          "h": 120,
+          "size": 33,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        }
+      ],
+      "notes": "建议 DSL 继续只声明目标、要求和附件。第一轮给 C 与 ACSL、整数和内存语义、覆盖集合以及内核证据要求；没有证明时 proof_assets 为空。下层封存 bundle 后，上层第二轮提交 Rocq 文件，以及它对应哪一个权威命题。\n\n页上为结构节选，完整稿在 examples 中。核心是 bundle 身份、VC 身份、命题 digest 和证明符号必须一致。仅证明一个后置条件，不能宣布全部义务完成；新增义务、过期声明和改变模型都需要重新处理。当前 verify 会拒绝这个 proposal 版本，不应拿它作已实现接口演示。\n\n研究验收应测闭包与失败拒绝，而不只测工具成功率。",
+      "sources": [
+        "examples/experiments/strong-contract.proposed.json",
+        "docs/advanced.md#framac-rocq-design"
+      ],
+      "caveat": ""
+    },
+    {
+      "section": "21 / 后续研究与复现",
+      "title": "先验证强证据闭包，再评估调度收益",
+      "subtitle": "把研究结论约束在固定命题、固定预算与固定信任要求之内",
+      "items": [
+        {
+          "kind": "table",
+          "values": [
+            [
+              "优先级",
+              "可落地实验",
+              "验收指标"
+            ],
+            [
+              "P1 · 权威 VC 与 coverage",
+              "一个函数子集：封存全部 VC / 理论\n错配、漏证、过期、额外假设负例",
+              "覆盖率；错误接受为零\n可追溯的 C → VC → proof 来源"
+            ],
+            [
+              "P2 · 调度与资源",
+              "扩大语料；静态 portfolio 作对照\n处理超时 / 取消样本；消融成本模型",
+              "固定门槛下的完成率 / wall time\n超时率 / 峰值资源 / 校准误差"
+            ],
+            [
+              "P3 · 工件缓存与后端",
+              "VC / proof 粒度复用\n显式 staging / 身份 / 清理契约",
+              "语义变更失效；后端证据一致性\n故障后无泄漏、可恢复"
+            ]
+          ],
+          "x": 96,
+          "y": 292,
+          "w": 1728,
+          "h": 480,
+          "rowHeight": 120,
+          "widths": [
+            350,
+            740,
+            638
+          ],
+          "size": 30
+        },
+        {
+          "kind": "text",
+          "text": "本机已有镜像：一次命令复现双确认与缓存",
+          "x": 96,
+          "y": 821,
+          "w": 1728,
+          "h": 44,
+          "size": 28,
+          "color": "accent",
+          "bold": true,
+          "mono": false,
+          "align": "left"
+        },
+        {
+          "kind": "box",
+          "x": 96,
+          "y": 873,
+          "w": 1728,
+          "h": 83,
+          "fill": "soft",
+          "stroke": "border"
+        },
+        {
+          "kind": "text",
+          "text": "pwsh -NoProfile -File scripts/quickstart.ps1",
+          "x": 120,
+          "y": 891,
+          "w": 1680,
+          "h": 55,
+          "size": 34,
+          "color": "text",
+          "bold": false,
+          "mono": true,
+          "align": "left"
+        }
+      ],
+      "notes": "建议先完成一个可审计的强证据小闭包，再扩展规模。第一阶段选择明确的函数子集，导出全部义务并加入错配、漏证、过期和额外假设负例；验收重点是错误接受为零及来源可追溯，而不是只看几个正例通过。\n\n调度实验则在同样预算和证据门槛下，对照静态 portfolio，记录超时、取消和资源，避免把降低要求当作加速。缓存与远程后端放在后续，先明确身份和恢复契约。现在已有镜像的本机，可以用这一条 quickstart 命令重新得到双家族结果和缓存来源；主线使用仍从 README 开始。\n\n汇报到这里，接下来可以围绕 VC 权威性、覆盖闭包或实验方法讨论。",
+      "sources": [
+        "README.md#example",
+        "scripts/quickstart.ps1",
+        "docs/advanced.md",
+        "docs/architecture.md"
+      ],
+      "caveat": ""
+    }
+  ]
+}

@@ -1,0 +1,872 @@
+{
+  "description": "2026-10-06 本机 quickstart 的真实输入、计划、结果与原始输出；未把计时解释为 benchmark。",
+  "base_commit": "513591c",
+  "capture_date": "2026-10-06",
+  "task_file": "examples/tasks/safe_assert_crosscheck.json",
+  "data_dir": "/data/quickstart-512c7e10b991471abc25f40996c05f2a",
+  "input_task": {
+    "version": "0.1",
+    "task": {
+      "id": "safe-assert-crosscheck",
+      "language": "C",
+      "entry": "main",
+      "sources": [
+        "../c/safe_assert.c"
+      ]
+    },
+    "property": {
+      "kind": "assertion_safety"
+    },
+    "semantics": {
+      "c_standard": "c11",
+      "data_model": "LP64"
+    },
+    "requirements": {
+      "min_confirmations": 2
+    },
+    "budget": {
+      "wall_time_sec": 30,
+      "memory_mb": 2048,
+      "max_parallel": 2
+    }
+  },
+  "input_c": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n",
+  "first": {
+    "logical": {
+      "task": {
+        "id": "safe-assert-crosscheck",
+        "language": "C",
+        "entry": "main",
+        "program": {
+          "files": [
+            {
+              "logical_path": "c/safe_assert.c",
+              "content": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n",
+              "sha256": "48470bc7498b9918f3e5fc5ffd8cd7cb7eda977e50fb4ec271e036dfd2a0fd3c"
+            }
+          ],
+          "sources": [
+            "c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 2
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        },
+        "version": "0.1",
+        "hints": {
+          "prefer_fast_counterexample": false,
+          "expected_characteristics": [],
+          "required_capabilities": []
+        }
+      },
+      "operation": "Verify"
+    },
+    "physical": {
+      "children": [
+        {
+          "children": [
+            {
+              "tool": "cbmc",
+              "time_slice_sec": 15,
+              "operator": "Run"
+            },
+            {
+              "tool": "esbmc",
+              "time_slice_sec": 15,
+              "operator": "Run"
+            }
+          ],
+          "max_parallel": 2,
+          "operator": "Parallel"
+        },
+        {
+          "tool": "cpachecker",
+          "time_slice_sec": 15,
+          "operator": "Run"
+        }
+      ],
+      "operator": "Sequence"
+    },
+    "optimization": {
+      "candidate_scores": [
+        {
+          "compatible": true,
+          "expected_runtime_sec": 0.5,
+          "family": "cbmc",
+          "history": null,
+          "reasons": [],
+          "score": 1,
+          "selected": true,
+          "success_rate": 0.5,
+          "tool": "cbmc"
+        },
+        {
+          "compatible": true,
+          "expected_runtime_sec": 0.7,
+          "family": "esbmc",
+          "history": null,
+          "reasons": [],
+          "score": 0.7142857142857143,
+          "selected": true,
+          "success_rate": 0.5,
+          "tool": "esbmc"
+        },
+        {
+          "compatible": true,
+          "expected_runtime_sec": 4,
+          "family": "cpachecker",
+          "history": null,
+          "reasons": [],
+          "score": 0.125,
+          "selected": true,
+          "success_rate": 0.5,
+          "tool": "cpachecker"
+        }
+      ],
+      "explanation": {
+        "budget": {
+          "max_parallel": 2,
+          "memory_mb": 2048,
+          "wall_time_sec": 30
+        },
+        "cache": "MISS",
+        "goal_id": "safe-assert-crosscheck",
+        "hints": {
+          "expected_characteristics": [],
+          "prefer_fast_counterexample": false,
+          "required_capabilities": []
+        },
+        "hints_applied": false,
+        "independent_candidates": 3,
+        "min_confirmations": 2,
+        "optimizer": "cost-aware-v1",
+        "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+        "selected_tools": [
+          "cbmc",
+          "esbmc",
+          "cpachecker"
+        ],
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "stages": [
+          [
+            "cbmc",
+            "esbmc"
+          ],
+          [
+            "cpachecker"
+          ]
+        ],
+        "tiny_budget": false,
+        "trust_feasible": true
+      },
+      "physical_plan": {
+        "children": [
+          {
+            "children": [
+              {
+                "operator": "Run",
+                "time_slice_sec": 15,
+                "tool": "cbmc"
+              },
+              {
+                "operator": "Run",
+                "time_slice_sec": 15,
+                "tool": "esbmc"
+              }
+            ],
+            "max_parallel": 2,
+            "operator": "Parallel"
+          },
+          {
+            "operator": "Run",
+            "time_slice_sec": 15,
+            "tool": "cpachecker"
+          }
+        ],
+        "operator": "Sequence"
+      }
+    },
+    "result": {
+      "artifacts": [
+        "d73dda3512dd9d179058b69b64fb0b17af24aee15600e76f64fd2186f18d3da7",
+        "e8e80413008134f170b973f92d33eb510ed9aff55e942e44c0cc7808f1291ec3",
+        "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+        "12c791882bd37c2683ae438866b71a14b36ddbd8ecaac16ef3be58fe8f445485",
+        "2763d14388d902b97669ffd1bfa73448f32f47748029f70eb50a04fa9f5782ab",
+        "de4e70e9fce37db703bdfffd71f6aa045bdf0ca22d8e785e69cad88fd97f1b6a",
+        "a28ea5f0175ad49e05a1d1308f5c7bc56ff8b8a3ddadf1435ba37ffd6a01e873",
+        "3986d689db5a682af47e8ef8ad40bf34c59d76e813aada5d0070199cbc6742ae",
+        "8cd1853c0970b7e42bc487d8404ecf661e929100095379d80466e61e56e1ac7d",
+        "ae7a879e9db1f3668d28893c534106f6fba6549d2fe25d5edd461f5431d72765",
+        "260c39eafc726c3cf474517575dbeb3bfc634dcd0e0c6d918436a30582580569",
+        "7b3f9b623f0b4ec9ee41f0273e88a559a7e74bcddff86709af27f35d69b39167",
+        "2794d52bf495aeefb8c1b1f479b698f1b8b56fa0db2116bd8c0e3e8a170a5e54",
+        "4e0c9db4d496dc1da2f19fe77dd98192dc2ee8889719315b57298d2912d1c48d",
+        "6a026e1d87024d8a0b747dbfe9ea2b85b172df7044f543e8a9516753d80daaab",
+        "0b5e431157b63646db073b4ec612744c67b382ca8d0659168c260c84b397d161",
+        "c40959cabb4daebce8a39617debf8ed5f3e5caea044cdc950b0e0c2077737efc",
+        "c07f18621fa6b22902884946fb67f5a5bb4466457b238a27239e0b7e1f8f90c1",
+        "1c2a7c0d72ffd7fc1a5284cfc393edc6921ff143c6b6f8a2a95c066c46cb2492",
+        "986b59c3f96c6969b8d494cd36f5a13f407979917b0997a584d0ea423dfa8344",
+        "48c60e62354a605fc8b4a781121f604b47985c41a97591da81d476abbb0a6f48",
+        "ef175b8059556d1b43f380db700983deb20e65f3882f895c9e0a8943de1158fd",
+        "7f799e6388f5d7e1dfee6c2a404f4e08eda2882a6d4e9195a2942be09d9c8206",
+        "e01b0db6bf5301a26c3b7ace99cd052004a25548ce483cd45bd309714e86fd45",
+        "5ae70bb403f9cdd574371fc4aa8de83cdc6f2ded3f7dc0399d66ab53c8353f95"
+      ],
+      "attempt_ids": [
+        "fff47a11efd04b669c653d5c704f09d6",
+        "852b69269fb24866b2db4c1e76e35793"
+      ],
+      "cache_hit": false,
+      "confirmations": 2,
+      "diagnostics": [],
+      "execution_id": "76b5d09d25784a868368601ab8b0a36a",
+      "failure_reasons": [],
+      "goal_id": "safe-assert-crosscheck",
+      "optimizer_summary": {
+        "budget": {
+          "max_parallel": 2,
+          "memory_mb": 2048,
+          "wall_time_sec": 30
+        },
+        "cache": "MISS",
+        "goal_id": "safe-assert-crosscheck",
+        "hints": {
+          "expected_characteristics": [],
+          "prefer_fast_counterexample": false,
+          "required_capabilities": []
+        },
+        "hints_applied": false,
+        "independent_candidates": 3,
+        "min_confirmations": 2,
+        "optimizer": "cost-aware-v1",
+        "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+        "selected_tools": [
+          "cbmc",
+          "esbmc",
+          "cpachecker"
+        ],
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "stages": [
+          [
+            "cbmc",
+            "esbmc"
+          ],
+          [
+            "cpachecker"
+          ]
+        ],
+        "tiny_budget": false,
+        "trust_feasible": true
+      },
+      "requirement_satisfied": true,
+      "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+      "source_execution_id": null,
+      "status": "COMPLETED",
+      "termination_reason": "REQUIREMENTS_MET",
+      "verdict": "SAFE",
+      "wall_time_sec": 1.5767692249974061
+    },
+    "attempts": [
+      {
+        "artifact_ids": [
+          "de4e70e9fce37db703bdfffd71f6aa045bdf0ca22d8e785e69cad88fd97f1b6a",
+          "a28ea5f0175ad49e05a1d1308f5c7bc56ff8b8a3ddadf1435ba37ffd6a01e873",
+          "3986d689db5a682af47e8ef8ad40bf34c59d76e813aada5d0070199cbc6742ae",
+          "8cd1853c0970b7e42bc487d8404ecf661e929100095379d80466e61e56e1ac7d",
+          "ae7a879e9db1f3668d28893c534106f6fba6549d2fe25d5edd461f5431d72765",
+          "260c39eafc726c3cf474517575dbeb3bfc634dcd0e0c6d918436a30582580569",
+          "7b3f9b623f0b4ec9ee41f0273e88a559a7e74bcddff86709af27f35d69b39167",
+          "2794d52bf495aeefb8c1b1f479b698f1b8b56fa0db2116bd8c0e3e8a170a5e54",
+          "4e0c9db4d496dc1da2f19fe77dd98192dc2ee8889719315b57298d2912d1c48d",
+          "6a026e1d87024d8a0b747dbfe9ea2b85b172df7044f543e8a9516753d80daaab"
+        ],
+        "backend_metrics": {
+          "cpu_seconds": 0.22,
+          "peak_sampled_rss_bytes": 29810688,
+          "rss_bytes": 0,
+          "scope": "local_process_tree"
+        },
+        "command": [
+          "/usr/local/bin/python3.11",
+          "-m",
+          "veriruntime.tools.container_driver",
+          "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6"
+        ],
+        "config_id": "81ba149c636dee4d75289ed7b0dc852e1fb9bc7027d7cb367b15238f78535a94",
+        "diagnostic_code": "",
+        "end_time": "2026-10-06T18:21:10.262971+08:00",
+        "execution_backend": "local-posix",
+        "execution_id": "76b5d09d25784a868368601ab8b0a36a",
+        "exit_code": 0,
+        "family": "cbmc",
+        "id": "fff47a11efd04b669c653d5c704f09d6",
+        "message": "Complete assertion proof with unwinding checks",
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "start_time": "2026-10-06T18:21:09.186839+08:00",
+        "status": "COMPLETED",
+        "stderr_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/stderr.txt",
+        "stdout_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/stdout.txt",
+        "termination_reason": "NORMAL",
+        "tool": "cbmc",
+        "verdict": "SAFE",
+        "version": "6.11.0 (cbmc-6.11.0)",
+        "wall_time_sec": 1.0761415080014558,
+        "workspace": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6"
+      },
+      {
+        "artifact_ids": [
+          "0b5e431157b63646db073b4ec612744c67b382ca8d0659168c260c84b397d161",
+          "c40959cabb4daebce8a39617debf8ed5f3e5caea044cdc950b0e0c2077737efc",
+          "c07f18621fa6b22902884946fb67f5a5bb4466457b238a27239e0b7e1f8f90c1",
+          "1c2a7c0d72ffd7fc1a5284cfc393edc6921ff143c6b6f8a2a95c066c46cb2492",
+          "986b59c3f96c6969b8d494cd36f5a13f407979917b0997a584d0ea423dfa8344",
+          "48c60e62354a605fc8b4a781121f604b47985c41a97591da81d476abbb0a6f48",
+          "ef175b8059556d1b43f380db700983deb20e65f3882f895c9e0a8943de1158fd",
+          "7f799e6388f5d7e1dfee6c2a404f4e08eda2882a6d4e9195a2942be09d9c8206",
+          "e01b0db6bf5301a26c3b7ace99cd052004a25548ce483cd45bd309714e86fd45",
+          "5ae70bb403f9cdd574371fc4aa8de83cdc6f2ded3f7dc0399d66ab53c8353f95"
+        ],
+        "backend_metrics": {
+          "cpu_seconds": 0.21000000000000002,
+          "peak_sampled_rss_bytes": 30019584,
+          "rss_bytes": 0,
+          "scope": "local_process_tree"
+        },
+        "command": [
+          "/usr/local/bin/python3.11",
+          "-m",
+          "veriruntime.tools.container_driver",
+          "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793"
+        ],
+        "config_id": "830eaaf46a523e4edad0c397deabf175f945efe0987057d3800984dc7a7ee225",
+        "diagnostic_code": "",
+        "end_time": "2026-10-06T18:21:10.606432+08:00",
+        "execution_backend": "local-posix",
+        "execution_id": "76b5d09d25784a868368601ab8b0a36a",
+        "exit_code": 0,
+        "family": "esbmc",
+        "id": "852b69269fb24866b2db4c1e76e35793",
+        "message": "Complete assertion proof with unwinding checks",
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "start_time": "2026-10-06T18:21:09.187588+08:00",
+        "status": "COMPLETED",
+        "stderr_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/stderr.txt",
+        "stdout_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/stdout.txt",
+        "termination_reason": "NORMAL",
+        "tool": "esbmc",
+        "verdict": "SAFE",
+        "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+        "wall_time_sec": 1.4188520710013108,
+        "workspace": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793"
+      }
+    ],
+    "events": "{\"time\": \"2026-10-06T10:21:09.186545+00:00\", \"kind\": \"execution_start\", \"semantic_key\": \"c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2\"}\n{\"time\": \"2026-10-06T10:21:09.186690+00:00\", \"kind\": \"tool_start\", \"tool\": \"cbmc\", \"remaining_wall_sec\": 29.999779814999783}\n{\"time\": \"2026-10-06T10:21:09.187477+00:00\", \"kind\": \"tool_start\", \"tool\": \"esbmc\", \"remaining_wall_sec\": 29.998992676002672}\n{\"time\": \"2026-10-06T10:21:10.458615+00:00\", \"kind\": \"tool_end\", \"tool\": \"cbmc\", \"attempt_id\": \"fff47a11efd04b669c653d5c704f09d6\", \"verdict\": \"SAFE\", \"status\": \"COMPLETED\", \"wall_time_sec\": 1.0761415080014558}\n{\"time\": \"2026-10-06T10:21:10.762953+00:00\", \"kind\": \"tool_end\", \"tool\": \"esbmc\", \"attempt_id\": \"852b69269fb24866b2db4c1e76e35793\", \"verdict\": \"SAFE\", \"status\": \"COMPLETED\", \"wall_time_sec\": 1.4188520710013108}\n{\"time\": \"2026-10-06T10:21:10.763127+00:00\", \"kind\": \"cancel_remaining\", \"reason\": \"REQUIREMENTS_MET\"}\n{\"time\": \"2026-10-06T10:21:10.763255+00:00\", \"kind\": \"execution_end\", \"verdict\": \"SAFE\", \"confirmations\": 2}\n"
+  },
+  "repeat": {
+    "optimization": {
+      "candidate_scores": [
+        {
+          "compatible": true,
+          "expected_runtime_sec": 1.0761415080014558,
+          "family": "cbmc",
+          "history": {
+            "definitive_count": 1,
+            "mean_runtime_sec": 1.0761415080014558,
+            "median_runtime_sec": 1.0761415080014558,
+            "property_kind": "assertion_safety",
+            "recent_runtime_sec": 1.0761415080014558,
+            "run_count": 1,
+            "safe_count": 1,
+            "size_bucket": "tiny",
+            "timeout_count": 0,
+            "tool": "cbmc",
+            "unknown_count": 0,
+            "unsafe_count": 0
+          },
+          "reasons": [],
+          "score": 0.6969343663667933,
+          "selected": true,
+          "success_rate": 0.75,
+          "tool": "cbmc"
+        },
+        {
+          "compatible": true,
+          "expected_runtime_sec": 1.4188520710013108,
+          "family": "esbmc",
+          "history": {
+            "definitive_count": 1,
+            "mean_runtime_sec": 1.4188520710013108,
+            "median_runtime_sec": 1.4188520710013108,
+            "property_kind": "assertion_safety",
+            "recent_runtime_sec": 1.4188520710013108,
+            "run_count": 1,
+            "safe_count": 1,
+            "size_bucket": "tiny",
+            "timeout_count": 0,
+            "tool": "esbmc",
+            "unknown_count": 0,
+            "unsafe_count": 0
+          },
+          "reasons": [],
+          "score": 0.5285963317308412,
+          "selected": true,
+          "success_rate": 0.75,
+          "tool": "esbmc"
+        },
+        {
+          "compatible": true,
+          "expected_runtime_sec": 4,
+          "family": "cpachecker",
+          "history": null,
+          "reasons": [],
+          "score": 0.125,
+          "selected": true,
+          "success_rate": 0.5,
+          "tool": "cpachecker"
+        }
+      ],
+      "explanation": {
+        "budget": {
+          "max_parallel": 2,
+          "memory_mb": 2048,
+          "wall_time_sec": 30
+        },
+        "cache": "HIT",
+        "cache_source_execution": "76b5d09d25784a868368601ab8b0a36a",
+        "fallback_selected_tools": [
+          "cbmc",
+          "esbmc",
+          "cpachecker"
+        ],
+        "goal_id": "safe-assert-crosscheck",
+        "hints": {
+          "expected_characteristics": [],
+          "prefer_fast_counterexample": false,
+          "required_capabilities": []
+        },
+        "hints_applied": false,
+        "independent_candidates": 3,
+        "min_confirmations": 2,
+        "optimizer": "cost-aware-v1",
+        "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+        "selected_tools": [],
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "stages": [
+          [
+            "cbmc",
+            "esbmc"
+          ],
+          [
+            "cpachecker"
+          ]
+        ],
+        "tiny_budget": false,
+        "trust_feasible": true
+      },
+      "physical_plan": {
+        "fallback": {
+          "children": [
+            {
+              "children": [
+                {
+                  "operator": "Run",
+                  "time_slice_sec": 15,
+                  "tool": "cbmc"
+                },
+                {
+                  "operator": "Run",
+                  "time_slice_sec": 15,
+                  "tool": "esbmc"
+                }
+              ],
+              "max_parallel": 2,
+              "operator": "Parallel"
+            },
+            {
+              "operator": "Run",
+              "time_slice_sec": 15,
+              "tool": "cpachecker"
+            }
+          ],
+          "operator": "Sequence"
+        },
+        "operator": "CacheLookup",
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "source_execution_id": "76b5d09d25784a868368601ab8b0a36a"
+      }
+    },
+    "result": {
+      "artifacts": [
+        "d73dda3512dd9d179058b69b64fb0b17af24aee15600e76f64fd2186f18d3da7",
+        "e8e80413008134f170b973f92d33eb510ed9aff55e942e44c0cc7808f1291ec3",
+        "e7011683d7fb6aca4ca7c055454ef2c6e844048cb131cb0b5a633aee8f2afe4a",
+        "12c791882bd37c2683ae438866b71a14b36ddbd8ecaac16ef3be58fe8f445485",
+        "2763d14388d902b97669ffd1bfa73448f32f47748029f70eb50a04fa9f5782ab",
+        "de4e70e9fce37db703bdfffd71f6aa045bdf0ca22d8e785e69cad88fd97f1b6a",
+        "a28ea5f0175ad49e05a1d1308f5c7bc56ff8b8a3ddadf1435ba37ffd6a01e873",
+        "3986d689db5a682af47e8ef8ad40bf34c59d76e813aada5d0070199cbc6742ae",
+        "8cd1853c0970b7e42bc487d8404ecf661e929100095379d80466e61e56e1ac7d",
+        "ae7a879e9db1f3668d28893c534106f6fba6549d2fe25d5edd461f5431d72765",
+        "260c39eafc726c3cf474517575dbeb3bfc634dcd0e0c6d918436a30582580569",
+        "7b3f9b623f0b4ec9ee41f0273e88a559a7e74bcddff86709af27f35d69b39167",
+        "2794d52bf495aeefb8c1b1f479b698f1b8b56fa0db2116bd8c0e3e8a170a5e54",
+        "4e0c9db4d496dc1da2f19fe77dd98192dc2ee8889719315b57298d2912d1c48d",
+        "6a026e1d87024d8a0b747dbfe9ea2b85b172df7044f543e8a9516753d80daaab",
+        "0b5e431157b63646db073b4ec612744c67b382ca8d0659168c260c84b397d161",
+        "c40959cabb4daebce8a39617debf8ed5f3e5caea044cdc950b0e0c2077737efc",
+        "c07f18621fa6b22902884946fb67f5a5bb4466457b238a27239e0b7e1f8f90c1",
+        "1c2a7c0d72ffd7fc1a5284cfc393edc6921ff143c6b6f8a2a95c066c46cb2492",
+        "986b59c3f96c6969b8d494cd36f5a13f407979917b0997a584d0ea423dfa8344",
+        "48c60e62354a605fc8b4a781121f604b47985c41a97591da81d476abbb0a6f48",
+        "ef175b8059556d1b43f380db700983deb20e65f3882f895c9e0a8943de1158fd",
+        "7f799e6388f5d7e1dfee6c2a404f4e08eda2882a6d4e9195a2942be09d9c8206",
+        "e01b0db6bf5301a26c3b7ace99cd052004a25548ce483cd45bd309714e86fd45",
+        "5ae70bb403f9cdd574371fc4aa8de83cdc6f2ded3f7dc0399d66ab53c8353f95",
+        "ba886d8484e0f608d08640d76592cd14fde8d1935eb63285bab56ee00030a232",
+        "15a502614dbfaf2482e6dfe3688b630e83d046ef9a0a4f7792a72acf627f28fd",
+        "dedb5e1f616192a1653fd4b812852335a3549c91ddc403a10edd93df80408df8",
+        "dbebe99282159894db4f574fdfb0152a018310a845f65e4b8f5dc111301385ff"
+      ],
+      "attempt_ids": [],
+      "cache_hit": true,
+      "confirmations": 2,
+      "diagnostics": [],
+      "execution_id": "effb701652a34c4383e743003898e208",
+      "failure_reasons": [],
+      "goal_id": "safe-assert-crosscheck",
+      "optimizer_summary": {
+        "budget": {
+          "max_parallel": 2,
+          "memory_mb": 2048,
+          "wall_time_sec": 30
+        },
+        "cache": "HIT",
+        "cache_source_execution": "76b5d09d25784a868368601ab8b0a36a",
+        "fallback_selected_tools": [
+          "cbmc",
+          "esbmc",
+          "cpachecker"
+        ],
+        "goal_id": "safe-assert-crosscheck",
+        "hints": {
+          "expected_characteristics": [],
+          "prefer_fast_counterexample": false,
+          "required_capabilities": []
+        },
+        "hints_applied": false,
+        "independent_candidates": 3,
+        "min_confirmations": 2,
+        "optimizer": "cost-aware-v1",
+        "reason": "Rank by smoothed definitive rate / median runtime; pack within concurrency and memory estimates; reserve fallback time",
+        "selected_tools": [],
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "stages": [
+          [
+            "cbmc",
+            "esbmc"
+          ],
+          [
+            "cpachecker"
+          ]
+        ],
+        "tiny_budget": false,
+        "trust_feasible": true
+      },
+      "requirement_satisfied": true,
+      "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+      "source_execution_id": "76b5d09d25784a868368601ab8b0a36a",
+      "status": "COMPLETED",
+      "termination_reason": "REQUIREMENTS_MET",
+      "verdict": "SAFE",
+      "wall_time_sec": 0.01679892100219149
+    },
+    "attempts": []
+  },
+  "native_commands": {
+    "cbmc": {
+      "argv": [
+        "/opt/cbmc/cbmc",
+        "/work/input/c/safe_assert.c",
+        "--function",
+        "main",
+        "--c11",
+        "--64",
+        "--unwind",
+        "64",
+        "--unwinding-assertions",
+        "--json-ui"
+      ],
+      "profile": {
+        "name": "cbmc",
+        "family": "cbmc",
+        "available": true,
+        "version": "6.11.0 (cbmc-6.11.0)",
+        "path": "/opt/cbmc/cbmc",
+        "languages": [
+          "C"
+        ],
+        "properties": [
+          "assertion_safety"
+        ],
+        "c_standards": [
+          "c11",
+          "c99"
+        ],
+        "data_models": [
+          "LP64",
+          "ILP32"
+        ],
+        "estimated_memory_mb": 256,
+        "prior_runtime_sec": 0.5,
+        "config_id": "f4dfed1efb65840d14746fd17876379155cc85caf31d385e531fdf2bd62d109c",
+        "diagnostic": ""
+      }
+    },
+    "esbmc": {
+      "argv": [
+        "/opt/esbmc/release/bin/esbmc",
+        "/work/input/c/safe_assert.c",
+        "--function",
+        "main",
+        "--std",
+        "c11",
+        "--64",
+        "--unwind",
+        "64",
+        "--z3",
+        "--multi-property",
+        "--overflow-check",
+        "--ub-shift-check"
+      ],
+      "profile": {
+        "name": "esbmc",
+        "family": "esbmc",
+        "available": true,
+        "version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+        "path": "/opt/esbmc/release/bin/esbmc",
+        "languages": [
+          "C"
+        ],
+        "properties": [
+          "assertion_safety"
+        ],
+        "c_standards": [
+          "c11",
+          "c99"
+        ],
+        "data_models": [
+          "LP64",
+          "ILP32"
+        ],
+        "estimated_memory_mb": 512,
+        "prior_runtime_sec": 0.7,
+        "config_id": "33232522b1568c23de00532dac4801b33cfc955f5ab6cd2d4b0297e445a166f7",
+        "diagnostic": ""
+      }
+    }
+  },
+  "raw_outputs": {
+    "cbmc": {
+      "stdout": "[\n  {\n    \"program\": \"CBMC 6.11.0 (cbmc-6.11.0)\"\n  },\n  {\n    \"messageText\": \"CBMC version 6.11.0 (cbmc-6.11.0) 64-bit x86_64 linux\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Type-checking safe_assert\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Generating GOTO Program\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Adding CPROVER library (x86_64)\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Removal of function pointers and virtual functions\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Generic Property Instrumentation\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"messageText\": \"Starting Bounded Model Checking\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"result\": [\n      {\n        \"description\": \"arithmetic overflow on signed + in x + 1\",\n        \"property\": \"main.overflow.1\",\n        \"sourceLocation\": {\n          \"comment\": \"arithmetic overflow on signed + in x + 1\",\n          \"file\": \"/work/input/c/safe_assert.c\",\n          \"function\": \"main\",\n          \"line\": \"6\",\n          \"pragma\": [ \"checked:bounds-check\", \"checked:pointer-check\", \"checked:div-by-zero-check\", \"checked:signed-overflow-check\", \"checked:undefined-shift-check\", \"checked:pointer-primitive-check\", \"checked:memory-leak-check\", \"checked:memory-cleanup-check\", \"checked:float-div-by-zero-check\", \"checked:enum-range-check\", \"checked:unsigned-overflow-check\", \"checked:pointer-overflow-check\", \"checked:conversion-check\", \"checked:float-overflow-check\", \"checked:nan-check\" ],\n          \"propertyClass\": \"overflow\",\n          \"propertyId\": \"main.overflow.1\",\n          \"workingDirectory\": \"/work\"\n        },\n        \"status\": \"SUCCESS\"\n      },\n      {\n        \"description\": \"arithmetic overflow on signed + in i + 1\",\n        \"property\": \"main.overflow.2\",\n        \"sourceLocation\": {\n          \"comment\": \"arithmetic overflow on signed + in i + 1\",\n          \"file\": \"/work/input/c/safe_assert.c\",\n          \"function\": \"main\",\n          \"line\": \"5\",\n          \"pragma\": [ \"checked:bounds-check\", \"checked:pointer-check\", \"checked:div-by-zero-check\", \"checked:signed-overflow-check\", \"checked:undefined-shift-check\", \"checked:pointer-primitive-check\", \"checked:memory-leak-check\", \"checked:memory-cleanup-check\", \"checked:float-div-by-zero-check\", \"checked:enum-range-check\", \"checked:unsigned-overflow-check\", \"checked:pointer-overflow-check\", \"checked:conversion-check\", \"checked:float-overflow-check\", \"checked:nan-check\" ],\n          \"propertyClass\": \"overflow\",\n          \"propertyId\": \"main.overflow.2\",\n          \"workingDirectory\": \"/work\"\n        },\n        \"status\": \"SUCCESS\"\n      },\n      {\n        \"description\": \"assertion x == 10\",\n        \"property\": \"main.assertion.1\",\n        \"sourceLocation\": {\n          \"comment\": \"assertion x == 10\",\n          \"file\": \"/work/input/c/safe_assert.c\",\n          \"function\": \"main\",\n          \"line\": \"7\",\n          \"pragma\": [ \"checked:bounds-check\", \"checked:pointer-check\", \"checked:div-by-zero-check\", \"checked:signed-overflow-check\", \"checked:undefined-shift-check\", \"checked:pointer-primitive-check\" ],\n          \"propertyClass\": \"assertion\",\n          \"propertyId\": \"main.assertion.1\",\n          \"workingDirectory\": \"/work\"\n        },\n        \"status\": \"SUCCESS\"\n      }\n    ]\n  },\n  {\n    \"messageText\": \"VERIFICATION SUCCESSFUL\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  },\n  {\n    \"cProverStatus\": \"success\"\n  }\n]\n",
+      "stderr": ""
+    },
+    "esbmc": {
+      "stdout": "ESBMC version 8.5.0 64-bit x86_64 linux\n",
+      "stderr": "Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc\nParsing /work/input/c/safe_assert.c\nConverting\nGenerating GOTO Program\nGOTO program creation time: 0.151s\nGOTO program processing time: 0.000s\nStarting Bounded Model Checking\nUnwinding loop 3 iteration 1   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 2   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 3   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 4   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 5   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 6   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 7   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 8   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 9   file /work/input/c/safe_assert.c line 5 column 5 function main\nUnwinding loop 3 iteration 10   file /work/input/c/safe_assert.c line 5 column 5 function main\nSymex completed in: 0.002s (54 assignments)\nCaching time: 0.000s (removed 10 assertions)\nSlicing time: 0.000s (removed 33 assignments)\nGenerated 21 VCC(s), 10 remaining after simplification (11 assignments)\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.002s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 6 column 9 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nSlicing time: 0.000s (removed 0 assignments)\nSolving claim 'arithmetic overflow on add at file /work/input/c/safe_assert.c line 5 column 29 function main' with solver Z3 v4.13.3\nEncoding remaining VCC(s) using bit-vector/floating-point arithmetic\nEncoding to solver time: 0.000s\nSolving with solver Z3 v4.13.3\nRuntime decision procedure: 0.000s\nBMC program time: 0.239s\n\n** Results:\n/work/input/c/safe_assert.c, function main\n  PASSED       [main.arithmetic-overflow.1]  line 5  arithmetic overflow on add\n  PASSED       [main.arithmetic-overflow.2]  line 6  arithmetic overflow on add\n  PASSED       [main.assertion.1]            line 7  assertion x == 10\n\n** 0 of 3 properties failed, 3 passed\nSolver: Z3 v4.13.3 • Decision procedure total time: 0.002s • Avg: 0.000s/property\n\nVERIFICATION SUCCESSFUL\n"
+    }
+  },
+  "execution_specs": {
+    "cbmc": {
+      "argv": [
+        "/usr/local/bin/python3.11",
+        "-m",
+        "veriruntime.tools.container_driver",
+        "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6"
+      ],
+      "cwd": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6",
+      "environment": {
+        "LC_ALL": "C",
+        "PATH": "/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/.bridge/.environment/home",
+        "TMPDIR": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/.bridge/.environment/tmp",
+        "XDG_CACHE_HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/.bridge/.environment/cache",
+        "XDG_CONFIG_HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/.bridge/.environment/config"
+      },
+      "wall_time_limit": 14.864688010999089,
+      "cpu_request": 1,
+      "memory_request_mb": 1024,
+      "metadata": {
+        "execution_id": "76b5d09d25784a868368601ab8b0a36a",
+        "attempt_id": "fff47a11efd04b669c653d5c704f09d6",
+        "tool": "cbmc",
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "goal_memory_budget_mb": 2048,
+        "tool_version": "6.11.0 (cbmc-6.11.0)",
+        "tool_config_id": "81ba149c636dee4d75289ed7b0dc852e1fb9bc7027d7cb367b15238f78535a94",
+        "tool_path": "sha256:c9c8560b2820beafb166e0d019741fb9f696caccce6ecc89a684bb7ffd19e304"
+      },
+      "stdout_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/stdout.txt",
+      "stderr_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6/stderr.txt",
+      "stdin_bytes": 0
+    },
+    "esbmc": {
+      "argv": [
+        "/usr/local/bin/python3.11",
+        "-m",
+        "veriruntime.tools.container_driver",
+        "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793"
+      ],
+      "cwd": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793",
+      "environment": {
+        "LC_ALL": "C",
+        "PATH": "/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/.bridge/.environment/home",
+        "TMPDIR": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/.bridge/.environment/tmp",
+        "XDG_CACHE_HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/.bridge/.environment/cache",
+        "XDG_CONFIG_HOME": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/.bridge/.environment/config"
+      },
+      "wall_time_limit": 14.882236963996547,
+      "cpu_request": 1,
+      "memory_request_mb": 1024,
+      "metadata": {
+        "execution_id": "76b5d09d25784a868368601ab8b0a36a",
+        "attempt_id": "852b69269fb24866b2db4c1e76e35793",
+        "tool": "esbmc",
+        "semantic_key": "c61c1d877544bae458d22cefd039eb13d4c38bcb6d01c549499050aab2591ad2",
+        "goal_memory_budget_mb": 2048,
+        "tool_version": "ESBMC version 8.5.0 64-bit x86_64 linux",
+        "tool_config_id": "830eaaf46a523e4edad0c397deabf175f945efe0987057d3800984dc7a7ee225",
+        "tool_path": "sha256:c2494568e5c76dd565679b60111d8bd0a032e922debf262c50e884ebe7c4f10c"
+      },
+      "stdout_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/stdout.txt",
+      "stderr_path": "/data/quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793/stderr.txt",
+      "stdin_bytes": 0
+    }
+  },
+  "container_requests": {
+    "cbmc": {
+      "name": "vrun-fff47a11efd04b669c653d5c704f09d6",
+      "image": "sha256:c9c8560b2820beafb166e0d019741fb9f696caccce6ecc89a684bb7ffd19e304",
+      "tool": "cbmc",
+      "task": {
+        "id": "safe-assert-crosscheck",
+        "language": "C",
+        "entry": "main",
+        "program": {
+          "files": [
+            {
+              "logical_path": "c/safe_assert.c",
+              "content": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n",
+              "sha256": "48470bc7498b9918f3e5fc5ffd8cd7cb7eda977e50fb4ec271e036dfd2a0fd3c"
+            }
+          ],
+          "sources": [
+            "c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 2
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        },
+        "version": "0.1",
+        "hints": {
+          "prefer_fast_counterexample": false,
+          "expected_characteristics": [],
+          "required_capabilities": []
+        }
+      },
+      "memory_mb": 1024,
+      "timeout_sec": 60,
+      "mount": {
+        "Type": "volume",
+        "Source": "veriruntime-data",
+        "Target": "/work",
+        "VolumeOptions": {
+          "NoCopy": true,
+          "Subpath": "quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/fff47a11efd04b669c653d5c704f09d6"
+        }
+      },
+      "prepared": true
+    },
+    "esbmc": {
+      "name": "vrun-852b69269fb24866b2db4c1e76e35793",
+      "image": "sha256:c2494568e5c76dd565679b60111d8bd0a032e922debf262c50e884ebe7c4f10c",
+      "tool": "esbmc",
+      "task": {
+        "id": "safe-assert-crosscheck",
+        "language": "C",
+        "entry": "main",
+        "program": {
+          "files": [
+            {
+              "logical_path": "c/safe_assert.c",
+              "content": "#include <assert.h>\n\nint main(void) {\n    int x = 0;\n    for (int i = 0; i < 10; ++i)\n        x++;\n    assert(x == 10);\n    return 0;\n}\n",
+              "sha256": "48470bc7498b9918f3e5fc5ffd8cd7cb7eda977e50fb4ec271e036dfd2a0fd3c"
+            }
+          ],
+          "sources": [
+            "c/safe_assert.c"
+          ]
+        },
+        "property": {
+          "kind": "assertion_safety"
+        },
+        "semantics": {
+          "c_standard": "c11",
+          "data_model": "LP64"
+        },
+        "requirements": {
+          "min_confirmations": 2
+        },
+        "budget": {
+          "wall_time_sec": 30,
+          "memory_mb": 2048,
+          "max_parallel": 2
+        },
+        "version": "0.1",
+        "hints": {
+          "prefer_fast_counterexample": false,
+          "expected_characteristics": [],
+          "required_capabilities": []
+        }
+      },
+      "memory_mb": 1024,
+      "timeout_sec": 60,
+      "mount": {
+        "Type": "volume",
+        "Source": "veriruntime-data",
+        "Target": "/work",
+        "VolumeOptions": {
+          "NoCopy": true,
+          "Subpath": "quickstart-512c7e10b991471abc25f40996c05f2a/executions/76b5d09d25784a868368601ab8b0a36a/852b69269fb24866b2db4c1e76e35793"
+        }
+      },
+      "prepared": true
+    }
+  }
+}

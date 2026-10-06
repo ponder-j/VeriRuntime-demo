@@ -131,3 +131,5 @@ CLI 退出码 0 只表示操作完成。应同时看 `verdict`、`requirement_sa
 需要看图时打开 [真实调度回放](docs/runtime-explorer.html)，可切换五个场景、查看八步调度、命令及后端记录；[流程全景](docs/dispatch.html) 提供整体视图。[强证明流程图](docs/strong-verification.html) 对应高级验证中的设计方案。
 
 当前 Rocq 能检查上层已写好的证明代码；完整的 C → Frama-C VC → Rocq → C 契约覆盖链仍未实现。Kubernetes 也仅预留后端接口。首次跑通例子不需要这些扩展。
+
+汇报材料集中在 [22 页 HTML 演示](docs/presentation/veriruntime-report/index.html)：当前架构、真实例子的完整输入 / 调度 / 输出、原型边界和未来 Frama-C + Rocq 设计。浏览器用 `← →` 翻页、`S` 打开讲稿与计时器、`F` 全屏；也可使用 [可编辑 PPTX](docs/presentation/veriruntime-report/VeriRuntime-report-final.pptx)、[PDF](docs/presentation/veriruntime-report/VeriRuntime-report.pdf) 和 [四页 drawio 框架图](docs/presentation/veriruntime-report/VeriRuntime-architecture.drawio)。每页讲稿保留来源，真实运行证据随演示保存；修改 `report-source.json` 后执行 `node scripts/build-report.mjs` 可重建 HTML 与 drawio。分享时可复制整个演示目录或使用 [离线材料包](docs/presentation/VeriRuntime-report.zip)。
