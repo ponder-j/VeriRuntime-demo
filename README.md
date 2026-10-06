@@ -30,8 +30,8 @@ flowchart TD
 ```
 
 **LLM decides WHAT SHOULD BE PROVED. VeriRuntime decides HOW A FIXED PROOF
-OBLIGATION SHOULD BE EXECUTED.** The upstream planner is an interface boundary,
-not implemented software in this repository. Runtime never adds assumptions,
+OBLIGATION SHOULD BE EXECUTED.** An optional Codex planner and bounded experiment
+runner live upstream in `veriruntime/planner/`. Runtime never adds assumptions,
 invariants or lemmas, weakens a property, or creates subgoals after UNKNOWN.
 
 ## Quick start
@@ -135,7 +135,49 @@ cross-checks, then inspects history and provenance. It retains a machine-readabl
 array and arithmetic. Requesting three confirmations explicitly exercises all
 three installed families through the optimizer; no tool names enter the DSL.
 
-## Python API / future LLM boundary
+## Codex semantic planning and experiments
+
+An optional upper layer automatically launches `codex exec` using the configured
+sol model (fallback `gpt-6.1-sol`). It reuses existing CLI authentication and provider
+configuration. The tested CLI is 0.157.1. Planner calls use structured JSON output,
+read-only sandboxing and ephemeral sessions; shell, subagent, app/plugin, web search
+and configured user MCP capabilities are disabled for the child invocation only.
+The host validates the resulting Workflow before starting real verification.
+
+```sh
+vrun plan examples/tasks/assertion_workflow.json \
+  --request 'Check both existing assertion goals; run the second only after the first is SAFE.'
+vrun experiment examples/tasks/assertion_workflow.json \
+  --request 'Check both existing assertion goals; run the second only after the first is SAFE.' \
+  --max-rounds 2
+./scripts/run_llm_experiment.sh
+```
+
+`plan` produces a reloadable `workflow.json` and starts no verifiers. `experiment`
+executes it, sends structured feedback to a new Codex process after UNKNOWN or
+blocked goals, and stops on satisfied goal requirements, an unchanged workflow,
+conflicting evidence, an error, cancellation, or the round limit (default 2, max 8).
+`--request-file`, `--model`, `--planner-timeout`, `--data-dir`, `--no-cache` and
+`--json` are available. Model/planning errors are separate from verifier verdicts.
+
+This first bridge plans **existing, already instrumented C goals**. It covers each
+supplied input once, preserves source/entry/property/C semantics, cannot lower
+confirmations or exceed caller budgets, and can propose explicit control dependencies.
+It does not turn arbitrary natural-language specifications into proved C contracts,
+generate invariants/assumptions, or edit source code. A completed experiment means
+the submitted goals received sufficient definitive answers, which may include UNSAFE;
+it is not an automatic check that the natural-language request was formalized correctly.
+
+Request, immutable input copies, prompt, output schema, Codex argv/events/usage,
+proposal/rationale/limitations, validated workflow, execution and feedback are kept
+under `<data-dir>/experiments/<id>/`. Generated source paths use a stable input namespace;
+the exported DSL and actual execution share the same snapshot identity. Planner logs
+remain separate from verifier proof artifacts. The real experiment script creates a
+fresh store for every run, then checks two-family SAFE/UNSAFE, a zero-verifier cache
+repeat, and two UNKNOWN feedback rounds without weakening memory_safety.
+See [the M8 experiment record](docs/llm-experiments.md).
+
+## Python API / LLM boundary
 
 ```python
 import asyncio
@@ -150,7 +192,7 @@ goal = load_task("examples/tasks/safe_assert.json")
 execution = asyncio.run(service.verify(goal))
 ```
 
-An upstream planner can consume goal_id, status, verdict, confirmations, artifacts,
+The upstream planner can consume goal_id, status, verdict, confirmations, artifacts,
 diagnostics, optimizer_summary and failure_reasons, then explicitly submit a new
 workflow. Feedback codes include timeout, insufficient_unwinding, out_of_memory,
 unsupported_property, no_compatible_tool, conflicting_verdict and verifier_error.
@@ -168,6 +210,7 @@ silently simulated features.
 | `veriruntime/tools/` | Registry and backend-specific compilation/output contracts |
 | `veriruntime/store.py`, `artifacts.py`, `cache.py` | SQLite provenance, content-addressed artifacts and exact goal cache |
 | `veriruntime/observability.py`, `cli.py` | Structured events and human/machine interfaces |
+| `veriruntime/planner/` | Optional upstream Codex process, logical validation and bounded feedback rounds |
 | `examples/`, `scripts/`, `tests/`, `docs/` | Real programs, runnable experiments, regression tests and contracts |
 
 This prototype explores declarative verification, logical/physical separation,

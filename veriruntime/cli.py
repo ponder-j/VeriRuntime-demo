@@ -16,13 +16,13 @@ def _execution_options(sub):
     sub.add_argument('--no-cache', action='store_true')
 
 
-async def _verify(service, workflow):
+async def _cancellable(operation):
     token = Cancellation()
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sig, token.cancel)
     try:
-        return await service.verify(workflow, token)
+        return await operation(token)
     finally:
         for sig in (signal.SIGINT, signal.SIGTERM):
             loop.remove_signal_handler(sig)
@@ -45,6 +45,16 @@ def main(argv=None) -> int:
             sub.add_argument('--explain', action='store_true')
         else:
             sub.add_argument('--analyze', action='store_true')
+    for command in ('plan', 'experiment'):
+        sub = commands.add_parser(command, help='Upstream Codex semantic planning on existing C assertion inputs')
+        sub.add_argument('task', help='Single-task or workflow input manifest')
+        request = sub.add_mutually_exclusive_group(required=True)
+        request.add_argument('--request', help='Natural-language planning requirement')
+        request.add_argument('--request-file', help='UTF-8 planning requirement file')
+        sub.add_argument('--model', help='Defaults to the configured sol model')
+        sub.add_argument('--planner-timeout', type=float, default=180)
+        sub.add_argument('--max-rounds', type=int, default=2)
+        _execution_options(sub)
     sub = commands.add_parser('history')
     sub.add_argument('--limit', type=int, default=20)
     _execution_options(sub)
@@ -83,6 +93,27 @@ def main(argv=None) -> int:
             return 0
         from veriruntime.service import VerificationService
         service = VerificationService(args.data_dir, cache_enabled=not args.no_cache)
+        if args.command in ('plan', 'experiment'):
+            from veriruntime.planner import CodexPlanner, ExperimentRunner
+            request = args.request if args.request is not None else Path(args.request_file).read_text(encoding='utf-8')
+            seed = load_workflow(args.task)
+            planner = CodexPlanner(model=args.model, timeout_sec=args.planner_timeout)
+            runner = ExperimentRunner(service, planner, max_rounds=args.max_rounds)
+            result = asyncio.run(_cancellable(lambda token: runner.run(seed, request,
+                plan_only=args.command == 'plan', cancellation=token)))
+            if args.json:
+                ui.json(result)
+            else:
+                ui.emit(f'Experiment {result.experiment_id}: {result.status} ({result.stop_reason})')
+                ui.emit(f'Model: {result.model}; planning rounds: {len(result.rounds)}; verifier executions: {result.verifier_executions}')
+                ui.emit(f'Provenance: {result.directory}/experiment.json')
+                for item in result.rounds:
+                    for goal in item.get('execution', {}).get('goals', []):
+                        value = goal['report']['result']
+                        ui.emit(f'  {value["goal_id"]}: {value["verdict"]}; confirmations={value["confirmations"]}; cache_hit={value["cache_hit"]}')
+                for diagnostic in result.diagnostics:
+                    ui.emit(f'  {diagnostic["code"]}: {diagnostic["detail"]}')
+            return 2 if result.status == 'ERROR' else 130 if result.status == 'CANCELLED' else 0
         if args.command == 'history':
             if not 1 <= args.limit <= 10000:
                 parser.error('--limit must be between 1 and 10000')
@@ -122,7 +153,7 @@ def main(argv=None) -> int:
                 return 0
             if not args.json:
                 ui.explain(workflow, optimizations, service.registry.profiles())
-        execution = asyncio.run(_verify(service, workflow))
+        execution = asyncio.run(_cancellable(lambda token: service.verify(workflow, token)))
         ui.json(execution) if args.json else ui.execution(execution, service.cache_enabled)
         return 0
     except (DSLValidationError, KeyError, OSError, ValueError) as exc:

@@ -1,4 +1,4 @@
-"""Public fixed-goal/workflow API, ready for a future upstream semantic planner."""
+"""Public fixed-goal/workflow API, independent of upstream semantic planners."""
 from __future__ import annotations
 
 from dataclasses import dataclass, replace

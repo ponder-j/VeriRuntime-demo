@@ -274,7 +274,8 @@ Adding Ultimate requires an adapter/profile and registration, not a DSL change.
 A learned optimizer replaces the optimize interface without modifying adapters.
 The service remains operational with no LLM, with cache disabled, or with one
 compatible verifier. An upstream planner can submit new workflows after UNKNOWN;
-the current implementation contains neither an LLM nor an HTTP server.
+M8 adds an optional Codex-backed upstream planner. The runtime itself does not call
+an LLM, and an HTTP server remains unimplemented.
 
 ## M7 final architecture review
 
@@ -287,3 +288,37 @@ Verdict/status and task/attempt remain separate. All real launches record versio
 outer argv, and any compilation-layer argv. Exact cache validation excludes
 incomplete evidence and requires intact, consistent provenance. The actual demo
 and three-family mini benchmark verify the intended semantic-transparent behavior.
+
+## M8 upstream semantic planner and bounded experiments
+
+`veriruntime/planner/` composes the public VerificationService API; runtime,
+optimizer, cache and adapters do not import or invoke it. CodexPlanner manages a
+real CLI process, stdout JSONL/final JSON, usage, deadlines, cancellation and group
+cleanup. ExperimentRunner owns explicit planning rounds, candidate validation,
+feedback handoff and bounded stopping. Neither model output nor rationale is
+treated as verifier evidence.
+
+The bridge starts with existing fixed goals as an input manifest. Captured files
+are copied into a stable allowlisted namespace. Every generated goal must keep
+one complete supplied source set, entry, property and C semantics; each input is
+covered once. Confirmation requirements cannot decrease; caller budgets cannot
+increase. The versioned workflow DSL validates the actual submitted document,
+including its DAG. Unsupported semantic edits must be authored as new explicit
+inputs outside this first bridge. Logical dependencies are proposed upstream and
+recorded; the service only obeys them.
+
+After unresolved results a new, recorded Codex invocation receives goal_id,
+status, verdict, confirmations, diagnostics, artifacts and optimizer summaries.
+An unchanged workflow is stopped before another verification; CONFLICT is returned
+for review, and bounded rounds prevent an unending replanning loop. Model failure,
+malformed output or an invalid workflow starts no verification for that proposal.
+Completed refers to satisfying submitted goal trust requirements, not proving that
+the user request has been formalized correctly. Natural-language interpretation
+and unbounded invariant/decomposition generation remain research scope.
+
+The configured sol default is selected without changing user settings or storing
+credentials. CLI per-call overrides disable tools/plugins/user MCP, and the child
+uses a read-only sandbox; unexpected model tool actions reject the proposal. Only
+the host runtime starts actual verifier commands. Experiment records and Codex
+messages are separate from semantic proof/cache evidence. See
+[llm-experiments.md](llm-experiments.md) for real acceptance and limits.

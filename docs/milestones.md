@@ -15,6 +15,7 @@ arrived during M3 and was integrated in M3–M7 without modifying M0–M2 histor
 | M5 | Persistent executions/artifacts, exact cache, evidence checks | 56 tests; real miss followed by zero-verifier hit |
 | M6 | Two-level EXPLAIN/ANALYZE, structured events, history/show and acceptance script | 59 tests; real demo script passed |
 | M7 | Third real verifier, cross-checks, six-case benchmark, final soundness review and docs | Final test counts and evidence in delivery report |
+| M8 | Optional upstream Codex planner, validated Workflow export and bounded feedback experiments | Real default-sol DAG, two-family miss/hit and honest UNKNOWN feedback; final checks in llm-experiments.md |
 
 Every milestone was reviewed for module boundaries, DSL tool leakage, logical versus
 physical planning, semantic cache validity, fixture isolation, status definitions
