@@ -1,379 +1,117 @@
-# VeriRuntime semantic contract
+# 架构细节
 
-VeriRuntime is a declarative multi-verifier execution runtime. A caller describes
-**what to verify**. The optimizer and scheduler decide **how to verify it**.
+[回到主线使用手册](../README.md) · 本页供理解实现和扩展接口时查阅，使用步骤以主线为准。
 
-## Two planning levels and the runtime boundary
+<a id="layers"></a>
 
-An upstream LLM Semantic Planner answers: which logical propositions should be
-proved to answer the user's question? VeriRuntime's per-goal Physical Optimizer
-answers: how should a fixed proof obligation be executed economically?
+## 三层职责与代码入口
 
-Anything that changes a proposition belongs upstream: goal decomposition,
-assumptions, invariants, auxiliary lemmas, logical dependencies, and replanning
-after UNKNOWN. VeriRuntime never silently creates those. It may change tools,
-order, concurrency, fallback, resource allocation, cancellation and cache lookup.
-Hints are advisory preferences, never correctness assumptions. The optimizer
-may ignore them, and they are excluded from semantic identity.
-
-VerificationTask is also named LogicalGoal. VerificationWorkflow contains fixed
-goals, explicit acyclic control dependencies and inert metadata. A single task
-JSON is backward-compatible shorthand for a one-goal workflow. An edge explicitly
-requires a predecessor's requested SAFE/UNSAFE result and satisfied confirmation
-requirement before its successor can run. No assertion is inherited as an
-assumption; G1 SAFE + G2 SAFE does not prove G3. Workflow scheduling can remain
-thin and sequential while physical plans within each goal run in parallel.
-
-The result API includes goal identity, verdict, lifecycle status, confirmations,
-artifacts, structured diagnostics, optimizer summary and failure codes. An
-upstream planner can consume UNKNOWN with `timeout`, `insufficient_unwinding`,
-`out_of_memory`, `no_compatible_tool` or other codes, then submit a new explicit
-workflow. No LLM is implemented inside the runtime.
-
-```mermaid
-flowchart TD
-    User[User requirement] --> Semantic[Upstream LLM Semantic Planner]
-    Semantic --> DSL
-    DSL[JSON Verification DSL] --> Parser[Parser and validator]
-    Parser --> Workflow[Logical Workflow IR: fixed goals and explicit dependencies]
-    Workflow --> Logical[Ready Logical Goal]
-    Logical --> Optimizer[Per-Goal Physical Optimizer]
-    Registry[Tool Registry] --> Optimizer
-    History[Execution History] --> Optimizer
-    Cache[Semantic Cache] --> Optimizer
-    Optimizer --> Physical[Physical Plan AST]
-    Physical --> Runtime[Runtime Scheduler]
-    Runtime --> Adapters[Tool Adapters: command and result interpretation]
-    Adapters --> Backend[ExecutionBackend: selected command lifecycle]
-    Runtime --> Backend
-    Backend --> Verifiers[Real Software Verifiers]
-    Verifiers --> Store[Execution and Artifact Store]
-    Store --> History
-    Store --> Cache
-    Store --> Feedback[Structured goal feedback]
-    Feedback -. explicit semantic replanning .-> Semantic
-```
-
-## Semantic transparency
-
-For a DSL request D, every returned SAFE or UNSAFE must refer to the immutable
-program snapshot, property, entry point, C semantics, and trust requirements of
-D. Different physical plans may change time, cost, selection, and order. UNKNOWN
-may change with resource budgets. Optimization must never weaken the proposition
-or confirmation requirement in order to produce a definitive result.
-
-Assertions refer to well-defined executions under the declared C data model.
-Unsupported language constructs, incomplete bounded proofs, or inconclusive
-tool output must not become SAFE. The prototype trusts supported verifier
-versions and their verdicts; it does not check proof certificates independently.
-
-## Boundaries and records
-
-| Layer | Responsibility | Main records / interface |
+| 层 | 权限与职责 | 代码 |
 |---|---|---|
-| DSL | Stable JSON, validation, no tool names or execution operators | schema, loader |
-| Logical IR | Verification proposition and immutable inputs | VerificationTask, ProgramSnapshot, VerificationProperty, Semantics, Requirements, Budget, LogicalPlan |
-| Optimizer | Capability filtering, history and cost heuristic, cache decision | optimize(logical_plan, context), OptimizationResult |
-| Physical plan | Structured implementation of a logical request | RunPlan, SequencePlan, ParallelPlan, CacheLookupPlan |
-| Scheduler | Global deadline, concurrency, fallback, cancellation, reconciliation | Runtime |
-| Tool adapter | Detection, capability declaration, argv construction, output parsing, artifact collection | ToolAdapter, ToolProfile |
-| Tool registry | Discovery, lookup and compatible candidates | ToolRegistry |
-| Infrastructure execution | Start/wait/cancel, process or future job ownership, metrics and cleanup | ExecutionBackend, ExecutionSpec, ExecutionHandle, ExecutionOutcome |
-| Execution store | Tasks, plans, attempts, results, history and events | SQLite |
-| Artifact store | Immutable content-addressed raw output and evidence | Artifact, filesystem |
-| Semantic cache | Exact completed definitive results meeting trust requirements | semantic key, evidence references |
+| 人 / 上层 LLM | 规约、固定目标、假设、不变式、引理及显式语义重规划 | 输入 DSL；可选 `planner/` |
+| VeriRuntime | 能力筛选、工具选择、执行顺序、并行 / 回退、预算、取消、缓存、证据归并 | `optimizer.py`、`runtime/`、`service.py` |
+| Infrastructure backend | 运行已经选好的命令；执行身份、指标、生命周期与清理 | `execution/`；当前 LocalExecutionBackend |
 
-The logical IR contains no physical operators. Adapters contain no global
-scheduling decisions. The runtime contains no backend-name branches. An
-optimizer can be replaced without changing an adapter or the DSL.
+凡是改变命题的动作都属于上层。Runtime 不生成子目标、不添加假设、不修改源码，也不在 UNKNOWN 后调用 LLM 写不变式。未来 Kubernetes 可以决定某个已选 execution 放在哪个 node，不能决定选哪个验证器或缓存是否有效。
+
+| 文件 / 目录 | 入口和职责 |
+|---|---|
+| [`model.py`](../veriruntime/model.py) | LogicalGoal / VerificationTask、Workflow、快照、要求及结果记录 |
+| [`dsl/`](../veriruntime/dsl/) | 严格 JSON Schema、单任务 / 工作流加载 |
+| [`plan.py`](../veriruntime/plan.py)、[`optimizer.py`](../veriruntime/optimizer.py) | 物理 AST、能力筛选与历史成本启发式 |
+| [`service.py`](../veriruntime/service.py)、[`runtime/engine.py`](../veriruntime/runtime/engine.py) | 工作流门控、目标调度与 reconcile |
+| [`runtime/process.py`](../veriruntime/runtime/process.py) | attempt 编排、资源策略、backend 调用与记录 |
+| [`execution/`](../veriruntime/execution/) | 后端契约与 POSIX 本地执行实现 |
+| [`tools/`](../veriruntime/tools/) | 探测、能力声明、命令生成、结果解析及工具工件 |
+| [`store.py`](../veriruntime/store.py)、[`artifacts.py`](../veriruntime/artifacts.py)、[`cache.py`](../veriruntime/cache.py) | SQLite 来源、内容寻址工件、精确缓存 |
+| [`planner/`](../veriruntime/planner/)、[`proofs/`](../veriruntime/proofs/) | 可选上层规划、独立 Rocq 工件检查 |
+
+<a id="dsl"></a>
+
+## 逻辑目标与不可变输入
+
+`VerificationTask` 也称 `LogicalGoal`；`VerificationWorkflow` 包含固定目标、显式无环控制依赖和 metadata。单任务 JSON 是一个单目标工作流的简写。逻辑 IR 中不出现 Run / Parallel 等物理算子。
+
+Schema 拒绝工具名称、执行策略、未知字段和重复 JSON key。源文件路径相对 DSL 文件解析；捕获所有 translation units 及递归的字面量本地头文件。无法忠实重放的 macro / absolute / symlink includes、依赖宿主环境的预定义宏等输入会被拒绝。系统头文件属于已记录的工具链环境。
+
+`semantic_key` 包含源码逻辑路径与内容 hash、translation-unit 列表、语言、入口、属性、C 语义和确认要求。任务名称、预算、工具选择和 advisory hints 不改变命题身份。当前 hints 被记录但不参与策略或正确性判断。
+
+工作流边要求前置目标返回指定 SAFE / UNSAFE 且满足确认要求，才允许后续目标执行。失败时后续目标 BLOCKED / UNKNOWN。就绪目标当前串行执行，目标内的验证器可以并行。G1 SAFE + G2 SAFE 不自动证明 G3；控制依赖不会传播假设。
+
+<a id="planning"></a>
+
+## 物理计划与真实执行顺序
+
+`optimize(LogicalPlan, RuntimeContext) → OptimizationResult` 的接口可替换。当前按工具可用性、语言、属性、C 标准 / 数据模型、程序形状和估计内存筛选候选；用平滑确定率 / 历史中位耗时排序，没有历史时使用先验。统计按工具版本和配置身份隔离，受到选择与取消偏差影响，不是理论最优策略。
+
+| 物理算子 | 含义 |
+|---|---|
+| Run | 一个已选工具及时间片 |
+| Parallel | 同阶段并发；嵌套计划也受目标级全局 semaphore 约束 |
+| Sequence | 未达到要求时继续下一阶段，保留回退时间 |
+| CacheLookup | 有效精确缓存；同时保存无效时执行的 fallback |
+
+每个固定目标依次经过：
+
+1. 工作流前置结果及确认数门控。
+2. 筛选、评分、装箱，生成候选物理计划。
+3. **候选计划生成后**核验缓存；有效命中替换为 CacheLookup。
+4. MISS 时解释 AST，约束并发与共享 deadline；adapter 生成已固定输入的 argv / workspace。
+5. ExecutionBackend 负责 start / wait / cancel / metrics / cleanup。已有 Docker transport 的资源预备也必须在取消后完成，再清理，避免迟到的 create 留下容器。
+6. adapter 解释原始输出；reconcile 归并完成证据；保存来源、工件和反馈。
+
+达到确认要求后可以取消未完成 peer；每一批完成项先归并再取消。要求一个确认时，尚未完成的 peer 被取消，无法判断它本来是否会产生冲突。提高确认要求会使更多独立家族实际完成。
+
+<a id="results"></a>
+
+## 结果、状态与信任边界
+
+`Verdict` 为 SAFE / UNSAFE / UNKNOWN / CONFLICT。`ExecutionStatus` 为 COMPLETED / TIMEOUT / CANCELLED / ERROR / OOM / START_FAILED；状态与命题结论分开，COMPLETED / UNKNOWN 是有效组合。
+
+只有 COMPLETED 的确定 SAFE / UNSAFE 贡献证据，同一家族只计一次。相反确定证据优先返回 CONFLICT，没有多数投票。同一精确目标的历史中出现相反确定证据也会使旧缓存失效；清缓存不会删除历史。
+
+C 断言验证针对声明数据模型下良定义的执行，信任支持的验证器与工具链。家族不同不等于数学上独立的信任根，例如 ESBMC 起源于 CBMC 的早期分支。普通 C adapter 的报告不是独立内核检查证书；Rocq 的证据边界见 [高级验证](advanced.md#rocq-proof)。
+
+反馈含 goal identity、status、verdict、confirmations、artifacts、diagnostics、optimizer_summary、failure_reasons。常见诊断包括 timeout、insufficient_unwinding、out_of_memory、unsupported_property、no_compatible_tool、conflicting_verdict 和 verifier_error。上层根据反馈显式提交新请求。
+
+<a id="cache"></a>
+
+## 精确缓存与证据来源
+
+当前缓存 contract 为 `definitive-cache-v3`，只缓存达到要求的确定结果。UNKNOWN、CONFLICT、取消、超时和错误不提供确定缓存。预算影响执行机会，但不能降低确认要求来换取结果。
+
+命中需要同时满足：相同 semantic key；来源结果和 completed attempts 一致；足够独立家族；无相反证据；版本 / config_id 非空且匹配当前工具；工件 hash 完整；SQLite 的逻辑、结果和 attempt metadata 与不可变 JSON 工件相符。Docker config identity 包含精确镜像身份；环境变更不能复用旧证据。
+
+HIT 仍建立新的 execution ID，零 attempts，并通过 source_execution_id 连接来源。版本 / 能力探测不算验证命令。当前没有工作流级缓存、部分确认复用、witness / invariant 输入复用、checkpoint 或增量证明；工件被保存为证据，不自动作为其他工具的新假设。
+
+<a id="execution-backend"></a>
 
 ## Execution Backend Abstraction
 
-Three scheduling responsibilities remain separate. An upstream LLM decides
-**what should be proved**; VeriRuntime decides **how a fixed goal should be
-executed**; an infrastructure backend decides **where/how the selected command
-physically runs**. A backend does not select CBMC versus CPAchecker, build a
-portfolio, validate cache evidence or change a proposition.
+公共异步契约为 `start(spec) → handle`、`wait(handle) → outcome`、`cancel(handle, reason)`、`collect_metrics(handle)`、`cleanup(handle)`。handle 是不透明身份；Runtime 不读取 PID。重复 wait 返回同一 outcome，cancel / cleanup 幂等。
 
-`veriruntime/execution/` defines the backend-neutral `ExecutionSpec`, opaque
-`ExecutionHandle`, `ExecutionMetrics` and `ExecutionOutcome`. The asynchronous
-contract is `start`, `wait`, `cancel`, `collect_metrics`, `cleanup`. A spec carries
-adapter-generated argv, workspace, environment, remaining wall time, CPU/memory
-requests and provenance metadata. Outcomes carry raw outputs, exit code, timing,
-termination, metrics and backend diagnostics; they contain no verifier verdict.
-Adapters alone interpret output, and Runtime alone reconciles evidence.
+`ExecutionSpec` 携带 argv、工作目录、环境、剩余 wall limit、CPU / 内存请求、执行 / 尝试 ID、semantic key 和工具路径 / 版本 / 配置身份。`ExecutionOutcome` 包含退出码、stdout / stderr、起止时间、耗时、状态、终止原因、指标和 backend diagnostics，**不包含 verifier verdict**。
 
-The current implementation is **LocalExecutionBackend**, using POSIX process
-groups. All product subprocess/PID/signal operations, including version probes,
-compiler drivers and the optional upstream planner's CLI, are concentrated in
-`execution/local.py`. Nested driver commands inherit the owning execution's
-process group rather than escaping supervision. Synchronous probe/helper calls
-use the same implementation boundary; they do not decide scheduling policy.
-
-Runtime and VerificationService accept `execution_backend=` injection. The
-existing native registry is the default and needs no Docker dependency. The M9
-Docker registry remains an optional adapter transport: the local backend runs its
-bridge, while the existing transport applies worker cgroups and mount isolation.
-`VRUN_BACKEND=native|docker` selects that existing tool transport, not a new DSL
-directive or an infrastructure-backend name. This preserves the already qualified
-Linux reproduction rather than rolling it back.
-
-Local enforces wall timeout and owned-process-group TERM/KILL cleanup. CPU and
-per-execution memory requests are **metadata only**. Runtime applies aggregate
-sampled RSS policy using backend metrics; samples can miss spikes. With the Docker
-bridge these local samples cover the bridge tree, not the verifier container;
-worker cgroup state is separate evidence. `backend-outcome.json` reports these
-guarantees explicitly. Attempt records include backend identity and metrics, while
-`execution-spec.json` stores requests and an allowlisted environment receipt.
-
-A future **KubernetesExecutionBackend** would map an already selected spec to a
-Job/Pod, stage the workspace, return artifacts to it, enforce requested resources,
-and own startup/cancel/cleanup races. Startup must return ownership without waiting
-indefinitely for a scheduled workload. It must execute the qualified tool identity
-in spec metadata, or report failure; silently changing toolchains/system headers
-would invalidate evidence and caching. Remote staging, environment qualification
-and lifecycle implementation remain future work. Verification DSL, Logical IR,
-optimizer interfaces, physical-plan semantics, registry and basic adapter contract
-remain unchanged. Kubernetes-specific settings belong to backend configuration,
-never RunPlan or the verification DSL. **Kubernetes is intentionally out of scope
-for M0–M7**, and no Kubernetes implementation, manifests or deployment dependencies
-are introduced in this follow-up.
-
-## Verdict and execution status
-
-Verdict: SAFE (proved property), UNSAFE (property violation), UNKNOWN
-(insufficient evidence), CONFLICT (opposing definitive evidence).
-
-ExecutionStatus: COMPLETED, TIMEOUT, CANCELLED, ERROR, OOM, START_FAILED.
-COMPLETED/UNKNOWN and TIMEOUT/UNKNOWN are valid combinations. Only
-COMPLETED attempts may contribute definitive evidence. Conflicting completed
-evidence yields CONFLICT; there is no majority vote. Confirmations count distinct
-verifier families, not repeated runs or versions of the same verifier.
-
-A VerificationTask is immutable and reusable. An ExecutionAttempt is one
-particular invocation, with its own identity, version, argv, timing, exit code,
-status, verdict, termination reason, and evidence. VerificationResult reconciles
-attempts and evaluates requirements; it does not hide unsuccessful attempts.
-
-## Identity and evidence
-
-The semantic key hashes the program's logical paths and content hashes, source
-translation-unit list, language, entry, property, semantics and requirements.
-Task labels, budgets and tool choices do not change the proposition. Tool version
-and configuration belong to provenance and tool-specific artifact validity.
-Local source dependencies must be snapshotted or rejected, never read live after
-task creation. System headers are part of the recorded verifier environment.
-
-The initial cache is exact. UNKNOWN, CONFLICT, timeout, cancellation and errors
-cannot supply definitive cache hits. Evidence must remain linked to its original
-execution and input snapshot. Resource enforcement on a portable subprocess
-backend is best effort, not a claim of cgroup-level isolation.
-
-## M0 API review
-
-YES: logical records depend only on semantic inputs; execution records explicitly
-separate verdict, lifecycle, task and attempt identity. Physical operators belong
-in a separate plan module. One adapter protocol and one optimizer interface are
-sufficient; no plugin framework or speculative proof-reuse abstraction is needed.
-
-## M1 review
-
-YES: strict schema rejects physical directives; the parser needs no verifier.
-Program content is captured before execution; local quoted headers participate
-in identity, while macro/absolute/symlink includes are rejected when replay is
-unsupported. The IR supports multiple translation units. `memory_safety` is a
-valid proposition but must be filtered out by adapters lacking that capability.
-
-## M2 review
-
-YES: tool-specific flags and result interpretation live only in adapters; the
-registry performs capability lookup. Actual command, version, output, and exit
-code were retained during smoke verification. Installed backends run real tests;
-missing backends explicitly skip only integration tests. No runtime fake backend
-or DSL tool directive was introduced.
-
-## Execution lifecycle
-
-```mermaid
-stateDiagram-v2
-    [*] --> Pending
-    Pending --> START_FAILED: preparation or spawn error
-    Pending --> Running: compatible tool and budget admission
-    Running --> COMPLETED: normal recognized termination
-    Running --> ERROR: abnormal exit or malformed result
-    Running --> TIMEOUT: wall deadline
-    Running --> OOM: aggregate sampled RSS exceeds budget
-    Running --> CANCELLED: user cancellation or requirements satisfied
-    COMPLETED --> Reconcile
-    ERROR --> Reconcile
-    TIMEOUT --> Reconcile
-    OOM --> Reconcile
-    CANCELLED --> Reconcile
-    START_FAILED --> Reconcile
-    Reconcile --> [*]
+```python
+from veriruntime.execution import LocalExecutionBackend
+from veriruntime.service import VerificationService
+service = VerificationService(".veriruntime", execution_backend=LocalExecutionBackend())
 ```
 
-Sequence falls back until requirements are met or budget is exhausted. Parallel
-starts backend executions, subject to one global concurrency bound even in nested
-plans. Every batch of completed attempts is reconciled before early cancellation.
-For one confirmation, an unfinished peer may be cancelled; only observed completed
-evidence can be checked for conflict. Requiring two confirmations keeps peers
-running. A conflict overrides all counts.
+当前只有 POSIX `LocalExecutionBackend`。产品 subprocess、PID 与进程组操作集中在 `execution/local.py`；探测与编译驱动使用同一实现边界，内层命令继承外层监督的进程组。wall timeout 从启动开始计时，TERM 后升级 KILL，正常退出也清理组内残留并回收父进程。主动逃离进程组的进程在本地保证范围外。
 
-POSIX processes have independent sessions; termination signals the whole process
-group, escalates to SIGKILL, and reaps the direct process. A process that deliberately
-escapes the group is outside this portable backend's isolation guarantees. Sampled
-RSS includes active verifier trees, but can miss short spikes, does not limit virtual
-memory or CPU, and is not strict memory isolation. No BenchExec/cgroup claims apply.
+Local 的 CPU / 每执行 memory request 仅为 metadata；Runtime 实施 aggregate sampled RSS 策略，可能漏掉尖峰。指标覆盖本地进程树；Docker 模式下它们覆盖桥接树，不能当作工具容器用量。Docker worker 的硬 cgroup 限额与 OOM 状态是另一条证据。未提供指标以 null / unavailable 报告。
 
-## M3 review
+`VRUN_BACKEND=native|docker` 选择既有 tool transport；`execution_backend=` 选择基础设施执行对象，两者不同。原生模式无需 Docker；本机 Windows 使用已有 Linux 控制容器和可选 Docker adapter transport。
 
-YES: physical operators are typed AST nodes; the interpreter depends on adapter
-interfaces, never tool names. Cancellation and failures yield UNKNOWN attempts,
-and reconciliation counts distinct families. Tests exercise real concurrency and
-process-group cleanup, and a real two-verifier SAFE cross-check. Raw inputs, plans,
-events, timing and attempt records are retained before the SQLite layer arrives.
+每次尝试保存 execution-spec.json、backend-outcome.json、命令、原始输出和 attempt；spec 环境回执只保留白名单，避免复制宿主无关凭证。后端状态不成功或清理失败，即使输出包含 SAFE，也不能贡献确定证据。
 
-## Physical optimizer and workflow scheduler
+未来 KubernetesExecutionBackend 需要实现 workspace staging / 回收、环境资格验证、准确工具身份、资源保证和启动取消竞态；不能静默替换工具链或系统头文件。start 应返回已拥有资源的 handle，wait 负责等待执行。集群专有配置属于 backend 对象 / 部署配置，不进入 DSL 或 Physical Plan。当前没有 Kubernetes、manifest、Helm 或分布式调度实现。
 
-`optimize(LogicalPlan, RuntimeContext) -> OptimizationResult` produces one physical
-plan per fixed goal. Candidates are filtered by availability, language, property,
-C standard/data model and memory estimate. The initial cost heuristic ranks by a
-smoothed definitive rate divided by historical median time, with version/config
-scoped priors. Memory estimates and max_parallel pack candidates into parallel
-stages; sequential fallback stages receive time slices under the global deadline.
-Infeasible trust requirements remain explicit and yield UNKNOWN, never a lowered
-confirmation count. Hints are recorded and currently ignored.
+<a id="adapter"></a>
 
-`VerificationService.verify(VerificationWorkflow | VerificationTask)` is the future
-LLM boundary. The thin DAG scheduler executes ready goals sequentially and checks
-explicit required predecessor results. Each ready goal is independently optimized
-and executed via `Runtime.execute_goal`. Blocked successors receive structured
-`dependency_not_satisfied` feedback. No workflow-level theorem verdict is inferred.
+## Adapter 与扩展
 
-## M4 review
+adapter 负责探测、声明能力、接受固定目标、物化快照、生成无 shell 插值的 argv、解析终端记录和收集工件，不负责组合策略。保持命题等价的编译展开允许执行，例如 CPAchecker / Ultimate 的 assert macro 与 reachability property；生成头文件、属性及预处理命令必须保存。
 
-YES: optimizer replacements need only the optimize interface. Tool adapters do
-not receive semantic planning authority. Real history is persisted in SQLite and
-influences candidate ordering. Plans honor memory estimates, concurrency and
-confirmation opportunity; runtime enforces the shared wall deadline and records
-uncertainty. Single goals and explicit control DAGs use the same per-goal engine.
-
-## Per-goal cache validity and provenance
-
-SQLite persists workflows, logical tasks, executions with both plans and optimizer
-decisions, attempts, results, runtime statistics, artifact references and cache
-entries. Raw stdout/stderr, argv/environment, input snapshots, events and result
-JSON are content-addressed immutable files. A cache hit records a new execution
-with zero attempts and a link to the source execution; history is never fabricated.
-
-Cache validity requires exact semantic goal identity (including requirements),
-a completed definitive source result, enough matching distinct verifier families,
-nonempty version/config provenance, no opposing completed attempt, and all original
-artifact hashes still intact. Unknowns, conflicts and unsuccessful attempts never
-contribute cache evidence. Labels, hints, budgets and physical plan identity are
-excluded from the semantic key. Tool-specific artifacts record version/config;
-they are stored as evidence and are not reused as solver inputs across versions.
-The cache format carries its own contract version and must be advanced if evidence
-interpretation changes. Workflow-level caching and partial confirmation reuse are
-not implemented. Clearing cache deletes selected entries only, not artifacts/history.
-Opposing completed evidence in the same exact goal's history also yields CONFLICT
-and evicts a previous definitive cache entry. Clearing cache cannot erase this
-recorded disagreement; it remains auditable in execution history.
-Cache revalidation also compares stored logical/result metadata and per-attempt
-provenance against their immutable JSON artifacts, so a metadata count or family
-change cannot fabricate a confirmation. M7 advanced the cache contract to v2 after
-qualifying ESBMC's unwinding property-table classification.
-
-## M5 review
-
-YES: the physical optimizer emits CacheLookup with an auditable fallback; execution
-revalidates evidence before returning a hit. Cache-disabled operation remains valid.
-Source execution and all evidence stay linked to the immutable logical snapshot.
-Tests verify zero verifier starts on a hit, strict requirements, corruption misses,
-conflict exclusion and scoped deletion.
-
-## EXPLAIN and structured feedback
-
-EXPLAIN separates the supplied Logical Workflow from optimized Physical Execution
-for each goal. Candidate filtering, scores, history, hints, resource packing, cache
-state and fallback plans are machine-readable. `--analyze` executes and presents
-attempts, verdict/status, timing, versions, termination, artifacts and source
-provenance. An explain-only call launches no verifier execution (version/help
-discovery probes may still run). Goals with dependencies are optimized again when
-ready because history/cache can change while predecessors execute.
-
-EventLog emits structured append-only JSONL independently of the CLI renderer.
-SQLite `history` and `show` expose real execution records; cache-hit show also
-includes original source provenance. Unknown results provide codes for filtering,
-timeouts, insufficient unfolding, memory limits, errors and unmet dependencies.
-
-## M6 review
-
-YES: user-facing rendering is separate from structured internal events; EXPLAIN
-does not conflate the supplied logical workflow and generated physical plans.
-The demo asserts a real UNSAFE miss followed by a hit with zero attempts. Demo
-cache clearing is scoped to known example keys and retains all other data.
-
-## Adapter contract and compilation layer
-
-An adapter detects/version-probes its real CLI, declares capabilities, accepts a
-fixed task, materializes its snapshot, builds argv without shell=True, parses
-recognized terminal records and collects evidence. It has no permission to select
-other goals, create assumptions or interpret a predecessor as a proof of its input.
-Equivalent syntax/property elaboration is permitted: CPAchecker's assertion macro
-and reachability specification preserve the same assertion obligation. Generated
-inputs/configs and preprocessing/verifier argv are retained as artifacts.
-
-Adding Ultimate requires an adapter/profile and registration, not a DSL change.
-A learned optimizer replaces the optimize interface without modifying adapters.
-The service remains operational with no LLM, with cache disabled, or with one
-compatible verifier. An upstream planner can submit new workflows after UNKNOWN;
-M8 adds an optional Codex-backed upstream planner. The runtime itself does not call
-an LLM, and an HTTP server remains unimplemented.
-
-## M7 final architecture review
-
-YES: single-task shorthand and multi-goal control DAGs share one fixed-goal API.
-The optimizer never creates subgoals. No runtime/optimizer/cache code branches on
-backend names, and test fixtures are confined to tests. Three genuine tools were
-qualified with real safe/unsafe runs and multi-source examples. Cross-checks require
-two distinct matching families. Opposing completed evidence returns CONFLICT.
-Verdict/status and task/attempt remain separate. All real launches record versions,
-outer argv, and any compilation-layer argv. Exact cache validation excludes
-incomplete evidence and requires intact, consistent provenance. The actual demo
-and three-family mini benchmark verify the intended semantic-transparent behavior.
-
-## M8 upstream semantic planner and bounded experiments
-
-`veriruntime/planner/` composes the public VerificationService API; runtime,
-optimizer, cache and adapters do not import or invoke it. CodexPlanner manages a
-real CLI process, stdout JSONL/final JSON, usage, deadlines, cancellation and group
-cleanup. ExperimentRunner owns explicit planning rounds, candidate validation,
-feedback handoff and bounded stopping. Neither model output nor rationale is
-treated as verifier evidence.
-
-The bridge starts with existing fixed goals as an input manifest. Captured files
-are copied into a stable allowlisted namespace. Every generated goal must keep
-one complete supplied source set, entry, property and C semantics; each input is
-covered once. Confirmation requirements cannot decrease; caller budgets cannot
-increase. The versioned workflow DSL validates the actual submitted document,
-including its DAG. Unsupported semantic edits must be authored as new explicit
-inputs outside this first bridge. Logical dependencies are proposed upstream and
-recorded; the service only obeys them.
-
-After unresolved results a new, recorded Codex invocation receives goal_id,
-status, verdict, confirmations, diagnostics, artifacts and optimizer summaries.
-An unchanged workflow is stopped before another verification; CONFLICT is returned
-for review, and bounded rounds prevent an unending replanning loop. Model failure,
-malformed output or an invalid workflow starts no verification for that proposal.
-Completed refers to satisfying submitted goal trust requirements, not proving that
-the user request has been formalized correctly. Natural-language interpretation
-and unbounded invariant/decomposition generation remain research scope.
-
-The configured sol default is selected without changing user settings or storing
-credentials. CLI per-call overrides disable tools/plugins/user MCP, and the child
-uses a read-only sandbox; unexpected model tool actions reject the proposal. Only
-the host runtime starts actual verifier commands. Experiment records and Codex
-messages are separate from semantic proof/cache evidence. See
-[llm-experiments.md](llm-experiments.md) for real acceptance and limits.
+加入新工具需要 adapter、profile 和注册，不需要把工具名写进 DSL。上层 planner 的 proposal 先通过完整语义校验，再调用 VerificationService；模型解释不是证明证据。独立 proof_check 也使用相同 backend 生命周期，具体 DSL 和完整 C / VC / Rocq 设计在 [高级验证](advanced.md)。

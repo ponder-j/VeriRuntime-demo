@@ -20,7 +20,7 @@
 <div class="facts" id="facts"></div>
 <section class="card"><div class="caption"><h2>03 / 实际尝试与结论</h2><small id="execution-id"></small></div><div class="table-wrap"><table><thead><tr><th>目标 / 工具</th><th>进程状态</th><th>逻辑结论</th><th>确认家族</th><th>耗时</th><th>版本 / 配置指纹</th></tr></thead><tbody id="attempts"></tbody></table></div><details id="commands"><summary>查看执行后端、原生命令与容器记录</summary><pre class="code-box" id="command-data"></pre></details><p class="source-note muted" id="evidence-note"></p></section>
 <div class="two-bottom"><section class="card"><h2>04 / 实际事件日志</h2><div id="events"></div></section><section class="card"><h2>执行边界</h2><ul class="list"><li>每次尝试创建独立容器，只挂载当前工作目录；验证器不能访问其他尝试、SQLite 或 Docker socket。</li><li>工具以 UID 10001 执行；根文件系统只读、禁网、移除 Linux capabilities，临时目录与 HOME 独立。</li><li>当前按 <code>memory_mb / max_parallel</code> 保守划分容器内存；禁止额外 swap，每个工具限制 1 CPU。</li><li>发现相反确定证据返回 CONFLICT；超时、错误、不足展开和不支持属性返回 UNKNOWN。</li><li>控制容器持有 Docker socket，仅用于本机可信 CLI。页面回放不会调用它。</li></ul></section></div>
-<footer><span id="receipt"></span><span>原始证据保留在 Docker 数据卷 · <a href="linux-docker.md">复现与验收说明</a></span></footer>
+<footer><span id="receipt"></span><span>原始证据保留在 Docker 数据卷 · <a href="../README.md">主线使用手册</a></span></footer>
 </main>
 <script id="evidence" type="application/json">__DISPATCH_EVIDENCE__</script>
 <script>

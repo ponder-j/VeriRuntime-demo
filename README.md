@@ -1,305 +1,133 @@
-# VeriRuntime
+# VeriRuntime — 主线使用手册
 
-VeriRuntime is a **declarative multi-verifier execution runtime**. Upper layers
-specify what to verify; VeriRuntime decides how to execute a fixed proof obligation.
-The prototype runs real C verification with CBMC, ESBMC and optional CPAchecker,
-records provenance, and can replace a verifier plan with a semantic cache lookup
-without changing the request.
+从这一份开始：**理解框架 → 跑通例子 → 接入自己的代码 → 按需查详细资料**。首次使用不需要阅读阶段报告，也不需要 LLM、Rocq 或集群环境。
 
-It is not a new verifier, a CBMC/CPAchecker replacement, an LLM agent, or a simple
-command wrapper. Its subject is logical/physical separation, automatic portfolio
-planning, scheduling, trust requirements, evidence storage and transparent caching.
+<a id="framework"></a>
+
+## 1. 框架解决什么问题
+
+VeriRuntime 接收上层写好的验证目标，用多个真实验证器执行，记录证据，并在目标和环境完全匹配时复用缓存。它负责调度，不替上层修改命题、添加假设或编写证明。
+
+| 层 | 负责什么 |
+|---|---|
+| 人 / 上层 LLM | 给出源码、属性、语义、证据要求和预算：要证明什么 |
+| VeriRuntime | 选工具，安排并行 / 顺序 / 回退，控制预算，核验缓存，归并结果 |
+| ExecutionBackend | 执行已经选好的命令，处理等待、取消、指标和清理：当前是 LocalExecutionBackend |
+
+一次请求经过这条路径：
 
 ```mermaid
-flowchart TD
-    User[User / natural-language requirement] --> LLM[Upstream LLM Semantic Planner]
-    LLM --> Workflow[Logical Verification Workflow: fixed goals and dependencies]
-    DSL[Single-task or Workflow JSON DSL] --> Workflow
-    Workflow --> IR[Logical Workflow IR]
-    IR --> Opt[Per-Goal Physical Optimizer]
-    Registry[Tool Registry and History] --> Opt
-    Cache[Per-Goal Semantic Cache] --> Opt
-    Opt --> Plans[Physical Plan ASTs]
-    Plans --> Runtime[Workflow Scheduler and Goal Runtime]
-    Runtime --> Backend[ExecutionBackend: LocalExecutionBackend]
-    Backend --> Tools[CBMC / ESBMC / CPAchecker]
-    Tools --> Store[Results, Artifacts and Provenance]
-    Store --> Cache
-    Store --> Registry
-    Store --> Feedback[Structured Results and Diagnostics]
-    Feedback -. explicit upstream replanning .-> LLM
+flowchart LR
+    DSL[上层 JSON DSL] --> Goal[校验与源码快照]
+    Goal --> Plan[优化器生成物理计划]
+    Plan --> Cache{核验缓存}
+    Cache -->|命中| Result[证据与结果]
+    Cache -->|未命中| Runtime[调度器与执行后端]
+    Runtime --> Tools[adapter 与真实验证器]
+    Tools --> Result
 ```
 
-**LLM decides WHAT SHOULD BE PROVED. VeriRuntime decides HOW A FIXED PROOF
-OBLIGATION SHOULD BE EXECUTED.** An optional Codex planner and bounded experiment
-runner live upstream in `veriruntime/planner/`. Runtime never adds assumptions,
-invariants or lemmas, weakens a property, or creates subgoals after UNKNOWN.
+上层 DSL 只写目标和要求，不指定 CBMC / ESBMC，不写 Parallel / Sequence。优化器生成这些物理执行细节。默认 C 验证路径使用 CBMC、ESBMC，CPAchecker 可选；本机通过 Docker Linux 隔离每次工具尝试。
 
-## Docker Linux on Windows / Linux
+<a id="example"></a>
 
-The demo now runs on Docker Desktop's Linux amd64 engine with a small control
-container and a fresh isolated container for each verifier attempt. Default builds
-use CBMC 6.11.0 and ESBMC 8.5.0; CPAchecker 4.2.2 / Java 21 is optional and also
-qualified on Linux. No verifier services or web server stay running.
+## 2. 先跑通一个例子
+
+本机已有镜像。在 PowerShell 7 中执行：
 
 ```powershell
-# PowerShell 7; build, run regression tests, and export real acceptance evidence
-./scripts/docker-demo.ps1
-# This host's Docker DNS needs the per-build workaround:
-./scripts/docker-demo.ps1 -BuildDns 1.1.1.1
-# Optional third family (larger Java/Clang image)
-./scripts/docker-demo.ps1 -WithCPAchecker -BuildDns 1.1.1.1
-# Existing images: repeat fresh-store acceptance without downloading/building
-./scripts/docker-demo.ps1 -WithCPAchecker -SkipBuild
+Set-Location C:\Codes\VeriRuntime
+pwsh -NoProfile -File scripts/quickstart.ps1
 ```
 
-```sh
-docker compose build runtime cbmc esbmc
-docker compose run --rm runtime doctor
-docker compose run --rm runtime verify examples/tasks/unsafe_assert_crosscheck.json --data-dir /data/my-demo --explain
-docker compose run --rm runtime verify examples/tasks/unsafe_assert_crosscheck.json --data-dir /data/my-demo --explain
-```
+脚本会检查工具、校验 DSL，在新的数据目录验证同一个目标两次，打印物理计划，并检查：**首次 SAFE 且至少两个家族确认；第二次缓存命中、实际验证次数为 0**。结果保存到 `.veriruntime/quickstart/latest.json`，原始证据保留在 Docker 数据卷里。它不会清空其他实验或缓存。
 
-Each worker has its own filesystem mount, HOME, temporary directories, process
-namespace and cgroup memory limit. It runs without network or Linux capabilities,
-with a read-only root filesystem and no access to the result store or Docker
-socket. Evidence cache hits now require the current tool family, version and
-configuration identity to match; Docker identities include the exact image ID.
-
-Open the offline [DSL dispatch explorer](docs/runtime-explorer.html) for real
-Linux records, JSON requests, generated plan ASTs, scheduling steps and commands.
-The [interactive overview](docs/dispatch.html) shows the complete path and cache
-shortcut. See [Linux Docker reproduction and acceptance](docs/linux-docker.md)
-for architecture, resources, evidence locations and current limits.
-
-## Optional verifier experiments and Rocq proofs
-
-The optional lab adds Ultimate Automizer and Frama-C Eva to the C portfolio,
-compares bounded loops, and runs Frama-C WP separately with Z3 and CVC5. Each
-attempt uses the same Docker isolation. These larger images are built only when
-requested by the lab script; the default runtime remains unchanged.
+新环境没有镜像时，先执行下面一条，再运行 quickstart。本机的 `-BuildDns` 参数用于构建时的 DNS 绕行；网络正常时可省略。
 
 ```powershell
-./scripts/verifier-lab.ps1 -BuildDns 1.1.1.1
-./scripts/verifier-lab.ps1 -SkipBuild
-docker compose run --rm runtime check-proof examples/proofs/check.json --json
+pwsh -NoProfile -File scripts/docker-demo.ps1 -BuildDns 1.1.1.1
 ```
 
-`check-proof` accepts an existing Rocq statement and proof supplied by a human or
-LLM. It compiles the modules, binds the supplied proof to the declared proposition,
-audits assumptions and independently rechecks compiled libraries. This result
-does not count as a C verifier confirmation. The complete Frama-C VC / Rocq / C
-coverage bridge is a proposed extension. See [the real experiment results and
-DSL design](docs/strong-verification.md), [the strong-proof scheduling diagram](docs/strong-verification.html)
-and [the recorded lab evidence](docs/verifier-lab.json).
+环境要求、可选 CPAchecker 和原生 macOS 路径见 [部署与运维](docs/operations.md#install)。
 
-## Native macOS quick start
+### 例子要证明什么
 
-Python 3.11+ is required. The pinned bootstrap is tested on macOS ARM64 Tahoe
-with Command Line Tools (`clang`, `xcrun`) and Homebrew. CPAchecker additionally
-requires Java 21+; the development host uses Java 24. Tools and libraries install
-inside the repository, with no sudo and no system package upgrades.
+[safe_assert.c](examples/c/safe_assert.c) 将 x 增加十次，然后断言 x 等于 10：
 
-```sh
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[dev]'
-./scripts/bootstrap_verifiers.sh             # CBMC + ESBMC and native dependencies
-./scripts/bootstrap_verifiers.sh --cpachecker # optional third verifier
-vrun doctor
-vrun validate examples/tasks/unsafe_assert.json
-vrun verify --explain examples/tasks/unsafe_assert.json
-vrun verify --explain examples/tasks/unsafe_assert.json
+```c
+#include <assert.h>
+int main(void) {
+    int x = 0;
+    for (int i = 0; i < 10; ++i)
+        x++;
+    assert(x == 10);
+    return 0;
+}
 ```
 
-The first verify shows CACHE MISS and a generated plan such as parallel CBMC /
-ESBMC with a CPAchecker fallback when installed. It returns UNSAFE. The second
-shows CacheLookup, CACHE HIT and **verifier executions: 0**. Discovery still uses
-version/help probes; zero executions means no verification command was started.
-SAFE/UNSAFE are distinct from process status, and UNKNOWN is an honest outcome.
-
-For native Linux without the container transport, install official tools and put them in PATH or set `VRUN_CBMC`,
-`VRUN_ESBMC`, `VRUN_CPACHECKER` to executable paths. The original native bootstrap
-still targets macOS; Windows uses Docker Linux process supervision. See [verifier support](docs/verifier-support.md)
-for versions, CLI qualification, installation sources and configuration limits.
-`verifiers.lock.json` pins archive hashes. If Homebrew has moved to a new formula
-version, its archive is rejected rather than silently replacing the pinned tool;
-use the fixed official archive URL or deliberately update and requalify the lock.
-
-## Declarative DSL and workflows
+对应的上层请求是 [safe_assert_crosscheck.json](examples/tasks/safe_assert_crosscheck.json)：
 
 ```json
 {
   "version": "0.1",
-  "task": {"id": "unsafe-assert", "language": "C", "entry": "main", "sources": ["../c/unsafe_assert.c"]},
+  "task": {
+    "id": "safe-assert-crosscheck", "language": "C", "entry": "main",
+    "sources": ["../c/safe_assert.c"]
+  },
   "property": {"kind": "assertion_safety"},
   "semantics": {"c_standard": "c11", "data_model": "LP64"},
-  "requirements": {"min_confirmations": 1},
+  "requirements": {"min_confirmations": 2},
   "budget": {"wall_time_sec": 30, "memory_mb": 2048, "max_parallel": 2}
 }
 ```
 
-Source paths resolve relative to the JSON file. The strict schemas reject tool
-names, run/parallel/sequence operators, strategy directives and unknown fields.
-The source snapshot includes all translation units and recursive literal local
-headers. Macro/absolute/symlink includes, environment-dependent predefined macros
-and nonstandard dependency syntax are rejected when faithful replay is unsupported.
-System headers belong to the recorded verifier/toolchain environment.
+`sources` 相对 JSON 文件解析；`min_confirmations=2` 要求两个不同验证家族一致；预算允许最多两个工具并行。验证器顺序由运行时决定。SAFE 只针对提交的断言与 C 语义，并非自动证明任意自然语言需求。
 
-`min_confirmations: 2` means two distinct verifier families must agree. It never
-specifies their names or order. Opposing definitive evidence returns CONFLICT,
-without a majority vote. Optional semantic hints are recorded as preferences and
-currently ignored; they neither change correctness assumptions nor the cache key.
+### 手动执行同样的过程
 
-A single task is a one-node `VerificationWorkflow`. The workflow form contains
-goals with their own properties, semantics, requirements and budgets, plus explicit
-dependencies. See [the small workflow](examples/tasks/assertion_workflow.json): G1
-proves the safe program; G2 checks the independent unsafe program after G1 is SAFE
-with its required confirmations. There is no theorem composition or assumption
-propagation. Failed dependencies produce BLOCKED/UNKNOWN with structured feedback.
-Ready goals run sequentially; verifiers within each goal may run in parallel.
+如果想逐步观察，复制下面整段。随机目录保证首次请求有独立的缓存与历史：
 
-## Commands and live demo
-
-```sh
-vrun parse examples/tasks/unsafe_assert.json
-vrun explain examples/tasks/unsafe_assert.json
-vrun explain --analyze examples/tasks/unsafe_assert.json
-vrun verify examples/tasks/unsafe_assert_crosscheck.json
-vrun verify examples/tasks/safe_assert_crosscheck.json
-vrun verify examples/tasks/assertion_workflow.json
-vrun verify --no-cache examples/tasks/safe_assert.json
-vrun history
-vrun show <execution-id>
-vrun cache clear examples/tasks/unsafe_assert.json
-./scripts/demo.sh
-./scripts/run_mini_benchmark.sh
-./scripts/run_mini_benchmark.sh --confirmations 3 # after installing all three
-pytest -q
+```powershell
+$demoDir = "/data/quickstart-" + [guid]::NewGuid().ToString("N")
+docker compose run --rm runtime validate examples/tasks/safe_assert_crosscheck.json
+docker compose run --rm runtime verify examples/tasks/safe_assert_crosscheck.json --data-dir $demoDir --explain
+docker compose run --rm runtime verify examples/tasks/safe_assert_crosscheck.json --data-dir $demoDir --explain
+docker compose run --rm runtime history --data-dir $demoDir --limit 5
 ```
 
-EXPLAIN displays the supplied Logical Workflow and generated per-goal Physical
-Execution separately. ANALYZE adds real attempt status/verdict, wall time, tool
-version, termination, cache source and artifacts. `--json` provides machine-readable
-output for doctor, tools, explain, verify, history and show. `--data-dir PATH`
-selects an isolated store. CLI exit 0 means the operation completed; inspect the
-verdict/requirement_satisfied fields to distinguish SAFE, UNSAFE and UNKNOWN.
-Invalid requests or access errors exit 2. SIGINT/SIGTERM request supervised cleanup.
+第一次关注 `Physical Plan`、`CACHE MISS`、`SAFE`、`confirmations=2` 和 `verifier executions: 2`；第二次关注 `CacheLookup`、`CACHE HIT` 和 `verifier executions: 0`。实际工具计划可能带有可选回退。版本 / 能力探测仍可能运行，零验证执行指没有启动新的证明命令。
 
-The demo uses `.veriruntime/demo/`, clears only known example cache keys, validates
-the first real UNSAFE run and its zero-attempt cache hit, checks SAFE and two-family
-cross-checks, then inspects history and provenance. It retains a machine-readable
-`demo-record.json`. The benchmark stores JSON/CSV results and real history in
-`.veriruntime/benchmark/`. Six small cases cover assertions, a loop, a branch, an
-array and arithmetic. Requesting three confirmations explicitly exercises all
-three installed families through the optimizer; no tool names enter the DSL.
+脚本结束还会打印可直接复制的 `show` 命令，用于查看本次执行的来源和工件。更多命令、证据位置及错误排查见 [部署与运维](docs/operations.md#commands)。
 
-## Codex semantic planning and experiments
+<a id="own-code"></a>
 
-An optional upper layer automatically launches `codex exec` using the configured
-sol model (fallback `gpt-6.1-sol`). It reuses existing CLI authentication and provider
-configuration. The tested CLI is 0.157.1. Planner calls use structured JSON output,
-read-only sandboxing and ephemeral sessions; shell, subagent, app/plugin, web search
-and configured user MCP capabilities are disabled for the child invocation only.
-The host validates the resulting Workflow before starting real verification.
+## 3. 换成自己的目标
 
-```sh
-vrun plan examples/tasks/assertion_workflow.json \
-  --request 'Check both existing assertion goals; run the second only after the first is SAFE.'
-vrun experiment examples/tasks/assertion_workflow.json \
-  --request 'Check both existing assertion goals; run the second only after the first is SAFE.' \
-  --max-rounds 2
-./scripts/run_llm_experiment.sh
-```
+1. 把 C 源码放入 `examples/c/`，写好要检查的 `assert`。
+2. 复制示例 JSON 到 `examples/tasks/`，修改 `task.id` 与 `task.sources`；按需调整预算和确认数。
+3. 使用相同的 `validate` / `verify` 命令运行新的 JSON，数据目录仍放在 `/data/` 下。
 
-`plan` produces a reloadable `workflow.json` and starts no verifiers. `experiment`
-executes it, sends structured feedback to a new Codex process after UNKNOWN or
-blocked goals, and stops on satisfied goal requirements, an unchanged workflow,
-conflicting evidence, an error, cancellation, or the round limit (default 2, max 8).
-`--request-file`, `--model`, `--planner-timeout`, `--data-dir`, `--no-cache` and
-`--json` are available. Model/planning errors are separate from verifier verdicts.
+多文件 C 输入可以列在 `sources` 中。多个固定目标需要先后执行时，参考 [工作流示例](examples/tasks/assertion_workflow.json)：前置目标达到要求后才执行后续目标，当前不会传播假设或组合成新定理。
 
-This first bridge plans **existing, already instrumented C goals**. It covers each
-supplied input once, preserves source/entry/property/C semantics, cannot lower
-confirmations or exceed caller budgets, and can propose explicit control dependencies.
-It does not turn arbitrary natural-language specifications into proved C contracts,
-generate invariants/assumptions, or edit source code. A completed experiment means
-the submitted goals received sufficient definitive answers, which may include UNSAFE;
-it is not an automatic check that the natural-language request was formalized correctly.
-
-Request, immutable input copies, prompt, output schema, Codex argv/events/usage,
-proposal/rationale/limitations, validated workflow, execution and feedback are kept
-under `<data-dir>/experiments/<id>/`. Generated source paths use a stable input namespace;
-the exported DSL and actual execution share the same snapshot identity. Planner logs
-remain separate from verifier proof artifacts. The real experiment script creates a
-fresh store for every run, then checks two-family SAFE/UNSAFE, a zero-verifier cache
-repeat, and two UNKNOWN feedback rounds without weakening memory_safety.
-See [the M8 experiment record](docs/llm-experiments.md).
-
-## Python API / LLM boundary
-
-```python
-import asyncio
-from veriruntime.dsl import load_workflow, load_task
-from veriruntime.service import VerificationService
-
-service = VerificationService()
-workflow = load_workflow("examples/tasks/assertion_workflow.json")
-execution = asyncio.run(service.verify(workflow))
-# Single task API remains supported:
-goal = load_task("examples/tasks/safe_assert.json")
-execution = asyncio.run(service.verify(goal))
-```
-
-The upstream planner can consume goal_id, status, verdict, confirmations, artifacts,
-diagnostics, optimizer_summary and failure_reasons, then explicitly submit a new
-workflow. Feedback codes include timeout, insufficient_unwinding, out_of_memory,
-unsupported_property, no_compatible_tool, conflicting_verdict and verifier_error.
-Assumption/invariant authoring and an HTTP endpoint are future interfaces, not
-silently simulated features.
-
-## Layout and research scope
-
-| Path | Responsibility |
+| 结果 | 如何理解 |
 |---|---|
-| `veriruntime/model.py` | Fixed goals, workflows, immutable snapshots and evidence records |
-| `veriruntime/dsl/`, `schemas/` | JSON validation and logical IR loading |
-| `veriruntime/plan.py`, `optimizer.py` | Physical AST and replaceable cost heuristic |
-| `veriruntime/runtime/`, `service.py` | Goal execution, resource supervision and workflow dependencies |
-| `veriruntime/execution/` | Backend-neutral execution lifecycle and the current POSIX LocalExecutionBackend |
-| `veriruntime/tools/` | Registry and backend-specific compilation/output contracts |
-| `veriruntime/store.py`, `artifacts.py`, `cache.py` | SQLite provenance, content-addressed artifacts and exact goal cache |
-| `veriruntime/observability.py`, `cli.py` | Structured events and human/machine interfaces |
-| `veriruntime/planner/` | Optional upstream Codex process, logical validation and bounded feedback rounds |
-| `veriruntime/proofs/` | Strict upstream proof DSL, module/type binding and separate kernel-check evidence |
-| `examples/`, `scripts/`, `tests/`, `docs/` | Real programs, runnable experiments, regression tests and contracts |
+| SAFE | 在声明语义下，断言目标通过且达到确认要求 |
+| UNSAFE | 验证器发现目标违反，达到确认要求；查看反例工件 |
+| UNKNOWN | 证据不足，例如超时、展开不足、内存问题或不支持的属性 |
+| CONFLICT | 已完成的确定证据相互矛盾；不能通过多数投票消除 |
 
-This prototype explores declarative verification, logical/physical separation,
-automatic portfolios, scheduling, exact semantic caching and explainable evidence
-provenance. It makes no theoretical optimality or novelty claim. Natural research
-extensions are cost-based planning, adaptive scheduling, evidence-aware optimization,
-witness/invariant reuse, incremental verification and learned verifier selection.
+CLI 退出码 0 只表示操作完成。应同时看 `verdict`、`requirement_satisfied` 和 diagnostics。当前主路径验证 `assertion_safety`；`memory_safety` 虽能解析，但没有兼容 adapter。BMC 展开上限为 64，展开不足会返回 UNKNOWN。
 
-The execution backend is a separate infrastructure boundary. Runtime selects and
-schedules fixed verifier commands; `ExecutionBackend` owns start/wait/cancel,
-metrics and cleanup. The current `LocalExecutionBackend` uses POSIX process groups.
-CPU/memory requests are recorded; native RSS monitoring remains best effort.
-Existing Docker isolation stays optional. An infrastructure backend can be supplied
-to `VerificationService(..., execution_backend=backend)` without changing the DSL
-or optimizer. Kubernetes remains a future backend, with no implementation or
-deployment dependency added. See [Execution Backend Abstraction](docs/architecture.md#execution-backend-abstraction).
-The [M11 backend acceptance note](docs/execution-backends.md) records resource
-guarantees, injection API and regression/real-verifier validation.
+<a id="reference"></a>
 
-Current limits: exact per-goal cache only; no witness reuse, checkpoints, incremental
-proofs or dynamic CPU allocation. Native execution samples RSS; Docker workers
-have hard cgroup limits with conservative fixed per-attempt memory shares. The cost model is a small
-history heuristic, including selection/cancellation bias. BMC proofs require complete
-unwinding; loops beyond the configured bound return UNKNOWN. `memory_safety` parses
-as a logical property but currently has no compatible adapter. CPAchecker rejects
-floating-point inputs in its Java-solver configuration. Verification assumes
-well-defined C executions and trusts verifier implementations; certificates are
-not independently checked. See [architecture](docs/architecture.md) and
-[milestone reviews](docs/milestones.md) for boundaries and validation.
-The [M0–M7 delivery report](docs/delivery-report.md) records the actual versions,
-execution IDs, miss/hit and confirmation results, benchmark and final test counts.
+## 4. 需要时再跳转
+
+| 你想了解什么 | 只打开这一份 |
+|---|---|
+| DSL、逻辑 / 物理计划、缓存、调度、ExecutionBackend、代码入口 | [架构细节](docs/architecture.md) |
+| 安装、隔离、工具版本、CLI、数据目录、原生 macOS、测试和历史验收 | [部署与运维](docs/operations.md) |
+| Ultimate / Eva / WP 实验、Rocq 证明 DSL、上层 LLM、Frama-C + Rocq 集成设计 | [高级验证](docs/advanced.md) |
+
+需要看图时打开 [真实调度回放](docs/runtime-explorer.html)，可切换五个场景、查看八步调度、命令及后端记录；[流程全景](docs/dispatch.html) 提供整体视图。[强证明流程图](docs/strong-verification.html) 对应高级验证中的设计方案。
+
+当前 Rocq 能检查上层已写好的证明代码；完整的 C → Frama-C VC → Rocq → C 契约覆盖链仍未实现。Kubernetes 也仅预留后端接口。首次跑通例子不需要这些扩展。

@@ -87,7 +87,7 @@ def main():
     if sys.version_info < (3, 11):
         parser.error("Bootstrap requires Python 3.11+; create the project .venv first")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
-        parser.error("Pinned bootstrap supports macOS ARM64 Tahoe. On Linux install official releases and set VRUN_<TOOL>; see docs/verifier-support.md.")
+        parser.error("Pinned bootstrap supports macOS ARM64 Tahoe. On Linux install official releases and set VRUN_<TOOL>; see docs/operations.md#native.")
     lock = json.loads((ROOT / "verifiers.lock.json").read_text())
     toolchains = ROOT / ".veriruntime/toolchains"
     downloads = toolchains / "downloads"

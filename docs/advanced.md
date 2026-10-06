@@ -1,45 +1,39 @@
-# M10 — 新验证器实验与 Frama-C / Rocq 集成设计
+# 高级验证
 
-基础 Docker 复现节点为 `7cb58ed`。本节点增加 **Ultimate Automizer**、**Frama-C Eva** 的可调度 C adapter，并实测 **Frama-C WP + Z3 / CVC5**。另有可执行的 **Rocq 9.1.1 proof_check DSL**，检查上层提交的证明代码。
+[回到主线使用手册](../README.md) · 本页集中保留扩展实验、上层证明和未来集成设计。
 
-当前已实现的是新 C 家族实验和独立 Rocq 证明工件检查。**完整的 C → Frama-C VC → Rocq → C 契约结论闭包仍是下面的设计方案**；不会把独立数学命题证明通过或 SMT 求解成功包装成已经完成该闭包。
+<a id="lab"></a>
 
-打开 [强证明调度设计页面](strong-verification.html) 查看义务生成、等待上层补证、Rocq 检查及覆盖闭包的关系；[现有 DSL 调度回放](runtime-explorer.html) 展示当前可执行路径。真实实验记录见 [verifier-lab.json](verifier-lab.json)，包含实际计划、命令、镜像身份、原始报告和证明工件摘要。
+## 新验证器实验
 
-## 复现实验
+基础断言路径不要求这些镜像。需要实验时才构建 Ultimate、Frama-C、Rocq；已有镜像可直接复验：
 
 ```powershell
-# 已有基础镜像时，构建三个额外的可选镜像并运行实验
-./scripts/verifier-lab.ps1 -BuildDns 1.1.1.1
-# 本机已构建，可直接复验
-./scripts/verifier-lab.ps1 -SkipBuild
-
-# 新 C 工具显式启用；默认环境保持三个原工具
+pwsh -NoProfile -File scripts/verifier-lab.ps1 -BuildDns 1.1.1.1
+pwsh -NoProfile -File scripts/verifier-lab.ps1 -SkipBuild
 docker compose run --rm -e VRUN_EXPERIMENTAL_TOOLS=ultimate,framac runtime doctor
 docker compose run --rm -e VRUN_EXPERIMENTAL_TOOLS=ultimate,framac runtime verify examples/tasks/safe_assert_crosscheck.json --data-dir /data/extended --explain
-
-# 独立检查上层已经写好的 .v
 docker compose run --rm runtime check-proof examples/proofs/check.json --json
 ```
 
-归档来源、版本与 SHA-256 记录在 `docker/experiments.lock.json`。新工具沿用 M9 的独立容器、卷 subpath、禁网、只读根文件系统及硬内存限额。Frama-C 官方包中的 Electron GUI 已从最终镜像移除；Rocq 使用多阶段 release build，最终镜像不安装 OCaml 编译工具链或 GUI。它带 Corelib，并未安装完整 Stdlib / Why3-Rocq 支撑库。Rocq 编译器实际为 9.1.1 + OCaml 5.3.0；上游仍把 OCaml 5.x 支持标为实验性，当前仅记录本机已通过的检查，不承诺所有第三方库兼容。[Rocq 构建说明](https://github.com/rocq-prover/rocq/blob/V9.1.1/INSTALL.md)
+扩展工具沿用独立尝试容器与环境锁。Frama-C 官方包的 Electron GUI 已移除；Rocq 是多阶段 release build，运行镜像不装 OCaml 编译工具链或 GUI，仅带 Corelib。OCaml 5.x 上游仍标为实验性，不承诺所有第三方库兼容。[Rocq 构建说明](https://github.com/rocq-prover/rocq/blob/V9.1.1/INSTALL.md) 版本 / 镜像规模见 [运维工具表](operations.md#tools)。
 
-## 已完成的真实实验
+六个原基准以调用者显式请求的 `min_confirmations=1` 分别测试一个家族，运行时没有降低原双家族请求。单家族实验矩阵不能被解释为满足双确认要求。
 
-六个原基准以调用者明确给出的 `min_confirmations=1` 分别测试单家族；运行时没有降低原请求的确认数。实验脚本记录新请求、实际计划、尝试、原始输出和工件；不能把单家族矩阵解读为满足原来的双家族请求。
-
-| 实验 | 结果与含义 |
+| 实验 | 已完成的真实结果 |
 |---|---|
-| Ultimate 0.3.1 / 35a84365 | 六案例 4 SAFE、2 UNSAFE；产生真实反例 / witness。尚未用独立 witness checker 复查，因此归为 verifier_report |
-| Frama-C 33.0 Eva | 六案例 4 SAFE、2 UNKNOWN；可能警报不当作具体反例；只接受完整分析、零警报且所报告断言调用已验证的结果 |
-| 100 次循环 | CBMC / ESBMC 的固定展开 64 返回 UNKNOWN；Ultimate 约 35 秒给出 SAFE；Eva 约 1.2 秒给出 SAFE |
-| WP + Z3 4.13.3 | `square` 的四个 JSON 报告义务通过，包括返回值非负和有符号溢出保护；三个非 Qed 义务实际调用 Z3 |
-| WP + CVC5 1.1.2 | 同一固定契约及 RTE 义务，通过另一求解器的独立运行验证。仍共享 WP 编码，不能计成两个 C 验证家族 |
-| Rocq 正确代码 | 先编译上层模块，再做指定命题的类型绑定、假设审计和独立 `rocq check`；VERIFIED，`code_verdict=null` |
-| Rocq 证明别的命题 | `.v` 自身可以编译，但绑定失败；REJECTED / proof_type_mismatch |
-| Rocq Admitted | REJECTED / untrusted_axioms_or_extensions |
+| Ultimate 六案例 | 4 SAFE / 2 UNSAFE；有反例 / witness，尚未独立检查，归为 verifier_report |
+| Eva 六案例 | 4 SAFE / 2 UNKNOWN；仅完整、零警报且报告断言已证明时 SAFE；抽象警报不当作具体反例 |
+| 100 次循环 | CBMC / ESBMC 固定展开 64 返回 UNKNOWN；Ultimate 约 34 秒、Eva 约 1.5 秒 SAFE，耗时是本机测量 |
+| WP + Z3 / CVC5 | 两个独立运行各 4/4 报告义务通过，含返回值非负、有符号溢出与 assigns；非 Qed 义务实际调用求解器 |
+| Rocq 正确代码 | 编译、类型绑定、假设审计、内核复查后 VERIFIED，code_verdict=null |
+| Rocq 错配命题 / Admitted | 分别 REJECTED / proof_type_mismatch、REJECTED / untrusted_axioms_or_extensions |
 
-WP 的运行报告仍保留了 “Skipped RTE guards” 警告，当前标量例子没有指针相关操作。实验只声明所记录义务通过，不宣称该选项覆盖任意 C 程序的所有运行时错误。未证完、假设不满足或不支持的义务必须留在未完成清单中。WP 是针对 C 契约生成证明义务的平台，内存与算术模型属于其证明语境。[Frama-C WP 手册](https://www.frama-c.com/download/frama-c-wp-manual.pdf)
+WP 两次运行共享编码来源，不能计为两个 C 验证家族。报告保留 Skipped RTE guards 警告；当前 square 标量例子没有指针操作，只声明记录的义务通过，不宣称覆盖任意程序的所有运行时错误。WP 模型、算术与内存语义属于证明语境。[Frama-C WP 手册](https://www.frama-c.com/download/frama-c-wp-manual.pdf)
+
+实际计划、尝试、原始报告和工件摘要在 [verifier-lab.json](verifier-lab.json)。[强证明流程图](strong-verification.html) 展示下面的设计，**完整 C → Frama-C VC → Rocq → C 契约覆盖链尚未实现**；独立数学证明通过或 SMT 成功不代表闭包已完成。
+
+<a id="rocq-proof"></a>
 
 ## 可执行的上层证明 DSL
 
@@ -70,6 +64,8 @@ Definition bound_proof : required_statement := VRGoal.Correct.discharge.
 绑定不是新的证明。错误命题的证明无法赋给它。之后单独加载已编译模块，审计假设闭包，再由 `rocq check` 重新检查 Binding 及依赖库。当前原型采取严格闭合策略，拒绝用户 Axiom / Parameter / Admitted、外部 ML 扩展和关闭关键类型检查的代码；不加载 `.coqrc`，不复用输入 `.vo`。假设审计和编译库复查是不同检查，保留各自日志。[Rocq 命令说明](https://rocq-prover.org/doc/V9.1.1/refman/practical-tools/coq-commands.html)、[假设检查说明](https://rocq-prover.org/doc/V9.1.1/refman/proof-engine/vernacular-commands.html)
 
 检查结果位于 `/data/proofs/<execution_id>/`，有源快照、精确镜像身份、命题与证明符号、每条命令、编译对象、日志和 SHA-256 记录。此接口暂不加入 C 家族的确认计数，也不进入 C 结果缓存；`VERIFIED` 仅表示提交证明建立了提交命题。
+
+<a id="framac-rocq-design"></a>
 
 ## Frama-C + Rocq 应如何组合
 
@@ -132,16 +128,74 @@ Rocq 内核能减少对战术和搜索代码的信任，但 C 前端、WP 生成
 
 缓存应分别作用于 C goal、生成的 VC bundle、证明工件和最终覆盖结果。键至少包含源码 / 契约 / 语义、目标命题、完整覆盖集合、生成器与模型、Rocq / 依赖库身份、已核验的证明 digest 和信任策略。更改内存模型、加入假设、漏掉新义务或换用 solver_report 都不能命中 kernel_checked 结果；过期绑定必须重新生成反馈。
 
-## 验收与可视化回执
 
-完整 Linux 测试为 119 passed，包含真实 Rocq 类型绑定与拒绝检查。实验脚本完成 16 次 C 家族验证、3 次 Rocq 检查、2 次 WP 求解器运行，结束时没有遗留验证容器。证明进程中断或 JSON 报告截断返回 UNKNOWN，不能接受单独留下的 VERIFIED 字段。
+<a id="llm-planner"></a>
 
-```powershell
-docker compose run --rm --entrypoint python runtime -m pytest -q --basetemp=/data/tests-m10-final -o cache_dir=/tmp/pytest-cache
+## 可选上层 LLM planner
+
+原生环境需要已登录的 Codex CLI；轻量 Docker 镜像未安装它，也不复制账号认证。当前 bridge 只编排已有形式化目标，不生成任意源码 / 假设 / 不变式。
+
+
+
+M8 资格验证使用 Codex CLI 0.157.1、`gpt-6.1-sol`。实现读取现有 sol 配置，
+未配置 sol 时回退到这个模型；可显式 `--model`。沿用 CLI 认证及 provider 配置，
+不读取认证文件、不记录凭据，也不修改用户配置。
+
+```sh
+source .venv/bin/activate
+vrun plan examples/tasks/assertion_workflow.json \
+  --request '检查两个已有断言目标；仅当第一个获得 SAFE 后才执行第二个。'
+vrun experiment examples/tasks/assertion_workflow.json \
+  --request '检查两个已有断言目标；仅当第一个获得 SAFE 后才执行第二个。' \
+  --max-rounds 2 --json
+./scripts/run_llm_experiment.sh
 ```
 
-测试临时文件必须位于命名数据卷的 `/data` 下，这样独立验证容器才能通过卷 subpath 访问当前尝试。不要用额外挂载替换 compose 的数据卷；缓存文件则放在控制容器的 `/tmp`。
+`plan` 只调用模型并导出可重载的 `workflow.json`。`experiment` 自动调用模型、校验
+Workflow、调用 VerificationService，再将未解决结果交给下一轮模型。成功 SAFE 和
+UNSAFE 都是有效回答；UNKNOWN 保持 UNKNOWN。默认最多 2 轮，允许 1–8 轮，单次模型
+默认超时 180 秒。SIGINT/SIGTERM 使用取消 token 并清理进程组。
 
-`strong-verification.html` 为 workflow 类型，最终交付校验为 showcase 9/9，零错误、零警告。规范为 `strong-verification.workflow.json`，3589 字节，SHA-256 `2e0839900a5cc1cac1611315fca594a0b3add48f6ceac1cc4df1fc8abdea2aef`；HTML 为 632465 字节，SHA-256 `04034fe71a3402fcdc472554b3ceea458987e6dd61bd7904697a047fca2b779a`。规范和 HTML 在校验后保持原始字节。
+当前输入上限是 8 个已有目标、128 KiB 源码和 32 KiB 自然语言要求。源快照与输入集
+冻结；目标不能遗漏或复制，entry/property/C semantics 不变，确认数不能降低，预算
+不能超过调用者上限。LLM 可创建命名与明确的控制依赖；新 assumption、invariant、
+lemma、源码 instrumentation 或任意自然语言规约转换尚未实现。
 
-Archify 内置 visual-check 在本机 Windows 启动 Chromium 时失败（`spawn UNKNOWN`），该命令不算通过。使用已安装的 Playwright Chromium 对同一交付 HTML 测量 1440×900、1600×1000、1920×1080、2048×1320，四种尺寸均无横向或纵向溢出；已人工检查最小 / 最大尺寸与深色截图，文字、连线和层次清晰。截图与测量位于忽略的 `.veriruntime/strong-*` 文件中。现有回放页面另验五个案例、八个步骤、深浅主题及窄屏宽度。
+### Process contract 与 provenance
+
+采用官方 [非交互接口](https://learn.chatgpt.com/docs/non-interactive-mode)：
+`codex exec --json --output-schema ... --output-last-message ... -`，prompt 走 stdin。
+逐次覆盖使用 read-only sandbox、ephemeral 会话，关闭 shell、subagent、app/plugin、
+web search 和用户配置中的 MCP，仅影响该子进程。相关设置见官方
+[配置说明](https://learn.chatgpt.com/docs/config-file/config-basic) 和
+[配置参考](https://learn.chatgpt.com/docs/config-file/config-reference)。
+
+调用以 argv 创建，无 shell 插值；模型进程超时、取消、启动错误、非零退出、非法
+JSON/schema、重复 JSON key、非预期工具动作等分别报告。传输 schema 是严格对象；
+最终 Workflow 还通过完整 DSL/schema、来源、快照、预算、确认数和 DAG 校验。
+失败 proposal 不进入 verifier Runtime。模型的文本解释不构成 proof evidence。
+
+每次实验在 `<data-dir>/experiments/<id>/` 保存：
+
+- `request.txt`、`seed.json`、`inputs.json` 和捕获的源码。
+- 每轮 `prompt.txt`、`response.schema.json`、`command.json`、`codex.events.jsonl`、
+  `codex.stderr.txt`、`codex-run.json`、`answer.json`。
+- 通过校验的 `workflow.json`、包含 rationale/limitations 的 proposal、实际执行、
+  `feedback.json` 和 `round.json`。
+- 最终 `experiment.json`：状态、停止原因、轮数、诊断与真实 verifier execution 数。
+
+源码使用稳定 input namespace；导出的 Workflow DSL 与实际执行使用同一个 snapshot。
+命名空间可能与原 seed 的逻辑路径不同，因此不承诺命中 seed 的既有缓存；相同输入
+顺序的重复实验可以复用 per-goal exact cache。Codex 日志与验证器 artifacts 分开，
+不把 LLM 解释、假定结果或 token usage 纳入 definitive cache。
+
+
+### 历史验收与边界
+
+M8 在原生环境、Codex CLI 0.157.1 完成四次真实 gpt-6.1-sol 规划：首次生成 G1 SAFE 后执行 G2 的 DAG，CBMC / ESBMC 给出两家族 SAFE / UNSAFE，共四次验证命令；重复规划两个目标均缓存命中，零验证命令；memory_safety 保持 UNKNOWN，第二轮没有允许范围内的新进展，以 unchanged_workflow 停止。普通 pytest 的模型进程替身仅用于协议测试，不会自动消耗模型配额。
+
+原始历史记录可用 `git show 4a86a7e:docs/llm-experiments.md` 取回，现场数据位于原环境的 `.veriruntime/llm-demo/`。原实验 ID 分别为 `56237a737d8842f49d6cf3df39448787`、`544ab1c09adb41b793dd5a0aaefeb3d5`、`7f27dab00f46475cb81c4f77ebf39cac`；不要求当前 Windows 环境具有这些旧目录。
+
+当前桥接没有通用自然语言验证、任意 subgoal 分解、invariant synthesis 或源码编辑。COMPLETED 表示提交目标得到满足确认要求的回答，可以包含 UNSAFE；不是形式化完整性已被自动证明。模型解释、token usage 与 planner 日志不会进入证明缓存；轮数和 wall timeout 也不是 token / 费用上限。需要使用已有账号的模型配额，并保存实际 prompt / proposal / feedback 供评估。
+
+完整框架与当前实验验收、可视化 SHA-256 回执统一见 [部署与运维](operations.md#validation)，不再为每个阶段另立手册。
